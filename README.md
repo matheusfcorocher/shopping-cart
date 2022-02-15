@@ -39,7 +39,7 @@ In short answer, must attend this gist: https://gist.github.com/talyssonoc/5b102
   
    <dt>CLI integration</dt>
   <dd>
-    Use <a href="https://www.npmjs.com/package/sequelize-cli">Sequelize-cli</a> for both the application and Sequelize have command-line tools to make it easy to work with them. Check the <a href="#scripts">Scripts</a> section to know more about this feature.
+    Use <a href="https://www.npmjs.com/package/knex">Knex</a> for both the application and Objection have command-line tools to make it easy to work with them. Check the <a href="#scripts">Scripts</a> section to know more about this feature.
   </dd>
   
   <dt>Configurations</dt>
