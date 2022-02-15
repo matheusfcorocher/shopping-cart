@@ -34,7 +34,7 @@ In short answer, must attend this gist: https://gist.github.com/talyssonoc/5b102
     
   <dt>Database integration</dt>
   <dd>
-    <a href="https://tsed.io/tutorials/objection.html#installation">Objection</a>, an ORM for SQL databases, is already integrated. But needs to configure some aspects to use it.</a>
+    <a href="https://vincit.github.io/objection.js/">Objection</a>, an ORM for SQL databases, is already integrated. But needs to configure some aspects to use it.</a>
   </dd>
   
    <dt>CLI integration</dt>
