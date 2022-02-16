@@ -1,0 +1,36 @@
+{
+  "name": "shopping-cart",
+  "version": "1.0.0",
+  "main": "app.js",
+  "repository": "https://github.com/matheusfcorocher/shopping-cart.git",
+  "author": "Matheus <matheuscorocher@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@types/config": "^0.0.41",
+    "config": "^3.3.7",
+    "dotenv": "^16.0.0",
+    "fastify": "^3.27.1",
+    "objection": "^3.0.1",
+    "pg": "^8.7.3"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.4.0",
+    "@types/node": "^17.0.18",
+    "@types/supertest": "^2.0.11",
+    "cross-env": "^7.0.3",
+    "jest": "^27.5.1",
+    "knex": "^1.0.3",
+    "supertest": "^6.2.2",
+    "ts-jest": "^27.1.3",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.5.5"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node server.js",
+    "server": "tsnd server.js",
+    "dev": "tsnd --respawn dotenv/config server.ts",
+    "knex": "knex",
+    "test": "NODE_ENV=test jest --runInBand"
+  }
+}
