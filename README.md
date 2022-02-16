@@ -10,7 +10,7 @@ This repository is backend service that must follow this requirements:
 * um pra remover o cupom do carrinho
 * um pra finalizar a compra
 
-In short answer, must attend this gist: https://gist.github.com/talyssonoc/5b102985170a436bcf86ba00f929b889
+In short answer, must attend this gist: <a href="https://gist.github.com/talyssonoc/5b102985170a436bcf86ba00f929b889">Gist</a>
 
 ## Features
 
