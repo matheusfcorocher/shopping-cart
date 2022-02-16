@@ -72,12 +72,13 @@ interface VoucherObject {
   code: string;
   type: VoucherType;
   amount: number;
+  minValue?: number;
 }
 
 class ConcreteVoucherCreatorMachine implements AbstractVoucherCreatorMachine {
   public create(data: VoucherObject): Voucher {
-    const { id, code, type, amount } = data;
-    return new Voucher(id, code, type, amount);
+    const { id, code, type, amount, minValue } = data;
+    return new Voucher(id, code, type, amount, minValue);
   }
 }
 

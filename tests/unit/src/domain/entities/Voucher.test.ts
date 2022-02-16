@@ -58,6 +58,7 @@ describe("Domain :: Entity :: Voucher", () => {
           code: "#F121221",
           type: "free shipping",
           amount: 30.0,
+          minValue: 50,
         });
         expect(voucher.isFreeShipping()).toEqual(true);
       });

@@ -4,12 +4,14 @@ export default class Voucher {
   code: string;
   type: VoucherType;
   amount: number;
+  minValue?: number;
 
-  constructor(id: number, code: string, type: VoucherType, amount: number) {
+  constructor(id: number, code: string, type: VoucherType, amount: number, minValue?: number) {
     this.id = id;
     this.code = code;
     this.type = type;
     this.amount = amount;
+    this.minValue = minValue;
   }
 
   public isPercentual(): boolean {
@@ -21,7 +23,7 @@ export default class Voucher {
   }
 
   public isFreeShipping(): boolean {
-    return this.type === "free shipping";
+    return this.type === "free shipping" && this.minValue !== undefined;
   }
 }
 
