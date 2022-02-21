@@ -4,26 +4,53 @@ export default class Voucher {
   code: string;
   type: VoucherType;
   amount: number;
-  minValue?: number;
+  minValue: number;
 
   constructor(id: number, code: string, type: VoucherType, amount: number, minValue?: number) {
     this.id = id;
     this.code = code;
     this.type = type;
     this.amount = amount;
-    this.minValue = minValue;
+    if(minValue === undefined)
+      this.minValue = -1;
+    else
+      this.minValue = minValue;
   }
 
-  public isPercentual(): boolean {
+  private isPercentual(): boolean {
     return this.type === "percentual";
   }
 
-  public isFixed(): boolean {
+  private isFixed(): boolean {
     return this.type === "fixed";
   }
 
-  public isFreeShipping(): boolean {
-    return this.type === "free shipping" && this.minValue !== undefined;
+  private isFreeShipping(): boolean {
+    return this.type === "free shipping" && this.hasMinValue();
+  }
+
+  private hasMinValue() : boolean {
+    return this.minValue !== -1;
+  }
+
+  public applySubTotalDiscount(subTotal: number): number {
+    if (this.isPercentual()) {
+      return subTotal * this.amount;
+    } else if (this.isFixed()) {
+      return this.amount;
+    }
+
+    return 0;
+  }
+
+  public applyShippingDiscount(subTotal: number, shipping: number) : number {
+    if(!this.hasMinValue())
+      return -1;
+    else if (this.isFreeShipping() && subTotal >= this.minValue) {
+      return shipping;
+    } 
+
+    return -1;
   }
 }
 

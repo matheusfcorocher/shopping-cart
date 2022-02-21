@@ -1,9 +1,8 @@
 import { Voucher } from ".";
-import { DiscountDomainService } from "../services/DiscountDomainService";
 import { ShippingDomainService } from "../services/ShippingDomainService";
 
 type CartState = "CREATED" | "PENDING" | "FINISHED";
-type Products = Array<LineItem>;
+type LineItems = Array<LineItem>;
 
 class LineItem {
   productId: number;
@@ -16,40 +15,40 @@ class LineItem {
 }
 export default class Cart {
   id: number;
-  products: Products;
+  lineItems: LineItems;
   voucherId?: number;
   state: CartState;
-  // subtotal: number;
-  // shipping: number;
-  // discount: number;
-  // total: number;
-
+  subtotal: number;
+  shipping: number;
+  discount: number;
+  total: number;
 
   constructor(
     id: number,
-    products: Products,
+    lineItems: LineItems,
     voucherId: number,
     state: CartState
   ) {
     this.id = id;
-    this.products = products;
+    this.lineItems = lineItems;
     this.voucherId = voucherId;
     this.state = state;
-    // this.subtotal = this.calculateSubTotalCost();
-    // this.total = this.calculateTotalCost();
+    this.subtotal = 0;
+    this.discount = 0;
+    this.shipping = 0;
+    this.total = 0;
   }
 
   public isFinished(): boolean {
     return this.state == "FINISHED";
   }
 
-  // private calculateSubTotalCost() {
-  //   return this.products.reduce((acc, p) => acc+p.price, 0);
-  // }
-
-  // private calculateTotalCost() {
-  //   return this.subtotal + this.shipping - this.discount;
-  // }
+  public calculateCartWeight(): number {
+    return this.lineItems.reduce(
+      (acc: number, item: LineItem) => acc + item.quantity,
+      0
+    );
+  }
 }
 
-export {CartState, Products};
+export { CartState, LineItems, LineItem };

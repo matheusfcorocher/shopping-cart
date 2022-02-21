@@ -2,7 +2,7 @@ import { Product } from "../entities";
 
 interface ProductRepository {
     getAllProducts(): Promise<Array<Product>>
-    // getProductById(id:number) : Product
+    getProductById(id:number) : Promise<Product>
 }
 
 export { ProductRepository };

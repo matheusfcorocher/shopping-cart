@@ -7,6 +7,9 @@ class FakeProductRepository implements ProductRepository {
     constructor(products: Array<Product>) {
         this.products = products;
     } 
+    getProductById(id: number): Promise<Product> {
+        throw new Error("Method not implemented.");
+    }
     getAllProducts(): Promise<Product[]> {
         return Promise.resolve(this.products);
     }

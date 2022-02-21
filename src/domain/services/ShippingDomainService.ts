@@ -1,26 +1,18 @@
 import { Product } from "../entities";
 
 class ShippingDomainService {
-  voucherRepository: any;
   cartRepository: any;
 
-  constructor(voucherRepository: any, cartRepository: any) {
-    this.voucherRepository = voucherRepository;
+  constructor(cartRepository: any) {
     this.cartRepository = cartRepository;
   }
 
-  public calculateShipping(voucherId: number, cartId: number): number {
-    const voucher = this.voucherRepository.getVoucherById(voucherId);
-    const cart = this.cartRepository.getCartById(cartId);
-
-    if (voucher.isFreeShipping() && cart.subtotal >= voucher.minValue) {
-      return 0;
-    } else if (cart.subtotal > 400) {
+  public async calculateShipping(cartId: number): Promise<number> {
+    const cart = await this.cartRepository.getCartById(cartId);
+    if (cart.subtotal > 400) {
       return 0;
     }
-    const shippingWeight: number = cart.products.reduce(
-      (acc: number, product: Product) => acc + product.available
-    );
+    const shippingWeight : number = cart.calculateCartWeight();
     if (shippingWeight <= 10) return 30;
 
     return this.calculateShippingCost(shippingWeight);
