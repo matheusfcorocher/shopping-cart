@@ -4,7 +4,7 @@ import { LineItems, LineItem } from "../../../../../src/domain/entities/Cart";
 import { appliedFactory } from "../../../../../src/domain/factories/AppliedVoucherFactory";
 import { FakeCartRepository } from "../../../../support/repositories/FakeCartRepository";
 
-describe("Application :: Product :: ListCart", () => {
+describe("Application :: Cart :: ListCart", () => {
   describe("#execute", () => {
     describe("When cart doesn't have any line item", () => {
       describe("and cart doesnt have voucher", () => {

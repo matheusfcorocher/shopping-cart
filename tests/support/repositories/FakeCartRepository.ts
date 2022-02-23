@@ -9,6 +9,9 @@ class FakeCartRepository implements CartRepository {
   ) {
     this.carts = carts;
   }
+  update(cart: Cart): Promise<Cart> {
+    return Promise.resolve(cart)
+  }
   getCartById(id: number): Promise<Cart> {
     const result = this.carts.filter((cart) => cart.id === id)[0];
     if (result === undefined) {
