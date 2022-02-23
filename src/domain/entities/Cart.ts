@@ -15,11 +15,11 @@ class LineItem {
 }
 
 type CartProps = {
-  id: number,
-  lineItems: LineItems,
-  appliedVoucher?: AppliedVoucher,
-  state: CartState,
-}
+  id: number;
+  lineItems: LineItems;
+  appliedVoucher?: AppliedVoucher;
+  state: CartState;
+};
 
 export default class Cart {
   id: number;
@@ -31,12 +31,7 @@ export default class Cart {
   discount: number;
   total: number;
 
-  constructor({
-    id,
-    lineItems,
-    appliedVoucher,
-    state
-  } : CartProps) {
+  constructor({ id, lineItems, appliedVoucher, state }: CartProps) {
     this.id = id;
     this.lineItems = lineItems;
     this.appliedVoucher = appliedVoucher;
@@ -52,17 +47,21 @@ export default class Cart {
   }
 
   public calculateCartWeight(): number {
-    return this.lineItems.reduce(
-      (acc: number, item: LineItem) => acc + item.quantity,
-      0
-    );
+    return this.lineItems
+      ? this.lineItems.reduce(
+          (acc: number, item: LineItem) => acc + item.quantity,
+          0
+        )
+      : 0;
   }
 
   public calculateSubTotalCost(): number {
-    return this.lineItems.reduce(
-      (acc: number, item: LineItem) => acc + item.quantity * item.unitPrice,
-      0
-    );
+    return this.lineItems
+      ? this.lineItems.reduce(
+          (acc: number, item: LineItem) => acc + item.quantity * item.unitPrice,
+          0
+        )
+      : 0;
   }
 
   public calculateShipping(): number {
@@ -82,7 +81,9 @@ export default class Cart {
   }
 
   public calculateDiscount(): number {
-    return this.appliedVoucher? this.appliedVoucher.apply(this.shipping, this.subtotal): 0;
+    return this.appliedVoucher
+      ? this.appliedVoucher.apply(this.shipping, this.subtotal)
+      : 0;
   }
 
   public calculateTotal(): number {
