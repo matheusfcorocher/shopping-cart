@@ -1,4 +1,3 @@
-import { Product } from ".";
 import { AppliedVoucher } from "../valueObjects/AppliedVoucher";
 
 type CartState = "CREATED" | "PENDING" | "FINISHED";
@@ -57,6 +56,12 @@ export default class Cart {
       const newLineItem = new LineItem(lineItemData.productId, lineItemData.price, 1)
       this.lineItems = [...this.lineItems, newLineItem];
     }
+
+    this.recalculateValues();
+  }
+
+  public applyVoucher(appliedVoucher: AppliedVoucher) : void {
+    this.appliedVoucher = appliedVoucher;
 
     this.recalculateValues();
   }
@@ -129,6 +134,12 @@ export default class Cart {
     } else {
       throw new Error("Item wasn't found in cart!")
     }
+  }
+
+  public removeVoucher() : void {
+    this.appliedVoucher = undefined;
+
+    this.recalculateValues();
   }
 }
 
