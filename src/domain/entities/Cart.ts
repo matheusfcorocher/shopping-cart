@@ -1,3 +1,4 @@
+import { Product } from ".";
 import { AppliedVoucher } from "../valueObjects/AppliedVoucher";
 
 type CartState = "CREATED" | "PENDING" | "FINISHED";
@@ -21,6 +22,10 @@ type CartProps = {
   state: CartState;
 };
 
+type LineItemDataProps = {
+  productId: number;
+  price: number;
+};
 export default class Cart {
   id: number;
   lineItems: LineItems;
@@ -42,15 +47,15 @@ export default class Cart {
     this.total = this.calculateTotal();
   }
 
-  public addLineItem(lineItem: LineItem) : void {
-    const item = this.lineItems.find(item => item.productId === lineItem.productId && item.unitPrice
-      === lineItem.unitPrice)
+  public addLineItem(lineItemData : LineItemDataProps) : void {
+    const item = this.lineItems.find(item => item.productId === lineItemData.productId)
     if(item) {
-      item.quantity += lineItem.quantity;
-      const index = this.lineItems.findIndex(LineItem => LineItem.productId === item.productId && LineItem.unitPrice === item.unitPrice)
+      item.quantity += 1;
+      const index = this.lineItems.findIndex(lineItem => lineItem.productId === lineItemData.productId)
       this.lineItems[index] = item;
     } else {
-      this.lineItems = [...this.lineItems, lineItem];
+      const newLineItem = new LineItem(lineItemData.productId, lineItemData.price, 1)
+      this.lineItems = [...this.lineItems, newLineItem];
     }
 
     this.recalculateValues();
@@ -111,6 +116,20 @@ export default class Cart {
     this.total = this.calculateTotal();
   }
 
+  public removeLineItem(productId: number) : void {
+    const item = this.lineItems.find(item => item.productId === productId)
+    if(item) {
+      item.quantity -= 1;
+      const index = this.lineItems.findIndex(lineItem => lineItem.productId === productId)
+      if(item.quantity <= 0)
+        this.lineItems.splice(index, 1)
+      else
+        this.lineItems[index] = item;
+      this.recalculateValues();
+    } else {
+      throw new Error("Item wasn't found in cart!")
+    }
+  }
 }
 
 export { CartState, LineItems, LineItem };
