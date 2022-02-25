@@ -9,6 +9,11 @@ class FakeCartRepository implements CartRepository {
   ) {
     this.carts = carts;
   }
+  delete(cart: Cart): Promise<string> {
+    const index = this.carts.findIndex(c => c.id === cart.id)
+    this.carts.splice(index, 1)
+    return Promise.resolve('Cart was deleted!')
+  }
   update(cart: Cart): Promise<Cart> {
     return Promise.resolve(cart)
   }
