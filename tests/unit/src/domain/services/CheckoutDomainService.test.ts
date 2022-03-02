@@ -1,5 +1,5 @@
 import { Product, Cart, Order } from "../../../../../src/domain/entities";
-import { LineItems } from "../../../../../src/domain/entities/Cart";
+import { LineItem, LineItems } from "../../../../../src/domain/entities/Cart";
 import CheckoutDomainService, {
   CheckoutDomainServiceProps,
 } from "../../../../../src/domain/services/CheckoutDomainService";
@@ -81,6 +81,353 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         };
 
         await expect(() => checkout.execute(data)).rejects.toThrow(error);
+      });
+    });
+    describe("when a line item is not found in products data", () => {
+      it("returns internal error", async () => {
+        const lineItems: LineItems = [
+          new LineItem(1, 20, 2),
+          new LineItem(2, 40, 1),
+        ];
+        const cart = new Cart({
+          id: 1,
+          lineItems,
+          state: "CREATED",
+        });
+        const carts = [cart];
+
+        const products: Array<Product> = [
+          new Product({
+            id: 3,
+            name: "Chocolate",
+            price: 20,
+            available: 0,
+          }),
+        ];
+        const orders: Array<Order> = [];
+
+        const cartRepository = new FakeCartRepository(carts);
+        const productRepository = new FakeProductRepository(products);
+        const orderRepository = new FakeOrderRepository(orders);
+
+        const internalError = new Error("Internal Error");
+        internalError.message = `Product with id 1 was not found in products data`
+
+        const checkout = new CheckoutDomainService(
+          cartRepository,
+          productRepository,
+          orderRepository
+        );
+
+        const data: CheckoutDomainServiceProps = {
+          cartdId: 1,
+          buyerId: 1,
+          paymentMethod: "pix",
+        };
+
+        await expect(() => checkout.execute(data)).rejects.toThrow(internalError);
+      });
+    });
+    describe("when request a line item but it's out of stock", () => {
+      it("returns bad request error", async () => {
+        const lineItems: LineItems = [
+          new LineItem(1, 20, 2),
+        ];
+        const cart = new Cart({
+          id: 1,
+          lineItems,
+          state: "CREATED",
+        });
+        const carts = [cart];
+
+        const products: Array<Product> = [
+          new Product({
+            id: 1,
+            name: "Chocolate",
+            price: 20,
+            available: 0,
+          }),
+        ];
+        const orders: Array<Order> = [];
+
+        const cartRepository = new FakeCartRepository(carts);
+        const productRepository = new FakeProductRepository(products);
+        const orderRepository = new FakeOrderRepository(orders);
+
+        const badRequestError = new Error("Bad request Error")
+        badRequestError.message = `Product Chocolate is out of stock`
+        const errors = [badRequestError];
+        const aggregateError = new AggregateError(errors)
+        
+      
+        const checkout = new CheckoutDomainService(
+          cartRepository,
+          productRepository,
+          orderRepository
+        );
+
+        const data: CheckoutDomainServiceProps = {
+          cartdId: 1,
+          buyerId: 1,
+          paymentMethod: "pix",
+        };
+        await expect(() => checkout.execute(data)).rejects.toThrow(aggregateError);
+      });
+    });
+    describe("when request a line item but its quantity surpass the quantity available of that product", () => {
+      it("returns bad request error", async () => {
+        const lineItems: LineItems = [
+          new LineItem(1, 20, 4),
+        ];
+        const cart = new Cart({
+          id: 1,
+          lineItems,
+          state: "CREATED",
+        });
+        const carts = [cart];
+
+        const products: Array<Product> = [
+          new Product({
+            id: 1,
+            name: "Chocolate",
+            price: 20,
+            available: 3,
+          }),
+        ];
+        const orders: Array<Order> = [];
+
+        const cartRepository = new FakeCartRepository(carts);
+        const productRepository = new FakeProductRepository(products);
+        const orderRepository = new FakeOrderRepository(orders);
+
+        const badRequestError = new Error("Bad request Error")
+        badRequestError.message = `Can't buy the product Chocolate with quantity 4 due it's only available 3 units`
+        const errors = [badRequestError];
+        const aggregateError = new AggregateError(errors)
+        
+      
+        const checkout = new CheckoutDomainService(
+          cartRepository,
+          productRepository,
+          orderRepository
+        );
+
+        const data: CheckoutDomainServiceProps = {
+          cartdId: 1,
+          buyerId: 1,
+          paymentMethod: "pix",
+        };
+        await expect(() => checkout.execute(data)).rejects.toThrow(aggregateError);
+      });
+    });
+
+    describe("when try to create order but its fail", () => {
+      it("returns internal error", async () => {
+        const lineItems: LineItems = [
+          new LineItem(1, 20, 3),
+        ];
+        const cart = new Cart({
+          id: 1,
+          lineItems,
+          state: "CREATED",
+        });
+        const carts = [cart];
+
+        const products: Array<Product> = [
+          new Product({
+            id: 1,
+            name: "Chocolate",
+            price: 20,
+            available: 5,
+          }),
+        ];
+        const orders: Array<Order> = [];
+
+        const cartRepository = new FakeCartRepository(carts);
+        const productRepository = new FakeProductRepository(products);
+        const orderRepository = new FakeOrderRepository(orders);
+
+        const error = new Error("Service Unavailable");
+        orderRepository.createOrder = () => {
+          throw error;
+        };
+    
+        const checkout = new CheckoutDomainService(
+          cartRepository,
+          productRepository,
+          orderRepository
+        );
+
+        const data: CheckoutDomainServiceProps = {
+          cartdId: 1,
+          buyerId: 1,
+          paymentMethod: "pix",
+        };
+        await expect(() => checkout.execute(data)).rejects.toThrow(error);
+      });
+    });
+    describe("when try to delete cart but its fail", () => {
+      it("returns internal error", async () => {
+        const lineItems: LineItems = [
+          new LineItem(1, 20, 3),
+        ];
+        const cart = new Cart({
+          id: 1,
+          lineItems,
+          state: "CREATED",
+        });
+        const carts = [cart];
+
+        const products: Array<Product> = [
+          new Product({
+            id: 1,
+            name: "Chocolate",
+            price: 20,
+            available: 5,
+          }),
+        ];
+        const orders: Array<Order> = [];
+
+        const cartRepository = new FakeCartRepository(carts);
+        const productRepository = new FakeProductRepository(products);
+        const orderRepository = new FakeOrderRepository(orders);
+
+        const error = new Error("Service Unavailable");
+        cartRepository.delete = () => {
+          throw error;
+        };
+    
+        const checkout = new CheckoutDomainService(
+          cartRepository,
+          productRepository,
+          orderRepository
+        );
+
+        const data: CheckoutDomainServiceProps = {
+          cartdId: 1,
+          buyerId: 1,
+          paymentMethod: "pix",
+        };
+        await expect(() => checkout.execute(data)).rejects.toThrow(error);
+      });
+    });
+
+    describe("when create order", () => {
+      it("create order", async () => {
+        const lineItems: LineItems = [
+          new LineItem(1, 20, 3),
+        ];
+        const cart = new Cart({
+          id: 1,
+          lineItems,
+          state: "CREATED",
+        });
+        const carts = [cart];
+
+        const products: Array<Product> = [
+          new Product({
+            id: 1,
+            name: "Chocolate",
+            price: 20,
+            available: 5,
+          }),
+        ];
+        const orders: Array<Order> = [];
+
+        const cartRepository = new FakeCartRepository(carts);
+        const productRepository = new FakeProductRepository(products);
+        const orderRepository = new FakeOrderRepository(orders);
+
+        const checkout = new CheckoutDomainService(
+          cartRepository,
+          productRepository,
+          orderRepository
+        );
+
+        const data: CheckoutDomainServiceProps = {
+          cartdId: 1,
+          buyerId: 1,
+          paymentMethod: "pix",
+        };
+        await checkout.execute(data);
+        expect(orders.length).toBe(1);
+      });
+      it("delete cart", async () => {
+        const lineItems: LineItems = [
+          new LineItem(1, 20, 3),
+        ];
+        const cart = new Cart({
+          id: 1,
+          lineItems,
+          state: "CREATED",
+        });
+        const carts = [cart];
+
+        const products: Array<Product> = [
+          new Product({
+            id: 1,
+            name: "Chocolate",
+            price: 20,
+            available: 5,
+          }),
+        ];
+        const orders: Array<Order> = [];
+
+        const cartRepository = new FakeCartRepository(carts);
+        const productRepository = new FakeProductRepository(products);
+        const orderRepository = new FakeOrderRepository(orders);
+
+        const checkout = new CheckoutDomainService(
+          cartRepository,
+          productRepository,
+          orderRepository
+        );
+
+        const data: CheckoutDomainServiceProps = {
+          cartdId: 1,
+          buyerId: 1,
+          paymentMethod: "pix",
+        };
+        await checkout.execute(data);
+        expect(carts.length).toBe(0);
+      });
+      it("returns the right message", async () => {
+        const lineItems: LineItems = [
+          new LineItem(1, 20, 3),
+        ];
+        const cart = new Cart({
+          id: 1,
+          lineItems,
+          state: "CREATED",
+        });
+        const carts = [cart];
+
+        const products: Array<Product> = [
+          new Product({
+            id: 1,
+            name: "Chocolate",
+            price: 20,
+            available: 5,
+          }),
+        ];
+        const orders: Array<Order> = [];
+
+        const cartRepository = new FakeCartRepository(carts);
+        const productRepository = new FakeProductRepository(products);
+        const orderRepository = new FakeOrderRepository(orders);
+
+        const checkout = new CheckoutDomainService(
+          cartRepository,
+          productRepository,
+          orderRepository
+        );
+
+        const data: CheckoutDomainServiceProps = {
+          cartdId: 1,
+          buyerId: 1,
+          paymentMethod: "pix",
+        };
+        expect(await checkout.execute(data)).toEqual("Order created successfully!");
       });
     });
   });

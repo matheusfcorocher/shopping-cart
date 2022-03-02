@@ -86,10 +86,14 @@ export default class CheckoutDomainService {
     if(messageErrors.length === 0) 
       return true
     
-    throw new AggregateError(messageErrors.map(m => {
+    const errors = messageErrors.map(m => {
       const badRequestError = new Error("Bad request Error")
-      badRequestError.message = m.message
-    }));
+      badRequestError.message = m
+      return badRequestError
+    })
+    const aggregateError = new AggregateError(errors);
+
+    throw aggregateError
   }
 
   public async execute(data: CheckoutDomainServiceProps): Promise<string> {
