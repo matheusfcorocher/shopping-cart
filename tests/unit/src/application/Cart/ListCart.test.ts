@@ -12,6 +12,7 @@ describe("Application :: Cart :: ListCart", () => {
           const lineItems: LineItems = [];
           const cart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
           });
           const carts = [cart];
@@ -35,6 +36,7 @@ describe("Application :: Cart :: ListCart", () => {
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
           const cart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
             appliedVoucher,
           });
@@ -58,6 +60,7 @@ describe("Application :: Cart :: ListCart", () => {
           ];
           const cart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
           });
           const carts = [cart];
@@ -84,6 +87,7 @@ describe("Application :: Cart :: ListCart", () => {
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
           const cart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
             appliedVoucher,
           });
@@ -98,7 +102,7 @@ describe("Application :: Cart :: ListCart", () => {
       });
     });
 
-    describe("When idCart wasn't found", () => {
+    describe("When buyerId wasn't found", () => {
       it("returns not found error", async () => {
         const lineItems: LineItems = [
           new LineItem('aaa', 20, 2),
@@ -113,6 +117,7 @@ describe("Application :: Cart :: ListCart", () => {
         const appliedVoucher = appliedFactory.fromVoucher(voucher);
         const cart = new Cart({
           id: 'aaa',
+          buyerId: "aaa",
           lineItems,
           appliedVoucher,
         });
@@ -120,10 +125,15 @@ describe("Application :: Cart :: ListCart", () => {
         const cartRepository = new FakeCartRepository(carts);
         const listCart = new ListCart(cartRepository);
 
-        const notFoundError = new Error("Not Found Error");
-        notFoundError.message = `Cart with id bbb can't be found.`;
-
-        await expect(() => listCart.execute('bbb')).rejects.toThrow(notFoundError);
+        expect(await listCart.execute('bbb')).toEqual(
+          expect.objectContaining(
+            {
+              id: expect.any(String),
+              buyerId: expect.any(String),
+              lineItems: []
+            }
+          )
+        );
       });
     });
   });

@@ -11,8 +11,8 @@ export default class ApplyVoucher {
     this.voucherRepository = voucherRepository;
   }
 
-  public async execute(cartId: string, code: string): Promise<Cart> {
-    const cart = await this.cartRepository.getCartById(cartId);
+  public async execute(buyerId: string, code: string): Promise<Cart> {
+    const cart = await this.cartRepository.getCartByBuyerId(buyerId);
     const voucher = await this.voucherRepository.getVoucherByCode(code);
     const appliedVoucher = appliedFactory.fromVoucher(voucher);
     cart.applyVoucher(appliedVoucher);

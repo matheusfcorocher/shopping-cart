@@ -13,6 +13,7 @@ describe("Application :: Cart :: ApplyVoucher", () => {
           const lineItems: LineItems = [];
           const cart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
           });
           const carts = [cart];
@@ -28,6 +29,7 @@ describe("Application :: Cart :: ApplyVoucher", () => {
 
           const newCart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
             appliedVoucher: appliedVoucher,
           });
@@ -58,6 +60,7 @@ describe("Application :: Cart :: ApplyVoucher", () => {
 
           const cart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
             appliedVoucher: appliedVoucher,
           });
@@ -74,6 +77,7 @@ describe("Application :: Cart :: ApplyVoucher", () => {
 
           const newCart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
             appliedVoucher: appliedVoucher2,
           });
@@ -101,6 +105,7 @@ describe("Application :: Cart :: ApplyVoucher", () => {
           ];
           const cart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
           });
           const carts = [cart];
@@ -116,6 +121,7 @@ describe("Application :: Cart :: ApplyVoucher", () => {
 
           const newCart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
             appliedVoucher: appliedVoucher,
           });
@@ -149,6 +155,7 @@ describe("Application :: Cart :: ApplyVoucher", () => {
 
           const cart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
             appliedVoucher: appliedVoucher,
           });
@@ -165,6 +172,7 @@ describe("Application :: Cart :: ApplyVoucher", () => {
 
           const newCart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
             appliedVoucher: appliedVoucher2,
           });
@@ -183,11 +191,12 @@ describe("Application :: Cart :: ApplyVoucher", () => {
       });
     });
 
-    describe("When cartId wasn't found", () => {
-      it("returns not found error", async () => {
+    describe("When buyerId wasn't found", () => {
+      it("returns correct cart", async () => {
         const lineItems: LineItems = [];
         const cart = new Cart({
           id: 'aaa',
+          buyerId: "aaa",
           lineItems,
         });
         const carts = [cart];
@@ -198,6 +207,7 @@ describe("Application :: Cart :: ApplyVoucher", () => {
           amount: 50,
         });
         const vouchers = [voucher];
+        const appliedVoucher = appliedFactory.fromVoucher(voucher);
 
         const cartRepository = new FakeCartRepository(carts);
         const voucherRepository = new FakeVoucherRepository(vouchers);
@@ -206,11 +216,15 @@ describe("Application :: Cart :: ApplyVoucher", () => {
           voucherRepository
         );
 
-        const notFoundError = new Error("Not Found Error");
-        notFoundError.message = `Cart with id bbb can't be found.`;
-
-        await expect(() => applyVoucher.execute('bbb', "XESBQ")).rejects.toThrow(
-          notFoundError
+        expect(await applyVoucher.execute('bbb', "XESBQ")).toEqual(
+          expect.objectContaining(
+            {
+              id: expect.any(String),
+              buyerId: expect.any(String),
+              lineItems: [],
+              appliedVoucher
+            }
+          )
         );
       });
     });
@@ -219,6 +233,7 @@ describe("Application :: Cart :: ApplyVoucher", () => {
         const lineItems: LineItems = [];
         const cart = new Cart({
           id: 'aaa',
+          buyerId: "aaa",
           lineItems,
         });
         const carts = [cart];
@@ -250,6 +265,7 @@ describe("Application :: Cart :: ApplyVoucher", () => {
         const lineItems: LineItems = [];
         const cart = new Cart({
           id: 'aaa',
+          buyerId: "aaa",
           lineItems,
         });
         const carts = [cart];

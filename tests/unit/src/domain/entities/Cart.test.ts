@@ -213,7 +213,7 @@ describe("Domain :: Entity :: Cart", () => {
           buyerId,
           lineItems,
         });
-        const error = new Error("Item wasn't found in cart!")
+        const error = new Error("Item with productId 3dsa wasn't found in cart!")
 
         expect(() => cart.removeLineItem('3dsa')).toThrow(error)
       });

@@ -14,6 +14,7 @@ describe("Application :: Cart :: RemoveVoucher", () => {
           const lineItems: LineItems = [];
           const cart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
           });
           const carts = [cart];
@@ -27,6 +28,7 @@ describe("Application :: Cart :: RemoveVoucher", () => {
 
           const newCart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
           });
 
@@ -56,6 +58,7 @@ describe("Application :: Cart :: RemoveVoucher", () => {
 
           const cart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
             appliedVoucher: appliedVoucher,
           });
@@ -65,6 +68,7 @@ describe("Application :: Cart :: RemoveVoucher", () => {
 
           const newCart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
           });
 
@@ -91,6 +95,7 @@ describe("Application :: Cart :: RemoveVoucher", () => {
           ];
           const cart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
           });
           const carts = [cart];
@@ -104,6 +109,7 @@ describe("Application :: Cart :: RemoveVoucher", () => {
 
           const newCart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
           });
 
@@ -136,6 +142,7 @@ describe("Application :: Cart :: RemoveVoucher", () => {
 
           const cart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
             appliedVoucher: appliedVoucher,
           });
@@ -145,6 +152,7 @@ describe("Application :: Cart :: RemoveVoucher", () => {
 
           const newCart = new Cart({
             id: 'aaa',
+            buyerId: "aaa",
             lineItems,
           });
 
@@ -162,11 +170,12 @@ describe("Application :: Cart :: RemoveVoucher", () => {
       });
     });
 
-    describe("When cartId wasn't found", () => {
+    describe("When buyerId wasn't found", () => {
       it("returns not found error", async () => {
         const lineItems: LineItems = [];
         const cart = new Cart({
           id: 'aaa',
+          buyerId: "aaa",
           lineItems,
         });
         const carts = [cart];
@@ -188,8 +197,14 @@ describe("Application :: Cart :: RemoveVoucher", () => {
         const notFoundError = new Error("Not Found Error");
         notFoundError.message = `Cart with id bbb can't be found.`;
 
-        await expect(() => removeVoucher.execute('bbb')).rejects.toThrow(
-          notFoundError
+        expect(await removeVoucher.execute('bbb')).toEqual(
+          expect.objectContaining(
+            {
+              id: expect.any(String),
+              buyerId: expect.any(String),
+              lineItems,
+            }
+          )
         );
       });
     });
@@ -199,6 +214,7 @@ describe("Application :: Cart :: RemoveVoucher", () => {
         const lineItems: LineItems = [];
         const cart = new Cart({
           id: 'aaa',
+          buyerId: "aaa",
           lineItems,
         });
         const carts = [cart];

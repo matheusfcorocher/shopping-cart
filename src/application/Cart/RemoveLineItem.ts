@@ -11,8 +11,8 @@ export default class RemoveLineItem {
     this.productRepository = productRepository;
   }
 
-  public async execute(cartId: string, productId: string): Promise<Cart> {
-    const cart = await this.cartRepository.getCartById(cartId);
+  public async execute(buyerId: string, productId: string): Promise<Cart> {
+    const cart = await this.cartRepository.getCartByBuyerId(buyerId);
     await this.productRepository.getProductById(productId);
     cart.removeLineItem(productId);
     await this.cartRepository.update(cart);

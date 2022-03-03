@@ -127,7 +127,7 @@ export default class Cart {
         this.lineItems[index] = item;
       this.recalculateValues();
     } else {
-      throw new Error("Item wasn't found in cart!")
+      throw new Error(`Item with productId ${productId} wasn't found in cart!`)
     }
   }
 

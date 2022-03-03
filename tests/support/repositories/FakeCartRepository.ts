@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Cart } from "../../../src/domain/entities";
+import { LineItem } from '../../../src/domain/entities/Cart';
 import { CartRepository } from "../../../src/domain/repositories/CartRepository";
 
 class FakeCartRepository implements CartRepository {
@@ -16,9 +17,13 @@ class FakeCartRepository implements CartRepository {
   public getCartByBuyerId(buyerId: string): Promise<Cart> {
     const result = this.carts.filter((cart) => cart?.buyerId?.normalize() === buyerId.normalize())[0];
     if (result === undefined) {
-      const notFoundError = new Error("Not Found Error");
-      notFoundError.message = `Cart with buyerId ${buyerId} can't be found.`;
-      return Promise.reject(notFoundError);
+      const lineItems : Array<LineItem> = []; 
+      const newCart = new Cart({
+        id: this.getNextId(),
+        buyerId: this.getNextId(),
+        lineItems,
+      });
+      return Promise.resolve(newCart);
     }
     return Promise.resolve(result);
   }

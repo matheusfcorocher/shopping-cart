@@ -7,7 +7,7 @@ export default class ListCart {
     this.cartRepository = cartRepository;
   }
 
-  public async execute(id: string): Promise<Cart> {
-    return this.cartRepository.getCartById(id);
+  public async execute(buyerId: string): Promise<Cart> {
+    return this.cartRepository.getCartByBuyerId(buyerId);
   }
 }
