@@ -1,14 +1,14 @@
 type VoucherType = "percentual" | "fixed" | "free shipping";
 
 type VoucherProps = {
-  id: number;
+  id: string;
   code: string;
   type: VoucherType;
   amount: number;
   minValue?: number;
 }
 export default class Voucher {
-  id: number;
+  id: string;
   code: string;
   type: VoucherType;
   amount: number;

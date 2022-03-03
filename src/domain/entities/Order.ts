@@ -16,7 +16,7 @@ interface CartProps {
 }
 
 interface OrderData {
-  buyerId: number;
+  buyerId: string;
   cart: CartProps;
   paymentMethod: PaymentMethod;
 }
@@ -27,7 +27,7 @@ interface OrderProps extends OrderData {
 
 export default class Order {
   id: string;
-  buyerId: number;
+  buyerId: string;
   cart: CartProps;
   paymentMethod: PaymentMethod;
 

@@ -1,13 +1,13 @@
 import { VoucherType } from "../entities/Voucher";
 
 type AppliedVoucherProps = {
-  voucherId: number;
+  voucherId: string;
   type: VoucherType;
   amount: number;
 };
 
 abstract class AppliedVoucher {
-  voucherId: number;
+  voucherId: string;
   type: VoucherType;
   amount: number;
 
@@ -49,10 +49,19 @@ class PercentualVoucher extends AppliedVoucher {
     amount
   }: AppliedVoucherProps) {
     super({ voucherId, type, amount});
+    if(!this.isInRange()) {
+      const internalError = new Error("Internal Error")
+      internalError.message = "PercentualVoucher must have an amount between 0 and 100."
+      throw internalError;
+    } 
   }
 
   public apply(subtotal: number, shipping: number): number {
-    return subtotal * this.amount;
+    return subtotal * this.amount/100;
+  }
+
+  private isInRange(): boolean {
+    return this.amount >= 0 && this.amount <= 100
   }
 }
 

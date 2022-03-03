@@ -1,5 +1,5 @@
 type BuyerProps = {
-  id: number;
+  id: string;
   name: string;
   birthDate: Date;
   email: string;
@@ -14,7 +14,7 @@ type Address = {
     country: string;
 }
 export default class Buyer {
-  id: number;
+  id: string;
   name: string;
   birthDate: Date;
   email: string;

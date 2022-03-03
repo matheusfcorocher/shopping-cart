@@ -11,15 +11,14 @@ describe("Application :: Cart :: ListCart", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [];
           const cart = new Cart({
-            id: 1,
+            id: 'aaa',
             lineItems,
-            state: "CREATED",
           });
           const carts = [cart];
           const cartRepository = new FakeCartRepository(carts);
           const listCart = new ListCart(cartRepository);
 
-          const result = await listCart.execute(1);
+          const result = await listCart.execute('aaa');
 
           expect(result).toEqual(cart);
         });
@@ -28,23 +27,22 @@ describe("Application :: Cart :: ListCart", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [];
           const voucher = new Voucher({
-            id: 1,
+            id: 'aaa',
             code: "#F121221",
             type: "percentual",
             amount: 30.0,
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
           const cart = new Cart({
-            id: 1,
+            id: 'aaa',
             lineItems,
             appliedVoucher,
-            state: "CREATED",
           });
           const carts = [cart];
           const cartRepository = new FakeCartRepository(carts);
           const listCart = new ListCart(cartRepository);
 
-          const result = await listCart.execute(1);
+          const result = await listCart.execute('aaa');
 
           expect(result).toEqual(cart);
         });
@@ -55,19 +53,18 @@ describe("Application :: Cart :: ListCart", () => {
       describe("and cart doesnt have voucher", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [
-            new LineItem(1, 20, 2),
-            new LineItem(2, 40, 1),
+            new LineItem('aaa', 20, 2),
+            new LineItem('bbb', 40, 1),
           ];
           const cart = new Cart({
-            id: 1,
+            id: 'aaa',
             lineItems,
-            state: "PENDING",
           });
           const carts = [cart];
           const cartRepository = new FakeCartRepository(carts);
           const listCart = new ListCart(cartRepository);
 
-          const result = await listCart.execute(1);
+          const result = await listCart.execute('aaa');
 
           expect(result).toEqual(cart);
         });
@@ -75,27 +72,26 @@ describe("Application :: Cart :: ListCart", () => {
       describe("and cart has voucher", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [
-            new LineItem(1, 20, 2),
-            new LineItem(2, 40, 1),
+            new LineItem('aaa', 20, 2),
+            new LineItem('bbb', 40, 1),
           ];
           const voucher = new Voucher({
-            id: 1,
+            id: 'aaa',
             code: "#F121221",
             type: "percentual",
             amount: 30.0,
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
           const cart = new Cart({
-            id: 1,
+            id: 'aaa',
             lineItems,
             appliedVoucher,
-            state: "PENDING",
           });
           const carts = [cart];
           const cartRepository = new FakeCartRepository(carts);
           const listCart = new ListCart(cartRepository);
 
-          const result = await listCart.execute(1);
+          const result = await listCart.execute('aaa');
 
           expect(result).toEqual(cart);
         });
@@ -105,30 +101,29 @@ describe("Application :: Cart :: ListCart", () => {
     describe("When idCart wasn't found", () => {
       it("returns not found error", async () => {
         const lineItems: LineItems = [
-          new LineItem(1, 20, 2),
-          new LineItem(2, 40, 1),
+          new LineItem('aaa', 20, 2),
+          new LineItem('bbb', 40, 1),
         ];
         const voucher = new Voucher({
-          id: 1,
+          id: 'aaa',
           code: "#F121221",
           type: "percentual",
           amount: 30.0,
         });
         const appliedVoucher = appliedFactory.fromVoucher(voucher);
         const cart = new Cart({
-          id: 1,
+          id: 'aaa',
           lineItems,
           appliedVoucher,
-          state: "PENDING",
         });
         const carts = [cart];
         const cartRepository = new FakeCartRepository(carts);
         const listCart = new ListCart(cartRepository);
 
         const notFoundError = new Error("Not Found Error");
-        notFoundError.message = `Cart with id 2 can't be found.`;
+        notFoundError.message = `Cart with id bbb can't be found.`;
 
-        await expect(() => listCart.execute(2)).rejects.toThrow(notFoundError);
+        await expect(() => listCart.execute('bbb')).rejects.toThrow(notFoundError);
       });
     });
   });

@@ -1,11 +1,11 @@
 type ProductProps = {
-  id: number,
+  id: string,
   name: string;
   price: number;
   available: number;
 }
 export default class Product {
-  id: number;
+  id: string;
   name: string;
   price: number;
   available: number;

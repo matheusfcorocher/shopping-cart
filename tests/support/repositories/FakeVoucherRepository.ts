@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import { Voucher } from "../../../src/domain/entities";
 import { VoucherRepository } from "../../../src/domain/repositories/VoucherRepository";
 
@@ -7,8 +8,11 @@ class FakeVoucherRepository implements VoucherRepository {
     constructor(vouchers: Array<Voucher>) {
         this.vouchers = vouchers;
     } 
-    getVoucherByCode(code: string): Promise<Voucher> {
-        const result = this.vouchers.filter((voucher) => voucher.code === code)[0];
+    public getNextId(): string {
+        return uuidv4();
+    }
+    public getVoucherByCode(code: string): Promise<Voucher> {
+        const result = this.vouchers.filter((voucher) => voucher.code.normalize() === code.normalize())[0];
         if (result === undefined) {
         const notFoundError = new Error("Not Found Error");
         //   notFoundError.CODE = "NOTFOUND_ERROR";
@@ -17,7 +21,7 @@ class FakeVoucherRepository implements VoucherRepository {
         }
         return Promise.resolve(result);
     }
-    getVoucherById(id: number): Promise<Voucher> {
+    public getVoucherById(id: string): Promise<Voucher> {
         const result = this.vouchers.filter((voucher) => voucher.id === id)[0];
         if (result === undefined) {
         const notFoundError = new Error("Not Found Error");
@@ -27,7 +31,7 @@ class FakeVoucherRepository implements VoucherRepository {
         }
         return Promise.resolve(result);
     }
-    getAllVouchers(): Promise<Voucher[]> {
+    public getAllVouchers(): Promise<Voucher[]> {
         return Promise.resolve(this.vouchers);
     }
 }

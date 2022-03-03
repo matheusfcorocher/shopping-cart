@@ -1,13 +1,12 @@
 import { AppliedVoucher } from "../valueObjects/AppliedVoucher";
 
-type CartState = "CREATED" | "PENDING" | "FINISHED";
 type LineItems = Array<LineItem>;
 class LineItem {
-  productId: number;
+  productId: string;
   unitPrice: number;
   quantity: number;
 
-  constructor(productId: number, unitPrice: number, quantity: number) {
+  constructor(productId: string, unitPrice: number, quantity: number) {
     this.productId = productId;
     this.unitPrice = unitPrice;
     this.quantity = quantity;
@@ -15,31 +14,31 @@ class LineItem {
 }
 
 type CartProps = {
-  id: number;
+  id: string;
+  buyerId?: string;
   lineItems: LineItems;
   appliedVoucher?: AppliedVoucher;
-  state: CartState;
 };
 
 type LineItemDataProps = {
-  productId: number;
+  productId: string;
   price: number;
 };
 export default class Cart {
-  id: number;
+  id: string;
+  buyerId?: string;
   lineItems: LineItems;
   appliedVoucher?: AppliedVoucher;
-  state: CartState;
   subtotal: number;
   shipping: number;
   discount: number;
   total: number;
 
-  constructor({ id, lineItems, appliedVoucher, state }: CartProps) {
+  constructor({ id, buyerId, lineItems, appliedVoucher}: CartProps) {
     this.id = id;
+    this.buyerId = buyerId;
     this.lineItems = lineItems;
     this.appliedVoucher = appliedVoucher;
-    this.state = state;
     this.subtotal = this.calculateSubTotalCost();
     this.shipping = this.calculateShipping();
     this.discount = this.calculateDiscount();
@@ -47,10 +46,10 @@ export default class Cart {
   }
 
   public addLineItem(lineItemData : LineItemDataProps) : void {
-    const item = this.lineItems.find(item => item.productId === lineItemData.productId)
+    const item = this.lineItems.find(item => item.productId.normalize() === lineItemData.productId.normalize())
     if(item) {
       item.quantity += 1;
-      const index = this.lineItems.findIndex(lineItem => lineItem.productId === lineItemData.productId)
+      const index = this.lineItems.findIndex(lineItem => lineItem.productId.normalize() === lineItemData.productId.normalize())
       this.lineItems[index] = item;
     } else {
       const newLineItem = new LineItem(lineItemData.productId, lineItemData.price, 1)
@@ -66,7 +65,7 @@ export default class Cart {
     this.recalculateValues();
   }
 
-  public calculateCartWeight(): number {
+  private calculateCartWeight(): number {
     return this.lineItems
       ? this.lineItems.reduce(
           (acc: number, item: LineItem) => acc + item.quantity,
@@ -75,13 +74,13 @@ export default class Cart {
       : 0;
   }
 
-  public calculateDiscount(): number {
+  private calculateDiscount(): number {
     return this.appliedVoucher
       ? this.appliedVoucher.apply(this.shipping, this.subtotal)
       : 0;
   }
 
-  public calculateSubTotalCost(): number {
+  private calculateSubTotalCost(): number {
     return this.lineItems
       ? this.lineItems.reduce(
           (acc: number, item: LineItem) => acc + item.quantity * item.unitPrice,
@@ -90,7 +89,7 @@ export default class Cart {
       : 0;
   }
 
-  public calculateShipping(): number {
+  private calculateShipping(): number {
     if (this.subtotal > 400) {
       return 0;
     }
@@ -106,12 +105,8 @@ export default class Cart {
     return Math.floor((weight - 10) / 5) * 7 + 30;
   }
 
-  public calculateTotal(): number {
+  private calculateTotal(): number {
     return this.subtotal + this.shipping - this.discount;
-  }
-
-  public isFinished(): boolean {
-    return this.state == "FINISHED";
   }
 
   private recalculateValues() : void {
@@ -121,11 +116,11 @@ export default class Cart {
     this.total = this.calculateTotal();
   }
 
-  public removeLineItem(productId: number) : void {
-    const item = this.lineItems.find(item => item.productId === productId)
+  public removeLineItem(productId: string) : void {
+    const item = this.lineItems.find(item => item.productId.normalize() === productId.normalize())
     if(item) {
       item.quantity -= 1;
-      const index = this.lineItems.findIndex(lineItem => lineItem.productId === productId)
+      const index = this.lineItems.findIndex(lineItem => lineItem.productId.normalize() === productId.normalize())
       if(item.quantity <= 0)
         this.lineItems.splice(index, 1)
       else
@@ -143,4 +138,4 @@ export default class Cart {
   }
 }
 
-export { CartState, LineItems, LineItem };
+export { LineItems, LineItem };

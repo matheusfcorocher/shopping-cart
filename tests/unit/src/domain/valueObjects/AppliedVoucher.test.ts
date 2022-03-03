@@ -6,7 +6,7 @@ describe("Domain :: ValueObjects :: AppliedVoucher", () => {
     describe("if voucher has percentual type", () => {
       it("returns correct value", () => {
         const voucher = new Voucher({
-          id: 1,
+          id: 'aad',
           code: "#F121221",
           type: "percentual",
           amount: 30.0,
@@ -14,14 +14,14 @@ describe("Domain :: ValueObjects :: AppliedVoucher", () => {
         const percentualVoucher = appliedFactory.fromVoucher(voucher);
 
         expect(percentualVoucher.apply(100, 15)).toEqual(
-          percentualVoucher.amount * 100
+          percentualVoucher.amount
         );
       });
     });
     describe("if voucher has fixed type", () => {
       it("returns correct value", () => {
         const voucher = new Voucher({
-          id: 1,
+          id: 'aad',
           code: "#F121221",
           type: "fixed",
           amount: 30.0,
@@ -37,7 +37,7 @@ describe("Domain :: ValueObjects :: AppliedVoucher", () => {
       describe("and subtotal is equal or more than minValue", () => {
         it("returns correct value", () => {
           const voucher = new Voucher({
-            id: 1,
+            id: 'aad',
             code: "#F121221",
             type: "free shipping",
             amount: 30.0,
@@ -51,7 +51,7 @@ describe("Domain :: ValueObjects :: AppliedVoucher", () => {
       describe("and voucher doesnt have minValue", () => {
         it("returns error", () => {
           const voucher = new Voucher({
-            id: 1,
+            id: 'aad',
             code: "#F121221",
             type: "free shipping",
             amount: 30.0,
@@ -66,7 +66,7 @@ describe("Domain :: ValueObjects :: AppliedVoucher", () => {
       describe("and subtotal is less than minValue", () => {
         it("returns 0", () => {
           const voucher = new Voucher({
-            id: 1,
+            id: 'aad',
             code: "#F121221",
             type: "free shipping",
             amount: 30.0,

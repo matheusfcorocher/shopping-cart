@@ -11,7 +11,7 @@ export default class RemoveVoucher {
     this.voucherRepository = voucherRepository;
   }
 
-  public async execute(cartId: number): Promise<Cart> {
+  public async execute(cartId: string): Promise<Cart> {
     const cart = await this.cartRepository.getCartById(cartId);
     cart.removeVoucher();
     await this.cartRepository.update(cart);

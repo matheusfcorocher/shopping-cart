@@ -1,6 +1,6 @@
+import { v4 as uuidv4 } from 'uuid';
 import { Order } from "../../../src/domain/entities";
 import { OrderRepository } from "../../../src/domain/repositories/OrderRepository";
-import { v4 as uuidv4 } from 'uuid';
 
 class FakeOrderRepository implements OrderRepository {
   orders: Array<Order>;
@@ -9,14 +9,14 @@ class FakeOrderRepository implements OrderRepository {
     this.orders = orders;
   }
 
-  getAllOrders(): Promise<Order[]> {
+  public getAllOrders(): Promise<Order[]> {
     return Promise.resolve(this.orders);
   }
-  createOrder(order: Order): Promise<string> {
+  public store(order: Order): Promise<string> {
     this.orders.push(order);
     return Promise.resolve("Order was emitted sucessfully!")
   }
-  getNextId(): string {
+  public getNextId(): string {
     return uuidv4();
   }
 }

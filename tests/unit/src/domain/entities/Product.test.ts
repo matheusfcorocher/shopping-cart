@@ -1,11 +1,14 @@
 import { Product } from "../../../../../src/domain/entities";
+import { FakeProductRepository } from "../../../../support/repositories/FakeProductRepository";
 
 describe("Domain :: Entity :: Product", () => {
   describe("#isAvailable", () => {
     describe("if product has available more than 0", () => {
       it("returns true", () => {
+        const products : Array<Product> = [];
+        const productFactory = new FakeProductRepository(products);
         const product = new Product({
-          id: 1,
+          id: productFactory.getNextId(),
           name: "Chocolate",
           price: 20,
           available: 100,
@@ -16,8 +19,10 @@ describe("Domain :: Entity :: Product", () => {
     });
     describe("if product has available less or equal than 0", () => {
       it("returns false", () => {
+        const products : Array<Product> = [];
+        const productFactory = new FakeProductRepository(products);
         const product = new Product({
-          id: 1,
+          id: productFactory.getNextId(),
           name: "Chocolate",
           price: 20,
           available: 0,

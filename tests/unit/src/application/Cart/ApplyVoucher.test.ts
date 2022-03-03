@@ -12,13 +12,12 @@ describe("Application :: Cart :: ApplyVoucher", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [];
           const cart = new Cart({
-            id: 1,
+            id: 'aaa',
             lineItems,
-            state: "CREATED",
           });
           const carts = [cart];
           const voucher = new Voucher({
-            id: 1,
+            id: 'aaa',
             code: "XESBQ",
             type: "fixed",
             amount: 50,
@@ -28,10 +27,9 @@ describe("Application :: Cart :: ApplyVoucher", () => {
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
 
           const newCart = new Cart({
-            id: 1,
+            id: 'aaa',
             lineItems,
             appliedVoucher: appliedVoucher,
-            state: "CREATED",
           });
 
           const cartRepository = new FakeCartRepository(carts);
@@ -41,7 +39,7 @@ describe("Application :: Cart :: ApplyVoucher", () => {
             voucherRepository
           );
 
-          const result = await applyVoucher.execute(1, "XESBQ");
+          const result = await applyVoucher.execute('aaa', "XESBQ");
 
           expect(result).toEqual(newCart);
         });
@@ -50,7 +48,7 @@ describe("Application :: Cart :: ApplyVoucher", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [];
           const voucher = new Voucher({
-            id: 1,
+            id: 'aaa',
             code: "XESBQ",
             type: "fixed",
             amount: 50,
@@ -59,14 +57,13 @@ describe("Application :: Cart :: ApplyVoucher", () => {
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
 
           const cart = new Cart({
-            id: 1,
+            id: 'aaa',
             lineItems,
             appliedVoucher: appliedVoucher,
-            state: "CREATED",
           });
           const carts = [cart];
           const voucher2 = new Voucher({
-            id: 1,
+            id: 'aaa',
             code: "AKITANDO",
             type: "percentual",
             amount: 50,
@@ -76,10 +73,9 @@ describe("Application :: Cart :: ApplyVoucher", () => {
           const appliedVoucher2 = appliedFactory.fromVoucher(voucher2);
 
           const newCart = new Cart({
-            id: 1,
+            id: 'aaa',
             lineItems,
             appliedVoucher: appliedVoucher2,
-            state: "CREATED",
           });
 
           const cartRepository = new FakeCartRepository(carts);
@@ -89,7 +85,7 @@ describe("Application :: Cart :: ApplyVoucher", () => {
             voucherRepository
           );
 
-          const result = await applyVoucher.execute(1, "AKITANDO");
+          const result = await applyVoucher.execute('aaa', "AKITANDO");
 
           expect(result).toEqual(newCart);
         });
@@ -100,17 +96,16 @@ describe("Application :: Cart :: ApplyVoucher", () => {
       describe("and cart doesnt have voucher", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [
-            new LineItem(1, 20, 2),
-            new LineItem(2, 40, 1),
+            new LineItem('aaa', 20, 2),
+            new LineItem('bbb', 40, 1),
           ];
           const cart = new Cart({
-            id: 1,
+            id: 'aaa',
             lineItems,
-            state: "CREATED",
           });
           const carts = [cart];
           const voucher = new Voucher({
-            id: 1,
+            id: 'aaa',
             code: "AKITANDO",
             type: "percentual",
             amount: 50,
@@ -120,10 +115,9 @@ describe("Application :: Cart :: ApplyVoucher", () => {
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
 
           const newCart = new Cart({
-            id: 1,
+            id: 'aaa',
             lineItems,
             appliedVoucher: appliedVoucher,
-            state: "CREATED",
           });
 
           const cartRepository = new FakeCartRepository(carts);
@@ -133,7 +127,7 @@ describe("Application :: Cart :: ApplyVoucher", () => {
             voucherRepository
           );
 
-          const result = await applyVoucher.execute(1, "AKITANDO");
+          const result = await applyVoucher.execute('aaa', "AKITANDO");
 
           expect(result).toEqual(newCart);
         });
@@ -141,11 +135,11 @@ describe("Application :: Cart :: ApplyVoucher", () => {
       describe("and cart has voucher", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [
-            new LineItem(1, 20, 2),
-            new LineItem(2, 40, 1),
+            new LineItem('aaa', 20, 2),
+            new LineItem('bbb', 40, 1),
           ];
           const voucher = new Voucher({
-            id: 1,
+            id: 'aaa',
             code: "XESBQ",
             type: "fixed",
             amount: 50,
@@ -154,14 +148,13 @@ describe("Application :: Cart :: ApplyVoucher", () => {
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
 
           const cart = new Cart({
-            id: 1,
+            id: 'aaa',
             lineItems,
             appliedVoucher: appliedVoucher,
-            state: "CREATED",
           });
           const carts = [cart];
           const voucher2 = new Voucher({
-            id: 1,
+            id: 'bbb',
             code: "AKITANDO",
             type: "percentual",
             amount: 50,
@@ -171,10 +164,9 @@ describe("Application :: Cart :: ApplyVoucher", () => {
           const appliedVoucher2 = appliedFactory.fromVoucher(voucher2);
 
           const newCart = new Cart({
-            id: 1,
+            id: 'aaa',
             lineItems,
             appliedVoucher: appliedVoucher2,
-            state: "CREATED",
           });
 
           const cartRepository = new FakeCartRepository(carts);
@@ -184,7 +176,7 @@ describe("Application :: Cart :: ApplyVoucher", () => {
             voucherRepository
           );
 
-          const result = await applyVoucher.execute(1, "AKITANDO");
+          const result = await applyVoucher.execute('aaa', "AKITANDO");
 
           expect(result).toEqual(newCart);
         });
@@ -195,13 +187,12 @@ describe("Application :: Cart :: ApplyVoucher", () => {
       it("returns not found error", async () => {
         const lineItems: LineItems = [];
         const cart = new Cart({
-          id: 1,
+          id: 'aaa',
           lineItems,
-          state: "CREATED",
         });
         const carts = [cart];
         const voucher = new Voucher({
-          id: 1,
+          id: 'aaa',
           code: "XESBQ",
           type: "fixed",
           amount: 50,
@@ -216,9 +207,9 @@ describe("Application :: Cart :: ApplyVoucher", () => {
         );
 
         const notFoundError = new Error("Not Found Error");
-        notFoundError.message = `Cart with id 2 can't be found.`;
+        notFoundError.message = `Cart with id bbb can't be found.`;
 
-        await expect(() => applyVoucher.execute(2, "XESBQ")).rejects.toThrow(
+        await expect(() => applyVoucher.execute('bbb', "XESBQ")).rejects.toThrow(
           notFoundError
         );
       });
@@ -227,13 +218,12 @@ describe("Application :: Cart :: ApplyVoucher", () => {
       it("returns not found error", async () => {
         const lineItems: LineItems = [];
         const cart = new Cart({
-          id: 1,
+          id: 'aaa',
           lineItems,
-          state: "CREATED",
         });
         const carts = [cart];
         const voucher = new Voucher({
-          id: 1,
+          id: 'aaa',
           code: "XESBB",
           type: "fixed",
           amount: 50,
@@ -250,7 +240,7 @@ describe("Application :: Cart :: ApplyVoucher", () => {
         const notFoundError = new Error("Not Found Error");
         notFoundError.message = `Voucher with code XESBQ can't be found.`;
 
-        await expect(() => applyVoucher.execute(1, "XESBQ")).rejects.toThrow(
+        await expect(() => applyVoucher.execute('aaa', "XESBQ")).rejects.toThrow(
           notFoundError
         );
       });
@@ -259,13 +249,12 @@ describe("Application :: Cart :: ApplyVoucher", () => {
       it("returns error", async () => {
         const lineItems: LineItems = [];
         const cart = new Cart({
-          id: 1,
+          id: 'aaa',
           lineItems,
-          state: "CREATED",
         });
         const carts = [cart];
         const voucher = new Voucher({
-          id: 1,
+          id: 'aaa',
           code: "XESBQ",
           type: "fixed",
           amount: 50,
@@ -284,7 +273,7 @@ describe("Application :: Cart :: ApplyVoucher", () => {
           voucherRepository
         );
 
-        await expect(() => applyVoucher.execute(1, "XESBQ")).rejects.toThrow(
+        await expect(() => applyVoucher.execute('aaa', "XESBQ")).rejects.toThrow(
           error
         );
       });

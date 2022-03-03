@@ -5,13 +5,13 @@ import { OrderRepository } from "../repositories/OrderRepository";
 import { ProductRepository } from "../repositories/ProductRepository";
 
 interface CheckoutDomainServiceProps {
-  cartdId: number;
-  buyerId: number;
+  cartdId: string;
+  buyerId: string;
   paymentMethod: PaymentMethod;
 }
 
 type ProductsDataProps = {
-  productId: number;
+  productId: string;
   name: string;
   available: number;
 };
@@ -110,7 +110,7 @@ export default class CheckoutDomainService {
       ...orderData,
       id: orderId,
     });
-    await this.orderRepository.createOrder(order);
+    await this.orderRepository.store(order);
     await this.cartRepository.delete(cart);
     return "Order created successfully!";
   }

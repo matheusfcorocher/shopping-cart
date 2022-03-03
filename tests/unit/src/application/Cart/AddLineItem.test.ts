@@ -12,21 +12,19 @@ describe("Application :: Cart :: AddLineItem", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [];
           const cart = new Cart({
-            id: 1,
+            id: 'aad',
             lineItems,
-            state: "CREATED",
           });
           const carts = [cart];
           const products = [
-            new Product({ id: 1, name: "foo", price: 20, available: 20 }),
+            new Product({ id: 'aad', name: "foo", price: 20, available: 20 }),
           ];
-          const newLineItem = new LineItem(1, 20, 1);
+          const newLineItem = new LineItem('aad', 20, 1);
 
           const newLineItems = [newLineItem];
           const newCart = new Cart({
-            id: 1,
+            id: 'aad',
             lineItems: newLineItems,
-            state: "CREATED",
           });
 
           const cartRepository = new FakeCartRepository(carts);
@@ -36,7 +34,7 @@ describe("Application :: Cart :: AddLineItem", () => {
             productRepository
           );
 
-          const result = await addLineItem.execute(1, 1);
+          const result = await addLineItem.execute('aad', 'aad');
 
           expect(result).toEqual(newCart);
         });
@@ -45,22 +43,21 @@ describe("Application :: Cart :: AddLineItem", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [];
           const voucher = new Voucher({
-            id: 1,
+            id: 'aaa',
             code: "#F121221",
             type: "percentual",
             amount: 30.0,
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
           const cart = new Cart({
-            id: 1,
+            id: 'aaa',
             lineItems,
             appliedVoucher,
-            state: "CREATED",
           });
           const carts = [cart];
 
           const products = [
-            new Product({ id: 1, name: "foo", price: 20, available: 20 }),
+            new Product({ id: 'aaa', name: "foo", price: 20, available: 20 }),
           ];
 
           const cartRepository = new FakeCartRepository(carts);
@@ -70,16 +67,15 @@ describe("Application :: Cart :: AddLineItem", () => {
             productRepository
           );
 
-          const newLineItem = new LineItem(1, 20, 1);
+          const newLineItem = new LineItem('aaa', 20, 1);
           const newLineItems = [newLineItem];
           const newCart = new Cart({
-            id: 1,
+            id: 'aaa',
             lineItems: newLineItems,
             appliedVoucher,
-            state: "CREATED",
           });
 
-          const result = await addLineItem.execute(1, 1);
+          const result = await addLineItem.execute('aaa', 'aaa');
 
           expect(result).toEqual(newCart);
         });
@@ -90,18 +86,17 @@ describe("Application :: Cart :: AddLineItem", () => {
       describe("and cart doesnt have voucher", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [
-            new LineItem(1, 20, 2),
-            new LineItem(2, 40, 1),
+            new LineItem('aaa', 20, 2),
+            new LineItem('bbb', 40, 1),
           ];
           const cart = new Cart({
-            id: 1,
+            id: 'aaa',
             lineItems,
-            state: "CREATED",
           });
           const carts = [cart];
 
           const products = [
-            new Product({ id: 1, name: "foo", price: 20, available: 20 }),
+            new Product({ id: 'aaa', name: "foo", price: 20, available: 20 }),
           ];
 
           const cartRepository = new FakeCartRepository(carts);
@@ -111,47 +106,44 @@ describe("Application :: Cart :: AddLineItem", () => {
             productRepository
           );
 
-          const newLineItems = [new LineItem(1, 20, 3), new LineItem(2, 40, 1)];
+          const newLineItems = [new LineItem('aaa', 20, 3), new LineItem('bbb', 40, 1)];
           const newCart = new Cart({
-            id: 1,
+            id: 'aaa',
             lineItems: newLineItems,
-            state: "CREATED",
           });
 
-          const result = await addLineItem.execute(1, 1);
+          const result = await addLineItem.execute('aaa', 'aaa');
           expect(result).toEqual(newCart);
         });
       });
       describe("and cart has voucher", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [
-            new LineItem(1, 20, 2),
-            new LineItem(2, 40, 1),
+            new LineItem('aaa', 20, 2),
+            new LineItem('bbb', 40, 1),
           ];
           const voucher = new Voucher({
-            id: 1,
+            id: 'aaa',
             code: "#F121221",
             type: "percentual",
             amount: 30.0,
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
           const cart = new Cart({
-            id: 1,
+            id: 'aaa',
             lineItems,
             appliedVoucher,
-            state: "CREATED",
           });
           const carts = [cart];
           const products = [
-            new Product({ id: 1, name: "foo", price: 20, available: 20 }),
+            new Product({ id: 'aaa', name: "foo", price: 20, available: 20 }),
           ];
 
-          const newLineItems = [new LineItem(1, 20, 3), new LineItem(2, 40, 1)];
+          const newLineItems = [new LineItem('aaa', 20, 3), new LineItem('bbb', 40, 1)];
           const newCart = new Cart({
-            id: 1,
+            id: 'aaa',
             lineItems: newLineItems,
             appliedVoucher,
-            state: "CREATED",
           });
 
           const cartRepository = new FakeCartRepository(carts);
@@ -161,7 +153,7 @@ describe("Application :: Cart :: AddLineItem", () => {
             productRepository
           );
 
-          const result = await addLineItem.execute(1, 1);
+          const result = await addLineItem.execute('aaa', 'aaa');
           expect(result).toEqual(newCart);
         });
       });
@@ -170,35 +162,34 @@ describe("Application :: Cart :: AddLineItem", () => {
     describe("When idCart wasn't found", () => {
       it("returns not found error", async () => {
         const lineItems: LineItems = [
-          new LineItem(1, 20, 2),
-          new LineItem(2, 40, 1),
+          new LineItem('aaa', 20, 2),
+          new LineItem('bbb', 40, 1),
         ];
-        const newLineItem = new LineItem(1, 20, 4);
+        const newLineItem = new LineItem('aaa', 20, 4);
         const voucher = new Voucher({
-          id: 1,
+          id: 'aaa',
           code: "#F121221",
           type: "percentual",
           amount: 30.0,
         });
         const appliedVoucher = appliedFactory.fromVoucher(voucher);
         const cart = new Cart({
-          id: 1,
+          id: 'aaa',
           lineItems,
           appliedVoucher,
-          state: "PENDING",
         });
         const carts = [cart];
         const products = [
-          new Product({ id: 1, name: "foo", price: 20, available: 20 }),
+          new Product({ id: 'aaa', name: "foo", price: 20, available: 20 }),
         ];
         const cartRepository = new FakeCartRepository(carts);
         const productRepository = new FakeProductRepository(products);
         const addLineItem = new AddLineItem(cartRepository, productRepository);
 
         const notFoundError = new Error("Not Found Error");
-        notFoundError.message = `Cart with id 2 can't be found.`;
+        notFoundError.message = `Cart with id bbb can't be found.`;
 
-        await expect(() => addLineItem.execute(2, 1)).rejects.toThrow(
+        await expect(() => addLineItem.execute('bbb', 'aaa')).rejects.toThrow(
           notFoundError
         );
       });
@@ -206,26 +197,25 @@ describe("Application :: Cart :: AddLineItem", () => {
     describe("When update the cart gives error", () => {
       it("returns error", async () => {
         const lineItems: LineItems = [
-          new LineItem(1, 20, 2),
-          new LineItem(2, 40, 1),
+          new LineItem('aaa', 20, 2),
+          new LineItem('bbb', 40, 1),
         ];
-        const newLineItem = new LineItem(1, 20, 4);
+        const newLineItem = new LineItem('aaa', 20, 4);
         const voucher = new Voucher({
-          id: 1,
+          id: 'aaa',
           code: "#F121221",
           type: "percentual",
           amount: 30.0,
         });
         const appliedVoucher = appliedFactory.fromVoucher(voucher);
         const cart = new Cart({
-          id: 1,
+          id: 'aaa',
           lineItems,
           appliedVoucher,
-          state: "PENDING",
         });
         const carts = [cart];
         const products = [
-          new Product({ id: 1, name: "foo", price: 20, available: 20 }),
+          new Product({ id: 'aaa', name: "foo", price: 20, available: 20 }),
         ];
         const cartRepository = new FakeCartRepository(carts);
         const error = new Error("Service Unavailable");
@@ -235,7 +225,7 @@ describe("Application :: Cart :: AddLineItem", () => {
         const productRepository = new FakeProductRepository(products);
         const addLineItem = new AddLineItem(cartRepository, productRepository);
 
-        await expect(() => addLineItem.execute(1, 1)).rejects.toThrow(
+        await expect(() => addLineItem.execute('aaa', 'aaa')).rejects.toThrow(
           error
         );
       });
