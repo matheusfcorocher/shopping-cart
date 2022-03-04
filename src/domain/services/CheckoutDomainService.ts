@@ -1,4 +1,4 @@
-import { Cart, Order } from "../entities";
+import { Cart, Order, Product } from "../entities";
 import { OrderData, PaymentMethod } from "../entities/Order";
 import { CartRepository } from "../repositories/CartRepository";
 import { OrderRepository } from "../repositories/OrderRepository";
@@ -96,6 +96,33 @@ export default class CheckoutDomainService {
     throw aggregateError
   }
 
+  private updateAvailableProducts(cart: Cart, products: Array<Product>) : Array<Product> {
+    const updatedProducts = products.map((product) => {
+      const lineItem = cart.lineItems.find(
+        (lineItem) => product.id == lineItem.productId
+      );
+      if (lineItem) {
+        product.available = product.available - lineItem.quantity
+      }
+
+      return product;
+    });
+    return updatedProducts;
+  }
+
+  private async updateProducts(cart: Cart, products: Array<Product>) : Promise<String> {
+    const updatedProducts = this.updateAvailableProducts(cart, products);
+    
+    const promises = [];
+    for(let product of updatedProducts) {
+      const {id, available} = product
+      promises.push(this.productRepository.update(id, {available}));
+    }
+    await Promise.all(promises)
+    
+    return Promise.resolve("Products were updated successfully!");
+  }
+
   public async execute(data: CheckoutDomainServiceProps): Promise<string> {
     const cart = await this.cartRepository.getCartById(data.cartdId);
     const products = await this.productRepository.getAllProducts();
@@ -111,6 +138,7 @@ export default class CheckoutDomainService {
       id: orderId,
     });
     await this.orderRepository.store(order);
+    await this.updateProducts(cart, products)
     await this.cartRepository.delete(cart);
     return "Order created successfully!";
   }

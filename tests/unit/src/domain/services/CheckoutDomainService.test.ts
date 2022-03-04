@@ -261,6 +261,50 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         await expect(() => checkout.execute(data)).rejects.toThrow(error);
       });
     });
+    describe("when try to update products but its fail", () => {
+      it("returns internal error", async () => {
+        const lineItems: LineItems = [
+          new LineItem('abc', 20, 3),
+        ];
+        const cart = new Cart({
+          id: 'abc',
+          lineItems,
+        });
+        const carts = [cart];
+
+        const products: Array<Product> = [
+          new Product({
+            id: 'abc',
+            name: "Chocolate",
+            price: 20,
+            available: 5,
+          }),
+        ];
+        const orders: Array<Order> = [];
+
+        const cartRepository = new FakeCartRepository(carts);
+        const productRepository = new FakeProductRepository(products);
+        const orderRepository = new FakeOrderRepository(orders);
+
+        const error = new Error("Service Unavailable");
+        productRepository.update = () => {
+          throw error;
+        };
+    
+        const checkout = new CheckoutDomainService(
+          cartRepository,
+          productRepository,
+          orderRepository
+        );
+
+        const data: CheckoutDomainServiceProps = {
+          cartdId: 'abc',
+          buyerId: 'abc',
+          paymentMethod: "pix",
+        };
+        await expect(() => checkout.execute(data)).rejects.toThrow(error);
+      });
+    });
     describe("when try to delete cart but its fail", () => {
       it("returns internal error", async () => {
         const lineItems: LineItems = [
@@ -344,6 +388,50 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         };
         await checkout.execute(data);
         expect(orders.length).toBe(1);
+      });
+      it("update products", async () => {
+        const lineItems: LineItems = [
+          new LineItem('abc', 20, 3),
+        ];
+        const cart = new Cart({
+          id: 'abc',
+          lineItems,
+        });
+        const carts = [cart];
+
+        const products: Array<Product> = [
+          new Product({
+            id: 'abc',
+            name: "Chocolate",
+            price: 20,
+            available: 5,
+          }),
+        ];
+        const orders: Array<Order> = [];
+
+        const cartRepository = new FakeCartRepository(carts);
+        const productRepository = new FakeProductRepository(products);
+        const orderRepository = new FakeOrderRepository(orders);
+
+        const checkout = new CheckoutDomainService(
+          cartRepository,
+          productRepository,
+          orderRepository
+        );
+
+        const data: CheckoutDomainServiceProps = {
+          cartdId: 'abc',
+          buyerId: 'abc',
+          paymentMethod: "pix",
+        };
+        await checkout.execute(data);
+        expect(products.length).toBe(1);
+        expect(products[0]).toEqual(new Product({
+          id: 'abc',
+          name: "Chocolate",
+          price: 20,
+          available: 2,
+        }),);
       });
       it("delete cart", async () => {
         const lineItems: LineItems = [
