@@ -1,10 +1,10 @@
-import ListCart from "../../../../../src/application/Cart/ListCart";
+import GetCurrentCart from "../../../../../src/application/Cart/GetCurrentCart";
 import { Cart, Voucher } from "../../../../../src/domain/entities";
 import { LineItems, LineItem } from "../../../../../src/domain/entities/Cart";
 import { appliedFactory } from "../../../../../src/domain/factories/AppliedVoucherFactory";
 import { FakeCartRepository } from "../../../../support/repositories/FakeCartRepository";
 
-describe("Application :: Cart :: ListCart", () => {
+describe("Application :: Cart :: GetCurrentCart", () => {
   describe("#execute", () => {
     describe("When cart doesn't have any line item", () => {
       describe("and cart doesnt have voucher", () => {
@@ -17,9 +17,9 @@ describe("Application :: Cart :: ListCart", () => {
           });
           const carts = [cart];
           const cartRepository = new FakeCartRepository(carts);
-          const listCart = new ListCart(cartRepository);
+          const getCurrentCart = new GetCurrentCart(cartRepository);
 
-          const result = await listCart.execute('aaa');
+          const result = await getCurrentCart.execute('aaa');
 
           expect(result).toEqual(cart);
         });
@@ -42,9 +42,9 @@ describe("Application :: Cart :: ListCart", () => {
           });
           const carts = [cart];
           const cartRepository = new FakeCartRepository(carts);
-          const listCart = new ListCart(cartRepository);
+          const getCurrentCart = new GetCurrentCart(cartRepository);
 
-          const result = await listCart.execute('aaa');
+          const result = await getCurrentCart.execute('aaa');
 
           expect(result).toEqual(cart);
         });
@@ -65,9 +65,9 @@ describe("Application :: Cart :: ListCart", () => {
           });
           const carts = [cart];
           const cartRepository = new FakeCartRepository(carts);
-          const listCart = new ListCart(cartRepository);
+          const getCurrentCart = new GetCurrentCart(cartRepository);
 
-          const result = await listCart.execute('aaa');
+          const result = await getCurrentCart.execute('aaa');
 
           expect(result).toEqual(cart);
         });
@@ -93,9 +93,9 @@ describe("Application :: Cart :: ListCart", () => {
           });
           const carts = [cart];
           const cartRepository = new FakeCartRepository(carts);
-          const listCart = new ListCart(cartRepository);
+          const getCurrentCart = new GetCurrentCart(cartRepository);
 
-          const result = await listCart.execute('aaa');
+          const result = await getCurrentCart.execute('aaa');
 
           expect(result).toEqual(cart);
         });
@@ -123,9 +123,9 @@ describe("Application :: Cart :: ListCart", () => {
         });
         const carts = [cart];
         const cartRepository = new FakeCartRepository(carts);
-        const listCart = new ListCart(cartRepository);
+        const getCurrentCart = new GetCurrentCart(cartRepository);
 
-        expect(await listCart.execute('bbb')).toEqual(
+        expect(await getCurrentCart.execute('bbb')).toEqual(
           expect.objectContaining(
             {
               id: expect.any(String),
