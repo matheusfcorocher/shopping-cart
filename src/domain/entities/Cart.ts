@@ -65,6 +65,27 @@ export default class Cart {
     this.recalculateValues();
   }
 
+  public removeLineItem(productId: string) : void {
+    const item = this.lineItems.find(item => item.productId.normalize() === productId.normalize())
+    if(item) {
+      item.quantity -= 1;
+      const index = this.lineItems.findIndex(lineItem => lineItem.productId.normalize() === productId.normalize())
+      if(item.quantity <= 0)
+        this.lineItems.splice(index, 1)
+      else
+        this.lineItems[index] = item;
+      this.recalculateValues();
+    } else {
+      throw new Error(`Item with productId ${productId} wasn't found in cart!`)
+    }
+  }
+
+  public removeVoucher() : void {
+    this.appliedVoucher = undefined;
+
+    this.recalculateValues();
+  }
+
   private calculateCartWeight(): number {
     return this.lineItems
       ? this.lineItems.reduce(
@@ -114,27 +135,6 @@ export default class Cart {
     this.shipping = this.calculateShipping();
     this.discount = this.calculateDiscount();
     this.total = this.calculateTotal();
-  }
-
-  public removeLineItem(productId: string) : void {
-    const item = this.lineItems.find(item => item.productId.normalize() === productId.normalize())
-    if(item) {
-      item.quantity -= 1;
-      const index = this.lineItems.findIndex(lineItem => lineItem.productId.normalize() === productId.normalize())
-      if(item.quantity <= 0)
-        this.lineItems.splice(index, 1)
-      else
-        this.lineItems[index] = item;
-      this.recalculateValues();
-    } else {
-      throw new Error(`Item with productId ${productId} wasn't found in cart!`)
-    }
-  }
-
-  public removeVoucher() : void {
-    this.appliedVoucher = undefined;
-
-    this.recalculateValues();
   }
 }
 

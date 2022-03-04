@@ -31,6 +31,26 @@ export default class CheckoutDomainService {
     this.orderRepository = orderRepository;
   }
 
+  public async execute(data: CheckoutDomainServiceProps): Promise<string> {
+    const cart = await this.cartRepository.getCartById(data.cartdId);
+    const products = await this.productRepository.getAllProducts();
+    const productsData = products.map((product) => {
+      const { id, name, available } = product;
+      return { productId: id, name, available };
+    });
+    this.verifyAvailability(cart, productsData);
+    const orderId = this.orderRepository.getNextId();
+    const orderData = this.convertCartToOrderData(cart, data);
+    const order = new Order({
+      ...orderData,
+      id: orderId,
+    });
+    await this.orderRepository.store(order);
+    await this.stockReduction(cart, products);
+    await this.cartRepository.delete(cart);
+    return "Order created successfully!";
+  }
+
   private convertCartToOrderData(
     cart: Cart,
     data: CheckoutDomainServiceProps
@@ -48,6 +68,36 @@ export default class CheckoutDomainService {
       },
       paymentMethod,
     };
+  }
+
+  private async stockReduction(
+    cart: Cart,
+    products: Array<Product>
+  ): Promise<String> {
+    const updatedProducts = this.updateProducts(cart, products);
+
+    const promises = [];
+    for (let product of updatedProducts) {
+      const { id, available } = product;
+      promises.push(this.productRepository.update(id, { available }));
+    }
+    await Promise.all(promises);
+
+    return Promise.resolve("Products stock were updated successfully!");
+  }
+
+  private updateProducts(cart: Cart, products: Array<Product>): Array<Product> {
+    const updatedProducts = products.map((product) => {
+      const lineItem = cart.lineItems.find(
+        (lineItem) => product.id == lineItem.productId
+      );
+      if (lineItem) {
+        product.available = product.available - lineItem.quantity;
+      }
+
+      return product;
+    });
+    return updatedProducts;
   }
 
   private verifyAvailability(
@@ -73,75 +123,26 @@ export default class CheckoutDomainService {
       }
 
       const internalError = new Error("Internal Error");
-      internalError.message = `Product with id ${lineItem.productId} was not found in products data`
+      internalError.message = `Product with id ${lineItem.productId} was not found in products data`;
       throw internalError;
     });
     const messageErrors = buying.reduce((acc: Array<any>, b) => {
-      if(b.canBuy)
-        return [...acc]
-      else
-        return [...acc, b.message]
+      if (b.canBuy) return [...acc];
+      else return [...acc, b.message];
     }, []);
 
-    if(messageErrors.length === 0) 
-      return true
-    
-    const errors = messageErrors.map(m => {
-      const badRequestError = new Error("Bad request Error")
-      badRequestError.message = m
-      return badRequestError
-    })
+    if (messageErrors.length === 0) return true;
+
+    const errors = messageErrors.map((m) => {
+      const badRequestError = new Error("Bad request Error");
+      badRequestError.message = m;
+      return badRequestError;
+    });
     const aggregateError = new AggregateError(errors);
 
-    throw aggregateError
+    throw aggregateError;
   }
-
-  private updateAvailableProducts(cart: Cart, products: Array<Product>) : Array<Product> {
-    const updatedProducts = products.map((product) => {
-      const lineItem = cart.lineItems.find(
-        (lineItem) => product.id == lineItem.productId
-      );
-      if (lineItem) {
-        product.available = product.available - lineItem.quantity
-      }
-
-      return product;
-    });
-    return updatedProducts;
-  }
-
-  private async updateProducts(cart: Cart, products: Array<Product>) : Promise<String> {
-    const updatedProducts = this.updateAvailableProducts(cart, products);
-    
-    const promises = [];
-    for(let product of updatedProducts) {
-      const {id, available} = product
-      promises.push(this.productRepository.update(id, {available}));
-    }
-    await Promise.all(promises)
-    
-    return Promise.resolve("Products were updated successfully!");
-  }
-
-  public async execute(data: CheckoutDomainServiceProps): Promise<string> {
-    const cart = await this.cartRepository.getCartById(data.cartdId);
-    const products = await this.productRepository.getAllProducts();
-    const productsData = products.map((product) => {
-      const { id, name, available } = product;
-      return { productId: id, name, available };
-    });
-    this.verifyAvailability(cart, productsData)
-    const orderId = this.orderRepository.getNextId();
-    const orderData = this.convertCartToOrderData(cart, data);
-    const order = new Order({
-      ...orderData,
-      id: orderId,
-    });
-    await this.orderRepository.store(order);
-    await this.updateProducts(cart, products)
-    await this.cartRepository.delete(cart);
-    return "Order created successfully!";
-  }
+  
 }
 
-export {CheckoutDomainServiceProps};
+export { CheckoutDomainServiceProps };

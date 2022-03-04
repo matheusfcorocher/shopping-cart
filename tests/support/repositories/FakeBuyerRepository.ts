@@ -12,12 +12,14 @@ class FakeBuyerRepository implements BuyerRepository {
   public getAllBuyers(): Promise<Buyer[]> {
     return Promise.resolve(this.buyers);
   }
+  
+  public getNextId(): string {
+    return uuidv4();
+  }
+
   public store(buyer: Buyer): Promise<string> {
     this.buyers.push(buyer);
     return Promise.resolve("Buyer was emitted sucessfully!")
-  }
-  public getNextId(): string {
-    return uuidv4();
   }
 }
 

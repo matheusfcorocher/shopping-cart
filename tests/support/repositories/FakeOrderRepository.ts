@@ -12,13 +12,16 @@ class FakeOrderRepository implements OrderRepository {
   public getAllOrders(): Promise<Order[]> {
     return Promise.resolve(this.orders);
   }
+
+  public getNextId(): string {
+    return uuidv4();
+  }
+  
   public store(order: Order): Promise<string> {
     this.orders.push(order);
     return Promise.resolve("Order was emitted sucessfully!")
   }
-  public getNextId(): string {
-    return uuidv4();
-  }
+  
 }
 
 export { FakeOrderRepository };

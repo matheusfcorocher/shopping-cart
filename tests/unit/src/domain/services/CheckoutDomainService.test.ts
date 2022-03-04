@@ -389,7 +389,7 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         await checkout.execute(data);
         expect(orders.length).toBe(1);
       });
-      it("update products", async () => {
+      it("reduce stock", async () => {
         const lineItems: LineItems = [
           new LineItem('abc', 20, 3),
         ];

@@ -8,16 +8,11 @@ class FakeProductRepository implements ProductRepository {
   constructor(products: Array<Product>) {
     this.products = products;
   }
-  public update(id: string, data: ProductDataProps): Promise<Product> {
-    const product = this.products.filter((p) => p.id === id)[0];
-    const updatedProduct = new Product({
-      ...product,
-      ...data
-    });
-    const index = this.products.findIndex((p) => p.id === id)
-    this.products.splice(index, 1, updatedProduct);
-    return Promise.resolve(product);
+
+  public getAllProducts(): Promise<Product[]> {
+    return Promise.resolve(this.products);
   }
+
   public getNextId(): string {
     return uuidv4();
   }
@@ -31,9 +26,18 @@ class FakeProductRepository implements ProductRepository {
     }
     return Promise.resolve(result);
   }
-  public getAllProducts(): Promise<Product[]> {
-    return Promise.resolve(this.products);
+
+  public update(id: string, data: ProductDataProps): Promise<Product> {
+    const product = this.products.filter((p) => p.id === id)[0];
+    const updatedProduct = new Product({
+      ...product,
+      ...data
+    });
+    const index = this.products.findIndex((p) => p.id === id)
+    this.products.splice(index, 1, updatedProduct);
+    return Promise.resolve(product);
   }
+ 
 }
 
 export { FakeProductRepository };

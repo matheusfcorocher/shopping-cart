@@ -11,9 +11,11 @@ class FakeCartRepository implements CartRepository {
   ) {
     this.carts = carts;
   }
-  public getNextId(): string {
-    return uuidv4();
+
+  public getAllCarts(): Promise<Cart[]> {
+    return Promise.resolve(this.carts);
   }
+
   public getCartByBuyerId(buyerId: string): Promise<Cart> {
     const result = this.carts.filter((cart) => cart?.buyerId?.normalize() === buyerId.normalize())[0];
     if (result === undefined) {
@@ -27,14 +29,7 @@ class FakeCartRepository implements CartRepository {
     }
     return Promise.resolve(result);
   }
-  public delete(cart: Cart): Promise<string> {
-    const index = this.carts.findIndex(c => c.id.normalize() === cart.id.normalize())
-    this.carts.splice(index, 1)
-    return Promise.resolve('Cart was deleted!')
-  }
-  public update(cart: Cart): Promise<Cart> {
-    return Promise.resolve(cart)
-  }
+
   public getCartById(id: string): Promise<Cart> {
     const result = this.carts.filter((cart) => cart.id === id)[0];
     if (result === undefined) {
@@ -44,9 +39,19 @@ class FakeCartRepository implements CartRepository {
     }
     return Promise.resolve(result);
   }
+
+  public getNextId(): string {
+    return uuidv4();
+  }
   
-  public getAllCarts(): Promise<Cart[]> {
-    return Promise.resolve(this.carts);
+  public delete(cart: Cart): Promise<string> {
+    const index = this.carts.findIndex(c => c.id.normalize() === cart.id.normalize())
+    this.carts.splice(index, 1)
+    return Promise.resolve('Cart was deleted!')
+  }
+
+  public update(cart: Cart): Promise<Cart> {
+    return Promise.resolve(cart)
   }
 }
 

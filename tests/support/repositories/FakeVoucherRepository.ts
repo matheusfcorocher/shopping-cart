@@ -7,10 +7,16 @@ class FakeVoucherRepository implements VoucherRepository {
 
     constructor(vouchers: Array<Voucher>) {
         this.vouchers = vouchers;
+    }
+
+    public getAllVouchers(): Promise<Voucher[]> {
+        return Promise.resolve(this.vouchers);
     } 
+
     public getNextId(): string {
         return uuidv4();
     }
+    
     public getVoucherByCode(code: string): Promise<Voucher> {
         const result = this.vouchers.filter((voucher) => voucher.code.normalize() === code.normalize())[0];
         if (result === undefined) {
@@ -31,9 +37,7 @@ class FakeVoucherRepository implements VoucherRepository {
         }
         return Promise.resolve(result);
     }
-    public getAllVouchers(): Promise<Voucher[]> {
-        return Promise.resolve(this.vouchers);
-    }
+    
 }
 
 export {FakeVoucherRepository};
