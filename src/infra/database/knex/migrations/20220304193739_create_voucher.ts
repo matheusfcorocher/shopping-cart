@@ -4,7 +4,7 @@ import { Knex } from "knex";
 export async function up(knex: Knex): Promise<void> {
     return knex.schema.createTable('vouchers', function(table) {
         table.increments();
-        table.string('uuid').notNullable();
+        table.uuid('uuid').notNullable().unique();
         table.string('code').notNullable();
         table.string('type').notNullable();
         table.integer('amount').notNullable();

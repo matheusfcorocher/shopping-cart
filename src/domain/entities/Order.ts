@@ -7,17 +7,13 @@ type PaymentMethod =
   | "bill"
   | "crypto wallet";
 
-interface CartProps {
+interface OrderData {
+  buyerId: string;
   lineItems: LineItems;
   subtotal: number;
   shipping: number;
   discount: number;
   total: number;
-}
-
-interface OrderData {
-  buyerId: string;
-  cart: CartProps;
   paymentMethod: PaymentMethod;
 }
 
@@ -28,13 +24,21 @@ interface OrderProps extends OrderData {
 export default class Order {
   id: string;
   buyerId: string;
-  cart: CartProps;
+  lineItems: LineItems;
+  subtotal: number;
+  shipping: number;
+  discount: number;
+  total: number;
   paymentMethod: PaymentMethod;
 
-  constructor({ id, cart, paymentMethod, buyerId }: OrderProps) {
+  constructor({ id,  buyerId, lineItems, subtotal, shipping, discount, total, paymentMethod}: OrderProps) {
     this.id = id;
     this.buyerId = buyerId;
-    this.cart = cart;
+    this.lineItems = lineItems;
+    this.subtotal = subtotal;
+    this.shipping = shipping;
+    this.discount = discount;
+    this.total = total;
     this.paymentMethod = paymentMethod;
   }
 }

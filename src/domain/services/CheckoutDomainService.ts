@@ -59,13 +59,11 @@ export default class CheckoutDomainService {
     const { buyerId, paymentMethod } = data;
     return {
       buyerId,
-      cart: {
-        lineItems,
-        subtotal,
-        shipping,
-        discount,
-        total,
-      },
+      lineItems,
+      subtotal,
+      shipping,
+      discount,
+      total,
       paymentMethod,
     };
   }
@@ -142,7 +140,6 @@ export default class CheckoutDomainService {
 
     throw aggregateError;
   }
-  
 }
 
 export { CheckoutDomainServiceProps };
