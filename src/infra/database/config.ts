@@ -1,14 +1,16 @@
 import type { Knex } from "knex";
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 // Update with your config settings.
 const {DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DEV_DATABASE, DB_TEST_DATABASE} = process.env;
-
 const config: { [key: string]: Knex.Config } = {
   development: {
     client: "pg",
     connection: {
       host: DB_HOST,
-      port: DB_PORT?parseInt(DB_PORT):3333,
+      port: DB_PORT?parseInt(DB_PORT):5432,
       database: DB_DEV_DATABASE,
       user: DB_USERNAME,
       password: DB_PASSWORD,

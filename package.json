@@ -33,6 +33,7 @@
     "server": "tsnd server.js",
     "dev": "tsnd --respawn dotenv/config server.ts",
     "knex": "knex",
+    "tsnd": "tsnd",
     "test": "NODE_ENV=test jest --runInBand"
   }
 }

@@ -5,7 +5,7 @@ export async function up(knex: Knex): Promise<void> {
     return knex.schema.createTable('vouchers', function(table) {
         table.increments();
         table.uuid('uuid').notNullable().unique();
-        table.string('code').notNullable();
+        table.string('code').notNullable().unique();
         table.string('type').notNullable();
         table.integer('amount').notNullable();
         table.float('minValue');

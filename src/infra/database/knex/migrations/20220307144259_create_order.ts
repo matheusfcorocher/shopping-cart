@@ -5,11 +5,7 @@ export async function up(knex: Knex): Promise<void> {
     return knex.schema.createTable("orders", function (table) {
         table.increments();
         table.uuid("uuid").notNullable().unique();
-        table.foreign("buyerId").references('uuid').inTable('buyers');
-        table.float("subtotal").notNullable(); 
-        table.float("shipping").notNullable(); 
-        table.float("discount").notNullable(); 
-        table.float("total").notNullable(); 
+        table.uuid("buyerId").references('uuid').inTable('buyers');
         table.string("paymentMethod").notNullable();
         table.timestamp("created_at").defaultTo(knex.fn.now());
         table.timestamp("updated_at").defaultTo(knex.fn.now());
