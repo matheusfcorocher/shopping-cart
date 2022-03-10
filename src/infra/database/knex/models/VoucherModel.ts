@@ -1,7 +1,7 @@
 import {Model} from "./index";
 
-class Buyers extends Model {
-  static tableName = "buyers";
+class VoucherModel extends Model {
+  static tableName = "vouchers";
 
   public static get relationMappings(): any {
     const Carts = require("./Carts");
@@ -11,12 +11,12 @@ class Buyers extends Model {
         relation: Model.BelongsToOneRelation,
         modelClass: Carts,
         join: {
-          from: "buyers.uuid",
-          to: "carts.buyerId",
+          from: "vouchers.uuid",
+          to: "carts.voucherId",
         },
       },
     };
   }
 }
 
-export {Buyers};
+export {VoucherModel};

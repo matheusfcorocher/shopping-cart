@@ -1,19 +1,28 @@
 import { Model } from "./index";
 
-class Orders extends Model {
-  static tableName = "orders";
+class CartModel extends Model {
+  static tableName = "carts";
 
   public static get relationMappings(): any {
     const Buyers = require("./Buyers");
     const LineItems = require("./LineItems");
+    const Vouchers = require("./Vouchers");
 
     return {
       buyer: {
         relation: Model.HasOneRelation,
         modelClass: Buyers,
         join: {
-          from: "orders.buyerId",
+          from: "carts.buyerId",
           to: "buyers.uuid",
+        },
+      },
+      voucher: {
+        relation: Model.HasOneRelation,
+        modelClass: Vouchers,
+        join: {
+          from: "carts.voucherId",
+          to: "vouchers.uuid",
         },
       },
       lineItems: {
@@ -21,15 +30,15 @@ class Orders extends Model {
         modelClass: LineItems,
 
         filter(builder : any) {
-          builder.where('lineItemableType', 'Orders');
+          builder.where('lineItemableType', 'Carts');
         },
 
         beforeInsert(model : any) {
-          model.lineItemableType = 'Orders';
+          model.lineItemableType = 'Carts';
         },
 
         join: {
-          from: 'orders.uuid',
+          from: 'carts.uuid',
           to: 'lineItems.ownerId'
         }
       }
@@ -37,4 +46,4 @@ class Orders extends Model {
   }
 }
 
-export { Orders };
+export { CartModel };

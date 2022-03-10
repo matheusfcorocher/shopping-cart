@@ -1,6 +1,6 @@
 import {Model} from "./index";
 
-class LineItems extends Model {
+class LineItemModel extends Model {
   static tableName = "lineItems";
 
   public static get relationMappings(): any {
@@ -19,4 +19,4 @@ class LineItems extends Model {
   }
 }
 
-export {LineItems};
+export {LineItemModel};
