@@ -1,7 +1,8 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { Voucher } from "../../../domain/entities";
 import { VoucherRepository } from "../../../domain/repositories/VoucherRepository";
 import { VoucherModel } from "../../database/knex/models/VoucherModel";
+import { ObjectionVoucherMapper, dbVoucherProps } from "./ObjectionVoucherMapper";
 
 class ObjectionVoucherRepository implements VoucherRepository {
   voucherModel: VoucherModel;
@@ -10,8 +11,10 @@ class ObjectionVoucherRepository implements VoucherRepository {
     this.voucherModel = voucherModel;
   }
 
-  getAllVouchers(): Promise<Voucher[]> {
-    return Promise.resolve(this.voucherModel);
+  public getAllVouchers(): Promise<Voucher[]> {
+    return Promise.resolve(this.voucherModel.query()).then((data) =>
+      data.map((d : dbVoucherProps) => ObjectionVoucherMapper.toEntity(d))
+    );
   }
   getVoucherById(id: string): Promise<Voucher> {
     throw new Error("Method not implemented.");

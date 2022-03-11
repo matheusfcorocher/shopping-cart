@@ -1,4 +1,4 @@
-import {Model} from "./index";
+import {Model} from "../knex";
 
 class BuyerModel extends Model {
   static tableName = "buyers";

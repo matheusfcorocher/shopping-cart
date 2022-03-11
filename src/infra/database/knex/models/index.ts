@@ -1,6 +1,15 @@
-const { Model } = require('objection');
-const knex = require('../knex');
+import {BuyerModel} from './BuyerModel';
+import {CartModel} from './CartModel';
+import {LineItemModel} from './LineItemModel';
+import {OrderModel} from './OrderModel';
+import {ProductModel} from './ProductModel';
+import {VoucherModel} from './VoucherModel';
 
-Model.knex(knex);
-
-export {Model};
+export {
+    BuyerModel,
+    CartModel,
+    LineItemModel,
+    OrderModel,
+    ProductModel,
+    VoucherModel,
+};
