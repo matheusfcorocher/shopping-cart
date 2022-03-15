@@ -7,7 +7,7 @@ import { ObjectionVoucherMapper } from "./ObjectionVoucherMapper";
 class ObjectionVoucherRepository implements VoucherRepository {
  
   public getAllVouchers(): Promise<Voucher[]> {
-    return Promise.resolve(VoucherModel.query()).then((data) =>
+    return VoucherModel.query().then((data) =>
       data.map((d) => ObjectionVoucherMapper.toEntity(d))
     );
   }

@@ -55,15 +55,12 @@ export default class CheckoutDomainService {
     cart: Cart,
     data: CheckoutDomainServiceProps
   ): OrderData {
-    const { lineItems, subtotal, shipping, discount, total } = cart;
+    const { lineItems, discount } = cart;
     const { buyerId, paymentMethod } = data;
     return {
       buyerId,
       lineItems,
-      subtotal,
-      shipping,
       discount,
-      total,
       paymentMethod,
     };
   }

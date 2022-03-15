@@ -5,14 +5,14 @@ type VoucherProps = {
   code: string;
   type: VoucherType;
   amount: number;
-  minValue?: number;
+  minValue?: number | null;
 }
 export default class Voucher {
   id: string;
   code: string;
   type: VoucherType;
   amount: number;
-  minValue?: number;
+  minValue?: number | null;
 
   constructor({id, code, type, amount, minValue} : VoucherProps) {
     this.id = id;

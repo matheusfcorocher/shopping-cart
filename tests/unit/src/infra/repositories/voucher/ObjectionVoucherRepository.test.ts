@@ -1,27 +1,28 @@
-import ModelsFactory from "../../../../../support/factories/models/ModelsFactory";
+import { Voucher } from "../../../../../../src/domain/entities";
+import ObjectionVoucherRepository from "../../../../../../src/infra/repositories/voucher/ObjectionVoucherRepository";
+import VoucherModelFactory from "../../../../../support/factories/models/VoucherModelFactory";
 
-const { setupIntegrationTest } = require("../../../../support/setup");
-let repository = new ObjectionVoucherRepository(
-  modelsFactory.returnModel("Voucher")
-);
+const { setupIntegrationTest } = require("../../../../../support/setup");
+const voucherRepository = new ObjectionVoucherRepository();
+
 describe("Infra :: Voucher :: ObjectionVoucherRepository", () => {
   setupIntegrationTest();
   beforeEach(async () => {
-    await ModelsFactory.createList("Vouchers", [
+    await VoucherModelFactory.createList([
       {
-        uuid: "TEST-TEST1",
+        uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
         code: "TEST1",
         type: "percentual",
         amount: 40,
       },
       {
-        uuid: "TEST-TEST2",
+        uuid: "92d91715-34ad-449e-9b81-73f1a74ef44e",
         code: "TEST2",
         type: "fixed",
         amount: 40,
       },
       {
-        uuid: "TEST-TEST3",
+        uuid: "8bc94226-3e20-40cb-a507-554fabf36ffa",
         code: "TEST3",
         type: "free shipping",
         amount: 2,
@@ -31,24 +32,55 @@ describe("Infra :: Voucher :: ObjectionVoucherRepository", () => {
   });
 
   describe("#getAllVouchers", () => {
-    describe("when cargo do exist", () => {
-      it("returns cargo from the database", async () => {
-        const cargo = await repository.getById(1);
-
-        expect(cargo).toBeInstanceOf(Cargo);
-        expect(cargo).toEqual(
-          dataFactory.create("Cargo", { cargoId: 1, resourceIds: [1, 2, 3] })
-        );
+    describe("When execute method is called", () => {
+      describe("result is a array instance of vouchers", () => {
+        it("returns correct result", async () => {
+          const vouchers = await voucherRepository.getAllVouchers();
+          expect(vouchers[0]).toBeInstanceOf(Voucher);
+        });
+      });
+      describe("result has correct length", () => {
+        it("returns correct result", async () => {
+          const vouchers = await voucherRepository.getAllVouchers();
+          expect(vouchers.length).toBe(3);
+        });
+      });
+      describe("result returns correct array", () => {
+        it("returns correct result", async () => {
+          const vouchers = await voucherRepository.getAllVouchers();
+          expect(vouchers).toEqual([
+            new Voucher({
+              id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              code: "TEST1",
+              type: "percentual",
+              amount: 40,
+              minValue: null,
+            }),
+            new Voucher({
+              id: "92d91715-34ad-449e-9b81-73f1a74ef44e",
+              code: "TEST2",
+              type: "fixed",
+              amount: 40,
+              minValue: null,
+            }),
+            new Voucher({
+              id: "8bc94226-3e20-40cb-a507-554fabf36ffa",
+              code: "TEST3",
+              type: "free shipping",
+              amount: 2,
+              minValue: 50,
+            }),
+          ]);
+        });
       });
     });
+    describe("When service is unavailable", () => {
+      it("returns error", async () => {
+        const error = new Error("Service Unavailable");
+        voucherRepository.getAllVouchers = () => Promise.reject(error);
 
-    describe("when cargo doesn't exist", () => {
-      it("returns not found error", async () => {
-        const notFoundError = new Error("Not Found Error");
-        notFoundError.CODE = "NOTFOUND_ERROR";
-        notFoundError.message = `Cargo with id 10 can't be found.`;
-        await expect(() => repository.getById(10)).rejects.toThrow(
-          notFoundError
+        await expect(() => voucherRepository.getAllVouchers()).rejects.toThrow(
+          error
         );
       });
     });
