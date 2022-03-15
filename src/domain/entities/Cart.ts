@@ -29,20 +29,41 @@ export default class Cart {
   buyerId?: string;
   lineItems: LineItems;
   appliedVoucher?: AppliedVoucher;
-  subtotal: number;
-  shipping: number;
-  discount: number;
-  total: number;
 
   constructor({ id, buyerId, lineItems, appliedVoucher}: CartProps) {
     this.id = id;
     this.buyerId = buyerId;
     this.lineItems = lineItems;
     this.appliedVoucher = appliedVoucher;
-    this.subtotal = this.calculateSubTotalCost();
-    this.shipping = this.calculateShipping();
-    this.discount = this.calculateDiscount();
-    this.total = this.calculateTotal();
+  }
+
+  public get discount(): number {
+    return this.appliedVoucher
+      ? this.appliedVoucher.apply(this.shipping, this.subtotal)
+      : 0;
+  }
+
+  public get subtotal(): number {
+    return this.lineItems
+      ? this.lineItems.reduce(
+          (acc: number, item: LineItem) => acc + item.quantity * item.unitPrice,
+          0
+        )
+      : 0;
+  }
+
+  public get shipping(): number {
+    if (this.subtotal > 400) {
+      return 0;
+    }
+    const shippingWeight: number = this.calculateCartWeight();
+    if (shippingWeight <= 10) return 30;
+
+    return this.calculateShippingCost(shippingWeight);
+  }
+
+  public get total(): number {
+    return this.subtotal + this.shipping - this.discount;
   }
 
   public addLineItem(lineItemData : LineItemDataProps) : void {
@@ -55,14 +76,10 @@ export default class Cart {
       const newLineItem = new LineItem(lineItemData.productId, lineItemData.price, 1)
       this.lineItems = [...this.lineItems, newLineItem];
     }
-
-    this.recalculateValues();
   }
 
   public applyVoucher(appliedVoucher: AppliedVoucher) : void {
     this.appliedVoucher = appliedVoucher;
-
-    this.recalculateValues();
   }
 
   public removeLineItem(productId: string) : void {
@@ -74,7 +91,6 @@ export default class Cart {
         this.lineItems.splice(index, 1)
       else
         this.lineItems[index] = item;
-      this.recalculateValues();
     } else {
       throw new Error(`Item with productId ${productId} wasn't found in cart!`)
     }
@@ -82,8 +98,6 @@ export default class Cart {
 
   public removeVoucher() : void {
     this.appliedVoucher = undefined;
-
-    this.recalculateValues();
   }
 
   private calculateCartWeight(): number {
@@ -95,47 +109,13 @@ export default class Cart {
       : 0;
   }
 
-  private calculateDiscount(): number {
-    return this.appliedVoucher
-      ? this.appliedVoucher.apply(this.shipping, this.subtotal)
-      : 0;
-  }
-
-  private calculateSubTotalCost(): number {
-    return this.lineItems
-      ? this.lineItems.reduce(
-          (acc: number, item: LineItem) => acc + item.quantity * item.unitPrice,
-          0
-        )
-      : 0;
-  }
-
-  private calculateShipping(): number {
-    if (this.subtotal > 400) {
-      return 0;
-    }
-    const shippingWeight: number = this.calculateCartWeight();
-    if (shippingWeight <= 10) return 30;
-
-    return this.calculateShippingCost(shippingWeight);
-  }
-
   private calculateShippingCost(weight: number): number {
     //If weight is above 10kg, will charge $7 for each
     //5kg that cart has
     return Math.floor((weight - 10) / 5) * 7 + 30;
   }
 
-  private calculateTotal(): number {
-    return this.subtotal + this.shipping - this.discount;
-  }
-
-  private recalculateValues() : void {
-    this.subtotal = this.calculateSubTotalCost();
-    this.shipping = this.calculateShipping();
-    this.discount = this.calculateDiscount();
-    this.total = this.calculateTotal();
-  }
+ 
 }
 
 export { LineItems, LineItem };

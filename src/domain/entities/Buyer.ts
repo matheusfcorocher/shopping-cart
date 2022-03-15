@@ -28,3 +28,5 @@ export default class Buyer {
     this.address = address;
   }
 }
+
+export { Address };

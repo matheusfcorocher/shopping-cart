@@ -1,25 +1,34 @@
-const { setupIntegrationTest } = require("../../../../support/setup");
+import ModelsFactory from "../../../../../support/factories/models/ModelsFactory";
 
-// const modelsFactory = new ModelsFactory();
-// const dataFactory = new DataFactory();
-// let repository = new SequelizeCargosRepository(
-//   modelsFactory.returnModel("Cargos")
-// );
+const { setupIntegrationTest } = require("../../../../support/setup");
+let repository = new ObjectionVoucherRepository(
+  modelsFactory.returnModel("Voucher")
+);
 describe("Infra :: Voucher :: ObjectionVoucherRepository", () => {
   setupIntegrationTest();
-//   beforeEach(async () => {
-//     await modelsFactory.createList("Resources", [
-//       { name: "water", weight: 100 },
-//       { name: "food", weight: 300 },
-//       { name: "minerals", weight: 1000 },
-//     ]);
-
-//     await modelsFactory.createList("Cargos", [
-//       { cargoId: 1, resourceId: 1 },
-//       { cargoId: 1, resourceId: 2 },
-//       { cargoId: 1, resourceId: 3 },
-//     ]);
-//   });
+  beforeEach(async () => {
+    await ModelsFactory.createList("Vouchers", [
+      {
+        uuid: "TEST-TEST1",
+        code: "TEST1",
+        type: "percentual",
+        amount: 40,
+      },
+      {
+        uuid: "TEST-TEST2",
+        code: "TEST2",
+        type: "fixed",
+        amount: 40,
+      },
+      {
+        uuid: "TEST-TEST3",
+        code: "TEST3",
+        type: "free shipping",
+        amount: 2,
+        minValue: 50,
+      },
+    ]);
+  });
 
   describe("#getAllVouchers", () => {
     describe("when cargo do exist", () => {

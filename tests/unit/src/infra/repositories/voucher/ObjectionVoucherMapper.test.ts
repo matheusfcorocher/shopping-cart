@@ -1,20 +1,22 @@
 import { Voucher } from "../../../../../../src/domain/entities";
+import { VoucherModel } from "../../../../../../src/infra/database/knex/models";
 import {
-  dbVoucherProps,
   ObjectionVoucherMapper,
 } from "../../../../../../src/infra/repositories/voucher/ObjectionVoucherMapper";
+import { VoucherModelData } from "../../../../../support/factories/models/VoucherModelFactory";
 describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
   describe(".toEntity", () => {
     describe("when voucher has fixed type", () => {
       it("returns voucher instance with passed object", () => {
-        const dbVoucherObject: dbVoucherProps = {
-          id: 1,
+        const voucherModel: VoucherModel = new VoucherModel();
+        const voucherObject : VoucherModelData = {
           uuid: "TEST-TEST",
           code: "TEST",
-          type: "fixed",
-          amount: 100,
-        };
-        const { uuid, code, type, amount } = dbVoucherObject;
+          type: "percentual",
+          amount: 50,
+        }
+        voucherModel.$setJson(voucherObject);
+        const { uuid, code, type, amount } = voucherObject;
         const answer = new Voucher({
           id: uuid,
           code,
@@ -22,21 +24,22 @@ describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
           amount,
         });
 
-        expect(ObjectionVoucherMapper.toEntity(dbVoucherObject)).toEqual(
+        expect(ObjectionVoucherMapper.toEntity(voucherModel)).toEqual(
           answer
         );
       });
     });
     describe("when voucher has percentual type", () => {
       it("returns voucher instance with passed object", () => {
-        const dbVoucherObject: dbVoucherProps = {
-          id: 1,
+        const voucherModel: VoucherModel = new VoucherModel();
+        const voucherObject : VoucherModelData = {
           uuid: "TEST-TEST",
           code: "TEST",
           type: "percentual",
           amount: 50,
-        };
-        const { uuid, code, type, amount } = dbVoucherObject;
+        }
+        voucherModel.$setJson(voucherObject);
+        const { uuid, code, type, amount } = voucherObject;
         const answer = new Voucher({
           id: uuid,
           code,
@@ -44,22 +47,23 @@ describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
           amount,
         });
 
-        expect(ObjectionVoucherMapper.toEntity(dbVoucherObject)).toEqual(
+        expect(ObjectionVoucherMapper.toEntity(voucherModel)).toEqual(
           answer
         );
       });
     });
     describe("when voucher has free shipping type", () => {
       it("returns voucher instance with passed object", () => {
-        const dbVoucherObject: dbVoucherProps = {
-          id: 1,
+        const voucherModel: VoucherModel = new VoucherModel();
+        const voucherObject : VoucherModelData = {
           uuid: "TEST-TEST",
           code: "TEST",
           type: "free shipping",
           amount: 20,
           minValue: 20,
-        };
-        const { uuid, code, type, amount, minValue } = dbVoucherObject;
+        }
+        voucherModel.$setJson(voucherObject);
+        const { uuid, code, type, amount, minValue } = voucherObject;
         const answer = new Voucher({
           id: uuid,
           code,
@@ -68,7 +72,7 @@ describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
           minValue,
         });
 
-        expect(ObjectionVoucherMapper.toEntity(dbVoucherObject)).toEqual(
+        expect(ObjectionVoucherMapper.toEntity(voucherModel)).toEqual(
           answer
         );
       });
@@ -78,8 +82,7 @@ describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
   describe(".toDatabase", () => {
     describe("when voucher has fixed type", () => {
       it("returns prepared object to be persisted", () => {
-        const dbVoucherObject: dbVoucherProps = {
-          id: 1,
+        const dbVoucherObject: VoucherModelData = {
           uuid: "TEST-TEST",
           code: "TEST",
           type: "fixed",
@@ -105,8 +108,7 @@ describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
     });
     describe("when voucher has percentual type", () => {
       it("returns prepared object to be persisted", () => {
-        const dbVoucherObject: dbVoucherProps = {
-          id: 1,
+        const dbVoucherObject: VoucherModelData = {
           uuid: "TEST-TEST",
           code: "TEST",
           type: "percentual",
@@ -132,8 +134,7 @@ describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
     });
     describe("when voucher has free shipping type", () => {
       it("returns prepared object to be persisted", () => {
-        const dbVoucherObject: dbVoucherProps = {
-          id: 1,
+        const dbVoucherObject: VoucherModelData = {
           uuid: "TEST-TEST",
           code: "TEST",
           type: "free shipping",

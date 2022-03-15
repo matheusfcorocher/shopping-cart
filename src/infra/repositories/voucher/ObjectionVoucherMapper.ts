@@ -1,18 +1,9 @@
 import { Voucher } from "../../../domain/entities";
-import { VoucherType } from "../../../domain/entities/Voucher";
-
-interface dbVoucherProps {
-    id: number;
-    uuid: string;
-    code: string;
-    type: VoucherType;
-    amount: number;
-    minValue?: number;
-}
+import { VoucherModel } from "../../database/knex/models";
 
 const ObjectionVoucherMapper = {
-  toEntity(dataValues: dbVoucherProps) {
-    const { uuid, code, type, amount, minValue } = dataValues;
+  toEntity(voucherModel: VoucherModel) {
+    const { uuid, code, type, amount, minValue } = voucherModel;
 
     return new Voucher({
       id: uuid,
@@ -34,4 +25,4 @@ const ObjectionVoucherMapper = {
   },
 };
 
-export { ObjectionVoucherMapper, dbVoucherProps};
+export { ObjectionVoucherMapper };

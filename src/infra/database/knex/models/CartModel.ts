@@ -1,12 +1,18 @@
-import { Model } from "../knex";
-
+import { Model, RelationMappings, RelationMappingsThunk } from "objection";
 class CartModel extends Model {
+  id!: number;
+  uuid!: string;
+  buyerId!: string;
+  voucherId?: string;
+  type?: string;
+  amount?: number;
+
   static tableName = "carts";
 
-  public static get relationMappings(): any {
-    const Buyers = require("./Buyers");
-    const LineItems = require("./LineItems");
-    const Vouchers = require("./Vouchers");
+  public static get relationMappings(): RelationMappings | RelationMappingsThunk {
+    const Buyers = require("./BuyerModel");
+    const LineItems = require("./LineItemModel");
+    const Vouchers = require("./VoucherModel");
 
     return {
       buyer: {

@@ -6,6 +6,7 @@ export async function up(knex: Knex): Promise<void> {
         table.increments();
         table.uuid("uuid").notNullable().unique();
         table.uuid("buyerId").references('uuid').inTable('buyers');
+        table.float('discount').notNullable();
         table.string("paymentMethod").notNullable();
         table.timestamp("created_at").defaultTo(knex.fn.now());
         table.timestamp("updated_at").defaultTo(knex.fn.now());

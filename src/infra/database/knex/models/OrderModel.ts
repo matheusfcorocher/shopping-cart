@@ -1,11 +1,18 @@
-import { Model } from "../knex";
+import { Model, RelationMappings, RelationMappingsThunk } from "objection";
+import { PaymentMethod } from "../../../../domain/entities/Order";
 
 class OrderModel extends Model {
+  id!: number;
+  uuid!: string;
+  buyerId!: string;
+  discount!: number;
+  paymentMethod!: PaymentMethod;
+
   static tableName = "orders";
 
-  public static get relationMappings(): any {
-    const Buyers = require("./Buyers");
-    const LineItems = require("./LineItems");
+  public static get relationMappings(): RelationMappings | RelationMappingsThunk {
+    const Buyers = require("./BuyerModel");
+    const LineItems = require("./LineItemModel");
 
     return {
       buyer: {

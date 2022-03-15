@@ -1,10 +1,16 @@
-import {Model} from "../knex";
-
+import { Model, RelationMappings, RelationMappingsThunk } from "objection";
 class LineItemModel extends Model {
+  uuid!: string;
+  productId!: string;
+  unitPrice!: number;
+  quantity!: number;
+  ownerId!: string;
+  ownerType!: string;
+
   static tableName = "lineItems";
 
-  public static get relationMappings(): any {
-    const Products = require("./Products");
+  public static get relationMappings(): RelationMappings | RelationMappingsThunk {
+    const Products = require("./ProductModel");
 
     return {
       product: {
