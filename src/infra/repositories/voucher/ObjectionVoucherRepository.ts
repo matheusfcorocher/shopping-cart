@@ -15,7 +15,7 @@ class ObjectionVoucherRepository implements VoucherRepository {
     return VoucherModel.query().findOne({
       uuid:id
     }).then((data) => {
-      if(data ===undefined) {
+      if(data === undefined) {
         const notFoundError = new Error("Not Found Error");
         //   notFoundError.CODE = "NOTFOUND_ERROR";
         notFoundError.message = `Voucher with id ${id} can't be found.`;
@@ -25,7 +25,17 @@ class ObjectionVoucherRepository implements VoucherRepository {
     })
   }
   getVoucherByCode(code: string): Promise<Voucher> {
-    throw new Error("Method not implemented.");
+    return VoucherModel.query().findOne({
+      code
+    }).then((data) => {
+      if(data === undefined) {
+        const notFoundError = new Error("Not Found Error");
+        //   notFoundError.CODE = "NOTFOUND_ERROR";
+        notFoundError.message = `Voucher with code ${code} can't be found.`;
+        return Promise.reject(notFoundError);
+      }
+      return ObjectionVoucherMapper.toEntity(data)
+    })
   }
   getNextId(): string {
     return uuidv4();
