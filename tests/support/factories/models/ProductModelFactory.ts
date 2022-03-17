@@ -22,9 +22,6 @@ const ProductModelFactory: ModelsFactory = {
       console.log(error)
     );
   },
-  returnModel: function (): typeof ProductModel {
-    return ProductModel;
-  },
 };
 
 export default ProductModelFactory;

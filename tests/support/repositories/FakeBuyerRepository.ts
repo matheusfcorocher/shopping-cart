@@ -17,9 +17,9 @@ class FakeBuyerRepository implements BuyerRepository {
     return uuidv4();
   }
 
-  public store(buyer: Buyer): Promise<string> {
+  public store(buyer: Buyer): Promise<Buyer> {
     this.buyers.push(buyer);
-    return Promise.resolve("Buyer was emitted sucessfully!")
+    return Promise.resolve(buyer);
   }
 }
 

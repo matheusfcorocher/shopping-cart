@@ -24,9 +24,6 @@ const VoucherModelFactory: ModelsFactory = {
       console.log(error)
     );
   },
-  returnModel: function (): typeof VoucherModel {
-    return VoucherModel;
-  },
 };
 
 export default VoucherModelFactory;

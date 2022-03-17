@@ -15,7 +15,6 @@ class ObjectionLineItemRepository implements LineItemRepository {
       owner,
       productId
     );
-
     return lineItem
       .$query()
       .delete()
@@ -93,12 +92,11 @@ class ObjectionLineItemRepository implements LineItemRepository {
     productId: string
   ): Promise<LineItemModel> {
     const { ownerId, ownerType } = owner;
-
     return LineItemModel.query()
       .findOne({
+        productId,
         ownerId,
         ownerType,
-        productId,
       })
       .then((data) => {
         if (data === undefined) {

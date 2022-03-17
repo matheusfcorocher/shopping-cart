@@ -23,9 +23,6 @@ const OrderModelFactory: ModelsFactory = {
       console.log(error)
     );
   },
-  returnModel: function (): typeof OrderModel {
-    return OrderModel;
-  },
 };
 
 export default OrderModelFactory;

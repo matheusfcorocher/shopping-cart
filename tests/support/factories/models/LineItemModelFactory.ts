@@ -24,9 +24,6 @@ const LineItemModelFactory: ModelsFactory = {
       console.log(error)
     );
   },
-  returnModel: function (): typeof LineItemModel {
-    return LineItemModel;
-  },
 };
 
 export default LineItemModelFactory;

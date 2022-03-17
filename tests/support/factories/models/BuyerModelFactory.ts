@@ -27,9 +27,6 @@ const BuyerModelFactory: ModelsFactory = {
       console.log(error)
     );
   },
-  returnModel: function (): typeof BuyerModel {
-    return BuyerModel;
-  },
 };
 
 export default BuyerModelFactory;

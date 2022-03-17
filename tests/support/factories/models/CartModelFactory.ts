@@ -23,9 +23,6 @@ const CartModelFactory: ModelsFactory = {
       console.log(error)
     );
   },
-  returnModel: function (): typeof CartModel {
-    return CartModel;
-  },
 };
 
 export default CartModelFactory;
