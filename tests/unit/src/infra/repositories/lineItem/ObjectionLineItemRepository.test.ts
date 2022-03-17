@@ -128,7 +128,9 @@ describe("Infra :: LineItem :: ObjectionLineItemRepository", () => {
             ownerType: "cart",
           };
           const productId = "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf";
-          expect(await lineItemRepository.delete(owner, productId)).toEqual("LineItem was deleted successfully.");
+          expect(await lineItemRepository.delete(owner, productId)).toEqual(
+            "LineItem was deleted successfully."
+          );
         });
       });
     });
@@ -137,55 +139,62 @@ describe("Infra :: LineItem :: ObjectionLineItemRepository", () => {
   describe("#getAllLineItemsByOwner", () => {
     describe("When method is called", () => {
       describe("result is a array instance of lineItems", () => {
-        // it("returns correct result", async () => {
-        //   const lineItems = await lineItemRepository.getAllLineItemsByOwner();
+        it("returns correct result", async () => {
+          const owner = {
+            ownerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+            ownerType: "cart",
+          };
+          const lineItems = await lineItemRepository.getAllLineItemsByOwner(
+            owner
+          );
 
-        //   expect(lineItems[0]).toBeInstanceOf(LineItem);
-        // });
+          expect(lineItems[0]).toBeInstanceOf(LineItem);
+        });
       });
       describe("result has correct length", () => {
-        // it("returns correct result", async () => {
-        //   const lineItems = await lineItemRepository.getAllLineItems();
+        it("returns correct result", async () => {
+          const owner = {
+            ownerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+            ownerType: "cart",
+          };
+          const lineItems = await lineItemRepository.getAllLineItemsByOwner(
+            owner
+          );
 
-        //   expect(lineItems.length).toBe(3);
-        // });
+          expect(lineItems.length).toBe(1);
+        });
       });
       describe("result returns correct array", () => {
         it("returns correct result", async () => {
-          // const lineItems = await lineItemRepository.getAllLineItems();
-          // const expected = [
-          //   new LineItem({
-          //     id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-          //     name: "Gaming Keyboard",
-          //     price: 79.99,
-          //     available: 30,
-          //   }),
-          //   new LineItem({
-          //     id: "92d91715-34ad-449e-9b81-73f1a74ef44e",
-          //     name: "Gaming Chair",
-          //     price: 299.99,
-          //     available: 30,
-          //   }),
-          //   new LineItem({
-          //     id: "8bc94226-3e20-40cb-a507-554fabf36ffa",
-          //     name: "Gaming Mouse",
-          //     price: 39.99,
-          //     available: 30,
-          //   }),
-          // ];
+          const owner = {
+            ownerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+            ownerType: "cart",
+          };
+          const lineItems = await lineItemRepository.getAllLineItemsByOwner(
+            owner
+          );
+          const expected = [
+            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", 69.99, 2),
+          ];
 
-          // expect(lineItems).toEqual(expect.arrayContaining(expected));
+          expect(lineItems).toEqual(expect.arrayContaining(expected));
         });
       });
     });
     describe("When service is unavailable", () => {
       it("returns error", async () => {
-        // const error = new Error("Service Unavailable");
-        // lineItemRepository.getAllLineItems = () => Promise.reject(error);
-
-        // await expect(() =>
-        //   lineItemRepository.getAllLineItems()
-        // ).rejects.toThrow(error);
+        const owner = {
+          ownerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+          ownerType: "cart",
+        };
+        const error = new Error("Service Unavailable");
+        lineItemRepository.getAllLineItemsByOwner = () => Promise.reject(error);
+        
+        await expect(() =>
+        lineItemRepository.getAllLineItemsByOwner(
+          owner
+        )
+        ).rejects.toThrow(error);
       });
     });
   });
@@ -214,7 +223,6 @@ describe("Infra :: LineItem :: ObjectionLineItemRepository", () => {
         //   price: 79.99,
         //   available: 30,
         // });
-
         // expect(lineItem).toEqual(expected);
       });
     });
@@ -223,7 +231,6 @@ describe("Infra :: LineItem :: ObjectionLineItemRepository", () => {
         // const id = "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd";
         // const notFoundError = new Error("Not Found Error");
         // notFoundError.message = `LineItem with id ${id} can't be found.`;
-
         // await expect(() =>
         //   lineItemRepository.getLineItemById(id)
         // ).rejects.toThrow(notFoundError);
@@ -245,7 +252,6 @@ describe("Infra :: LineItem :: ObjectionLineItemRepository", () => {
         //   price: 79.99,
         //   available: 28,
         // });
-
         // expect(lineItem).toEqual(expected);
       });
     });
@@ -257,7 +263,6 @@ describe("Infra :: LineItem :: ObjectionLineItemRepository", () => {
         // };
         // const notFoundError = new Error("Not Found Error");
         // notFoundError.message = `LineItem with id ${id} can't be found.`;
-
         // await expect(() =>
         //   lineItemRepository.update(id, lineItemData)
         // ).rejects.toThrow(notFoundError);
