@@ -189,11 +189,9 @@ describe("Infra :: LineItem :: ObjectionLineItemRepository", () => {
         };
         const error = new Error("Service Unavailable");
         lineItemRepository.getAllLineItemsByOwner = () => Promise.reject(error);
-        
+
         await expect(() =>
-        lineItemRepository.getAllLineItemsByOwner(
-          owner
-        )
+          lineItemRepository.getAllLineItemsByOwner(owner)
         ).rejects.toThrow(error);
       });
     });
@@ -212,60 +210,115 @@ describe("Infra :: LineItem :: ObjectionLineItemRepository", () => {
   });
 
   describe("#store", () => {
-    describe("result is a lineItem instance", () => {
-      it("returns the correct result", async () => {
-        // const lineItem = await lineItemRepository.getLineItemById(
-        //   "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf"
-        // );
-        // const expected = new LineItem({
-        //   id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-        //   name: "Gaming Keyboard",
-        //   price: 79.99,
-        //   available: 30,
-        // });
-        // expect(lineItem).toEqual(expected);
+    describe("store in database", () => {
+      it("returns correct result", async () => {
+        const owner = {
+          ownerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fca",
+          ownerType: "cart",
+        };
+        const lineItem = new LineItem(
+          "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+          69.99,
+          2
+        );
+        await lineItemRepository.store(lineItem, owner);
+        expect(
+          (
+            await LineItemModel.query().where({
+              ...owner,
+              productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+            })
+          ).length
+        ).toBe(1);
       });
     });
-    describe("When doesn't find a lineItem by id", () => {
-      it("returns error", async () => {
-        // const id = "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd";
-        // const notFoundError = new Error("Not Found Error");
-        // notFoundError.message = `LineItem with id ${id} can't be found.`;
-        // await expect(() =>
-        //   lineItemRepository.getLineItemById(id)
-        // ).rejects.toThrow(notFoundError);
+    describe("result is a lineItem", () => {
+      it("returns correct result", async () => {
+        const owner = {
+          ownerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fca",
+          ownerType: "cart",
+        };
+        const lineItem = new LineItem(
+          "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+          69.99,
+          2
+        );
+        const expected = await lineItemRepository.store(lineItem, owner);
+
+        expect(lineItem).toEqual(expected);
       });
     });
   });
 
   describe("#update", () => {
-    describe("result is a lineItem instance", () => {
-      it("returns the correct result", async () => {
-        // const id = "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf";
-        // const lineItemData = {
-        //   available: 28,
-        // };
-        // const lineItem = await lineItemRepository.update(id, lineItemData);
-        // const expected = new LineItem({
-        //   id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-        //   name: "Gaming Keyboard",
-        //   price: 79.99,
-        //   available: 28,
-        // });
-        // expect(lineItem).toEqual(expected);
+    describe("when lineItem is not found", () => {
+      describe("due ownerId is wrong", () => {
+        it("returns error", async () => {
+          const owner = {
+            ownerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
+            ownerType: "cart",
+          };
+          const { ownerId, ownerType } = owner;
+          const productId = "92d91715-34ad-449e-9b81-73f1a74ef44e";
+          const notFoundError = new Error("Not Found Error");
+          notFoundError.message = `Line with ownerId ${ownerId} and productId ${productId} can't be found for ${ownerType}.`;
+
+          await expect(() =>
+            lineItemRepository.update(owner, productId, { quantity: 3 })
+          ).rejects.toThrow(notFoundError);
+        });
+      });
+      describe("due ownerType is wrong", () => {
+        it("returns error", async () => {
+          const owner = {
+            ownerId: "92d91715-34ad-449e-9b81-73f1a74ef44e",
+            ownerType: "order",
+          };
+          const { ownerId, ownerType } = owner;
+          const productId = "92d91715-34ad-449e-9b81-73f1a74ef44e";
+          const notFoundError = new Error("Not Found Error");
+          notFoundError.message = `Line with ownerId ${ownerId} and productId ${productId} can't be found for ${ownerType}.`;
+
+          await expect(() =>
+            lineItemRepository.update(owner, productId, { quantity: 3 })
+          ).rejects.toThrow(notFoundError);
+        });
+      });
+      describe("due productId is wrong", () => {
+        it("returns error", async () => {
+          const owner = {
+            ownerId: "92d91715-34ad-449e-9b81-73f1a74ef44e",
+            ownerType: "cart",
+          };
+          const { ownerId, ownerType } = owner;
+          const productId = "92d91715-34ad-449e-9b81-73f1a74ef44a";
+          const notFoundError = new Error("Not Found Error");
+          notFoundError.message = `Line with ownerId ${ownerId} and productId ${productId} can't be found for ${ownerType}.`;
+
+          await expect(() =>
+            lineItemRepository.update(owner, productId, { quantity: 3 })
+          ).rejects.toThrow(notFoundError);
+        });
       });
     });
-    describe("When doesn't find a lineItem by id", () => {
-      it("returns error", async () => {
-        // const id = "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd";
-        // const lineItemData = {
-        //   available: 28,
-        // };
-        // const notFoundError = new Error("Not Found Error");
-        // notFoundError.message = `LineItem with id ${id} can't be found.`;
-        // await expect(() =>
-        //   lineItemRepository.update(id, lineItemData)
-        // ).rejects.toThrow(notFoundError);
+    describe("when lineItem is found", () => {
+      describe("update lineItem from database", () => {
+        it("returns correct result", async () => {
+          const owner = {
+            ownerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+            ownerType: "cart",
+          };
+          const productId = "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf";
+          const expected = new LineItem(
+            "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+            69.99,
+            3
+          );
+
+          expect(
+            await lineItemRepository.update(owner, productId, { quantity: 3 })
+          ).toEqual(expected);
+        });
       });
     });
   });

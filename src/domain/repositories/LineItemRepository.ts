@@ -6,8 +6,8 @@ interface Owner {
 }
 
 interface LineItemProps {
-    unitPrice: number;
-    quantity: number;
+    unitPrice?: number;
+    quantity?: number;
 }
 
 interface LineItemRepository {
