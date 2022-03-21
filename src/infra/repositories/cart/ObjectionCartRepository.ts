@@ -5,23 +5,39 @@ import { VoucherType } from "../../../domain/entities/Voucher";
 import { appliedFactory } from "../../../domain/factories/AppliedVoucherFactory";
 import { CartRepository } from "../../../domain/repositories/CartRepository";
 import { Owner } from "../../../domain/repositories/LineItemRepository";
-import {
-  AppliedVoucher,
-} from "../../../domain/valueObjects/AppliedVoucher";
+import { AppliedVoucher } from "../../../domain/valueObjects/AppliedVoucher";
 import { CartModel } from "../../database/knex/models";
 import { ObjectionLineItemRepository } from "../lineItem/ObjectionLineItemRepository";
 import { ObjectionCartMapper } from "./ObjectionCartMapper";
 
 class ObjectionCartRepository implements CartRepository {
-  public delete(cart: Cart): Promise<string> {
-    const { buyerId, id } = cart;
+  public async delete(cart: Cart): Promise<string> {
+    const { buyerId, id, lineItems } = cart;
+
+    const lineItemsRepository = new ObjectionLineItemRepository();
+    const owner = {
+      ownerId: id,
+      ownerType: "cart",
+    };
+    const promises = lineItems
+      .map((l) => l.productId)
+      .map((id) => lineItemsRepository.delete(owner, id));
+
+    await Promise.all(promises);
+
     return CartModel.query()
       .delete()
       .where({
         buyerId,
-        id,
+        uuid: id,
       })
-      .then(() => Promise.resolve("Cart was deleted successfully."));
+      .then(() => Promise.resolve("Cart was deleted successfully."))
+      .catch((err) => {
+        const notFoundError = new Error("Not Found Error");
+        //   notFoundError.CODE = "NOTFOUND_ERROR";
+        notFoundError.message = `Cart with id ${id} and buyerId ${buyerId} can't be found.`;
+        return Promise.reject(notFoundError);
+      });
   }
   public getAllCarts(): Promise<Cart[]> {
     return CartModel.query().then((data) =>
@@ -71,7 +87,7 @@ class ObjectionCartRepository implements CartRepository {
     return CartModel.query()
       .patchAndFetch(data)
       .then((result) => {
-        return this.transformCartModelToCart(result); 
+        return this.transformCartModelToCart(result);
       });
   }
 

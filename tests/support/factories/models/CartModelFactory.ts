@@ -4,9 +4,10 @@ import { ModelsFactory } from "./ModelsFactory";
 interface CartModelData {
   uuid: string;
   buyerId: string;
-  voucherId: string;
-  type: string;
-  amount: number;
+  voucherId?: string;
+  type?: string;
+  amount?: number;
+  minValue?: number;
 }
 
 const CartModelFactory: ModelsFactory = {
