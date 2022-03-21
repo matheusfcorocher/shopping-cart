@@ -264,4 +264,63 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       });
     });
   });
+
+  describe("#getAllCarts", () => {
+    describe("When method is called", () => {
+      describe("result is a array instance of lineItems", () => {
+        it("returns correct result", async () => {
+          const carts = await cartRepository.getAllCarts();
+
+          expect(carts[0]).toBeInstanceOf(Cart);
+        });
+      });
+      describe("result has correct length", () => {
+        it("returns correct result", async () => {
+          const carts = await cartRepository.getAllCarts();
+
+          expect(carts.length).toBe(2);
+        });
+      });
+      describe("result returns correct array", () => {
+        it("returns correct result", async () => {
+          const lineItems: LineItems = [];
+          const lineItems2: LineItems = [
+            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", 69.99, 2),
+          ];
+          const voucher = new Voucher({
+            id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+            code: "TEST1",
+            type: "fixed",
+            amount: 50,
+          });
+          const appliedVoucher = appliedFactory.fromVoucher(voucher);
+
+          const expected = [
+            new Cart({
+              id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
+              buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
+              lineItems,
+            }),
+            new Cart({
+              id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              lineItems: lineItems2,
+              appliedVoucher,
+            }),
+          ];
+          const carts = await cartRepository.getAllCarts();
+
+          expect(carts).toEqual(expect.arrayContaining(expected));
+        });
+      });
+    });
+    describe("When service is unavailable", () => {
+      it("returns error", async () => {
+        const error = new Error("Service Unavailable");
+        cartRepository.getAllCarts = () => Promise.reject(error);
+
+        await expect(() => cartRepository.getAllCarts()).rejects.toThrow(error);
+      });
+    });
+  });
 });
