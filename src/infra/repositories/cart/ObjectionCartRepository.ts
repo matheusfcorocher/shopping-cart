@@ -11,7 +11,6 @@ import { ObjectionLineItemRepository } from "../lineItem/ObjectionLineItemReposi
 import { ObjectionCartMapper } from "./ObjectionCartMapper";
 
 class ObjectionCartRepository implements CartRepository {
-  
   public async delete(cart: Cart): Promise<string> {
     const { buyerId, id, lineItems } = cart;
 
@@ -55,13 +54,13 @@ class ObjectionCartRepository implements CartRepository {
         uuid: id,
       })
       .then((data) => {
-        if (data === undefined) {
-          const notFoundError = new Error("Not Found Error");
-          //   notFoundError.CODE = "NOTFOUND_ERROR";
-          notFoundError.message = `Cart with id ${id} can't be found.`;
-          return Promise.reject(notFoundError);
-        }
-        return this.transformCartModelToCart(data);
+        return this.transformCartModelToCart(data!);
+      })
+      .catch((err) => {
+        const notFoundError = new Error("Not Found Error");
+        //   notFoundError.CODE = "NOTFOUND_ERROR";
+        notFoundError.message = `Cart with id ${id} can't be found.`;
+        return Promise.reject(notFoundError);
       });
   }
   public getCartByBuyerId(buyerId: string): Promise<Cart> {
@@ -70,13 +69,13 @@ class ObjectionCartRepository implements CartRepository {
         buyerId,
       })
       .then((data) => {
-        if (data === undefined) {
-          const notFoundError = new Error("Not Found Error");
-          //   notFoundError.CODE = "NOTFOUND_ERROR";
-          notFoundError.message = `Cart with buyerId ${buyerId} can't be found.`;
-          return Promise.reject(notFoundError);
-        }
-        return this.transformCartModelToCart(data);
+        return this.transformCartModelToCart(data!);
+      })
+      .catch((err) => {
+        const notFoundError = new Error("Not Found Error");
+        //   notFoundError.CODE = "NOTFOUND_ERROR";
+        notFoundError.message = `Cart with buyerId ${buyerId} can't be found.`;
+        return Promise.reject(notFoundError);
       });
   }
   public getNextId(): string {
