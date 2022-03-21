@@ -354,4 +354,35 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       });
     });
   });
+
+  describe("#getCartByBuyerId", () => {
+    describe("when execute method", () => {
+      describe("and cart is found", () => {
+        it("returns correct result", async () => {
+          const lineItems: LineItems = [];
+          const cart = new Cart({
+            id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
+            buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
+            lineItems,
+          });
+
+          expect(await cartRepository.getCartByBuyerId(cart.buyerId!)).toEqual(cart);
+        });
+      });
+    });
+    describe("when try to get cart by id", () => {
+      describe("but cart isn't found", () => {
+        it("returns not found error", async () => {
+          const buyerId = "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcs";
+          const notFoundError = new Error("Not Found Error");
+          notFoundError.message = `Cart with buyerId ${buyerId} can't be found.`;
+          cartRepository.delete = () => Promise.reject(notFoundError);
+
+          await expect(() =>
+            cartRepository.getCartByBuyerId(buyerId)
+          ).rejects.toThrow(notFoundError);
+        });
+      });
+    });
+  });
 });
