@@ -3,22 +3,26 @@ import { VoucherType } from "../entities/Voucher";
 type AppliedVoucherProps = {
   voucherId: string;
   type: VoucherType;
-  amount: number;
+  amount?: number | null;
+  minValue?: number | null;
 };
 
 abstract class AppliedVoucher {
   voucherId: string;
   type: VoucherType;
-  amount: number;
+  amount?: number | null;
+  minValue?: number | null;
 
   constructor({
     voucherId,
     type,
-    amount
+    amount,
+    minValue
   }: AppliedVoucherProps) {
     this.voucherId = voucherId;
     this.type = type;
     this.amount = amount;
+    this.minValue = minValue;
   }
 
   abstract apply(subtotal: number, shipping: number): number;
@@ -30,13 +34,13 @@ class FixedVoucher extends AppliedVoucher {
   constructor({
     voucherId,
     type,
-    amount
+    amount,
   }: AppliedVoucherProps) {
     super({ voucherId, type, amount});
   }
 
   public apply(subtotal: number, shipping: number): number {
-    return this.amount;
+    return this.amount!;
   }
 }
 
@@ -46,7 +50,7 @@ class PercentualVoucher extends AppliedVoucher {
   constructor({
     voucherId,
     type,
-    amount
+    amount,
   }: AppliedVoucherProps) {
     super({ voucherId, type, amount});
     if(!this.isInRange()) {
@@ -57,35 +61,27 @@ class PercentualVoucher extends AppliedVoucher {
   }
 
   public apply(subtotal: number, shipping: number): number {
-    return subtotal * this.amount/100;
+    return subtotal * this.amount!/100;
   }
 
   private isInRange(): boolean {
-    return this.amount >= 0 && this.amount <= 100
+    return this.amount! >= 0 && this.amount! <= 100
   }
 }
 
 //ShippingVoucher
-
-interface ShippingVoucherProps extends AppliedVoucherProps {
-  minValue: number;
-}
-
 class ShippingVoucher extends AppliedVoucher {
-  minValue: number;
 
   constructor({
     voucherId,
     type,
-    amount,
     minValue,
-  }: ShippingVoucherProps) {
-    super({ voucherId, type, amount});
-    this.minValue = minValue;
+  }: AppliedVoucherProps) {
+    super({ voucherId, type, minValue});
   }
 
   public apply(subtotal: number, shipping: number): number {
-    if (subtotal >= this.minValue) {
+    if (subtotal >= this.minValue!) {
       return shipping;
     }
     return 0;

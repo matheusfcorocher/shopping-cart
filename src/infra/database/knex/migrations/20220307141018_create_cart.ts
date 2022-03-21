@@ -8,6 +8,7 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid("voucherId").references('uuid').inTable('vouchers'); //AppliedVoucher field
     table.string("type"); //AppliedVoucher field
     table.integer("amount"); //AppliedVoucher field
+    table.float("minValue"); //AppliedVoucher field
     table.timestamp("created_at").defaultTo(knex.fn.now());
     table.timestamp("updated_at").defaultTo(knex.fn.now());
   });

@@ -3,15 +3,9 @@ import { LineItems } from "../../../domain/entities/Cart";
 import { AppliedVoucher } from "../../../domain/valueObjects/AppliedVoucher";
 import { CartModel } from "../../database/knex/models";
 
-interface VoucherProps {
-  voucherId: string;
-  type: string;
-  amount: number;
-}
-
 interface AditionalProps {
   lineItems: LineItems; 
-  appliedVoucher: AppliedVoucher;
+  appliedVoucher?: AppliedVoucher;
 }
 
 const ObjectionCartMapper = {
@@ -29,15 +23,16 @@ const ObjectionCartMapper = {
       appliedVoucher
     });
   },
-  toDatabase(cart: Cart, voucherProps: VoucherProps) {
+  toDatabase(cart: Cart) {
     const { id, buyerId} = cart;
-    const { voucherId, type, amount} = voucherProps;
+    const { voucherId, type, amount, minValue} = cart.appliedVoucher || {};
     return {
       uuid: id,
       buyerId,
       voucherId,
       type,
-      amount
+      amount,
+      minValue
     };
   },
 };

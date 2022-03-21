@@ -5,7 +5,8 @@ class CartModel extends Model {
   buyerId!: string;
   voucherId?: string;
   type?: string;
-  amount?: number;
+  amount?: number | null;
+  minValue?: number | null;
 
   static tableName = "carts";
 
