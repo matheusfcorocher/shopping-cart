@@ -1,5 +1,5 @@
 import { LineItem } from "../../../../../../src/domain/entities/Cart";
-import { LineItemModel } from "../../../../../../src/infra/database/knex/models";
+import { LineItemModel } from "../../../../../../src/infra/database/knex/models/LineItemModel";
 import { ObjectionLineItemMapper } from "../../../../../../src/infra/repositories/lineItem/ObjectionLineItemMapper";
 import { LineItemModelData } from "../../../../../support/factories/models/LineItemModelFactory";
 

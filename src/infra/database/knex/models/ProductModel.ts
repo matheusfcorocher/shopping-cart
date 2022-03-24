@@ -10,12 +10,12 @@ class ProductModel extends Model {
   static tableName = "products";
 
   public static get relationMappings(): RelationMappings | RelationMappingsThunk {
-    const LineItems =  require("./LineItemModel");
+    const { LineItemModel } =  require("./LineItemModel");
 
     return {
       lineItem: {
         relation: Model.BelongsToOneRelation,
-        modelClass: LineItems,
+        modelClass: LineItemModel,
         join: {
           from: "products.uuid",
           to: "lineItems.productId",

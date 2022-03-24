@@ -11,8 +11,8 @@ class OrderModel extends Model {
   static tableName = "orders";
 
   public static get relationMappings(): RelationMappings | RelationMappingsThunk {
-    const BuyerModel = require("./BuyerModel");
-    const LineItemModel = require("./LineItemModel");
+    const { BuyerModel } = require("./BuyerModel");
+    const { LineItemModel } = require("./LineItemModel");
 
     return {
       buyer: {
@@ -27,13 +27,13 @@ class OrderModel extends Model {
         relation: Model.HasManyRelation,
         modelClass: LineItemModel,
 
-        // filter(builder : any) {
-        //   builder.where('lineItemableType', 'Orders');
-        // },
+        filter(builder : any) {
+          builder.where('ownerType', 'order');
+        },
 
-        // beforeInsert(model : any) {
-        //   model.lineItemableType = 'Orders';
-        // },
+        beforeInsert(model : any) {
+          model.ownerType = 'order';
+        },
 
         join: {
           from: 'orders.uuid',

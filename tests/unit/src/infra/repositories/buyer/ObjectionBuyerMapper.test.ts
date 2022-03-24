@@ -1,5 +1,5 @@
 import { Buyer } from "../../../../../../src/domain/entities";
-import { BuyerModel } from "../../../../../../src/infra/database/knex/models";
+import { BuyerModel } from "../../../../../../src/infra/database/knex/models/BuyerModel";
 import { ObjectionBuyerMapper } from "../../../../../../src/infra/repositories/buyer/ObjectionBuyerMapper";
 import { BuyerModelData } from "../../../../../support/factories/models/BuyerModelFactory";
 describe("Infra :: Buyer :: ObjectionBuyerMapper", () => {

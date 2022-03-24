@@ -15,7 +15,7 @@ class BuyerModel extends Model {
   static tableName = "buyers";
 
   public static get relationMappings(): RelationMappings | RelationMappingsThunk {
-    const CartModel = require("./CartModel");
+    const { CartModel } = require("./CartModel");
 
     return {
       owner: {

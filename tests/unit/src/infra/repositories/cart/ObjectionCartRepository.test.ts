@@ -5,6 +5,7 @@ import {
 } from "../../../../../../src/domain/entities/Cart";
 import { appliedFactory } from "../../../../../../src/domain/factories/AppliedVoucherFactory";
 import { CartModel } from "../../../../../../src/infra/database/knex/models/CartModel";
+import { LineItemModel } from "../../../../../../src/infra/database/knex/models/LineItemModel";
 import { ObjectionCartRepository } from "../../../../../../src/infra/repositories/cart/ObjectionCartRepository";
 import BuyerModelFactory from "../../../../../support/factories/models/BuyerModelFactory";
 import CartModelFactory from "../../../../../support/factories/models/CartModelFactory";
@@ -127,7 +128,7 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
   describe("#delete", () => {
     describe("when cart doesnt have any lineItems", () => {
       describe("deletes cart from database", () => {
-        it.only("returns correct result", async () => {
+        it("returns correct result", async () => {
           const lineItems: LineItems = [];
           const cart = new Cart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
@@ -154,6 +155,28 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       });
     });
     describe("when cart has lineItems", () => {
+      describe("deletes lineItems from database", () => {
+        it("returns correct result", async () => {
+          const lineItems: LineItems = [
+            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", 69.99, 2),
+          ];
+          const voucher = new Voucher({
+            id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+            code: "TEST1",
+            type: "percentual",
+            amount: 40,
+          });
+          const appliedVoucher = appliedFactory.fromVoucher(voucher);
+          const cart = new Cart({
+            id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+            buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+            lineItems,
+            appliedVoucher,
+          });
+          await cartRepository.delete(cart);
+          expect((await LineItemModel.query()).length).toBe(2);
+        });
+      });
       describe("deletes cart from database", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [

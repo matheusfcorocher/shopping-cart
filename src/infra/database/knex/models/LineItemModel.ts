@@ -12,7 +12,7 @@ class LineItemModel extends Model {
   static tableName = "lineItems";
 
   public static get relationMappings(): RelationMappings | RelationMappingsThunk {
-    const ProductModel = require("./ProductModel");
+    const { ProductModel } = require("./ProductModel");
 
     return {
       product: {

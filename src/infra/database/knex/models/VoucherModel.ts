@@ -12,12 +12,12 @@ class VoucherModel extends Model {
   static tableName = "vouchers";
 
   public static get relationMappings(): RelationMappings | RelationMappingsThunk {
-    const Carts = require("./CartModel");
+    const { CartModel } = require("./CartModel");
 
     return {
-      owner: {
+      cart: {
         relation: Model.BelongsToOneRelation,
-        modelClass: Carts,
+        modelClass: CartModel,
         join: {
           from: "vouchers.uuid",
           to: "carts.voucherId",

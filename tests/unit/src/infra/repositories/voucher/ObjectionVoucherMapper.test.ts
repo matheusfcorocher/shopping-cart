@@ -1,5 +1,5 @@
 import { Voucher } from "../../../../../../src/domain/entities";
-import { VoucherModel } from "../../../../../../src/infra/database/knex/models";
+import { VoucherModel } from "../../../../../../src/infra/database/knex/models/VoucherModel";
 import {
   ObjectionVoucherMapper,
 } from "../../../../../../src/infra/repositories/voucher/ObjectionVoucherMapper";

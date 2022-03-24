@@ -1,5 +1,5 @@
 import { Product } from "../../../../../../src/domain/entities";
-import { ProductModel } from "../../../../../../src/infra/database/knex/models";
+import { ProductModel } from "../../../../../../src/infra/database/knex/models/ProductModel";
 import { ObjectionProductMapper } from "../../../../../../src/infra/repositories/product/ObjectionProductMapper";
 import { ProductModelData } from "../../../../../support/factories/models/ProductModelFactory";
 describe("Infra :: Product :: ObjectionProductMapper", () => {

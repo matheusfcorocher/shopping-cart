@@ -23,34 +23,27 @@ class ObjectionCartRepository implements CartRepository {
   //public methods
 
   public async delete(cart: Cart): Promise<string> {
-    // return transaction(
-    //   CartModel,
-    //   async (BoundCartModel) => {
-        const { buyerId, id, lineItems } = cart;
+    return transaction(CartModel, LineItemModel, async (BoundCartModel, BoundLineItemModel) => {
+      const { buyerId, id, lineItems } = cart;
 
-        const owner = {
-          ownerId: id,
-          ownerType: "cart",
-        };
-        const productIds = lineItems.map((l) => l.productId);
+      const productIds = lineItems.map((l) => l.productId);
 
-        await this.deleteLineItems(owner, productIds, CartModel);
+      await this.deleteLineItems(productIds, BoundLineItemModel);
 
-        return CartModel.query()
-          .delete()
-          .where({
-            buyerId,
-            uuid: id,
-          })
-          .then(() => "Cart was deleted successfully.")
-          .catch(() => {
-            const notFoundError = new Error("Not Found Error");
-            //   notFoundError.CODE = "NOTFOUND_ERROR";
-            notFoundError.message = `Cart with id ${id} and buyerId ${buyerId} can't be found.`;
-            return Promise.reject(notFoundError);
-          });
-      // }
-    // );
+      return BoundCartModel.query()
+        .delete()
+        .where({
+          buyerId,
+          uuid: id,
+        })
+        .then(() => "Cart was deleted successfully.")
+        .catch(() => {
+          const notFoundError = new Error("Not Found Error");
+          //   notFoundError.CODE = "NOTFOUND_ERROR";
+          notFoundError.message = `Cart with id ${id} and buyerId ${buyerId} can't be found.`;
+          return Promise.reject(notFoundError);
+        });
+    });
   }
 
   public getAllCarts(): Promise<Cart[]> {
@@ -143,20 +136,20 @@ class ObjectionCartRepository implements CartRepository {
   //private methods
 
   private async deleteLineItems(
-    owner: Owner,
     productIds: Array<string>,
-    cartModel: typeof CartModel
+    lineItemModel: typeof LineItemModel
   ): Promise<String> {
-    const { ownerId, ownerType } = owner;
-    return cartModel
-      .relatedQuery('lineItems')
-      .for([productIds])
+    return lineItemModel
+      .query()
+      .whereIn("productId", productIds)
       .delete()
-      .where({
-        ownerId,
-        ownerType,
-      })
-      .then(() => Promise.resolve("LineItem was deleted successfully."));
+      .then(() => Promise.resolve("LineItem was deleted successfully."))
+      .catch(() => {
+        const notFoundError = new Error("Not Found Error");
+        //   notFoundError.CODE = "NOTFOUND_ERROR";
+        notFoundError.message = `LineItems can't be found.`;
+        return Promise.reject(notFoundError);
+      });
   }
 
   private getAllLineItemsByOwner(owner: Owner): Promise<LineItem[]> {
