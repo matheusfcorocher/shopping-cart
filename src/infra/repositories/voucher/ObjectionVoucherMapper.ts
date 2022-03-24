@@ -1,5 +1,5 @@
 import { Voucher } from "../../../domain/entities";
-import { VoucherModel } from "../../database/knex/models";
+import { VoucherModel } from "../../database/knex/models/VoucherModel";
 
 const ObjectionVoucherMapper = {
   toEntity(voucherModel: VoucherModel) {

@@ -1,4 +1,4 @@
-import { CartModel } from "../../../../src/infra/database/knex/models";
+import { CartModel } from "../../../../src/infra/database/knex/models/CartModel";
 import { ModelsFactory } from "./ModelsFactory";
 
 interface CartModelData {
@@ -10,8 +10,8 @@ interface CartModelData {
   minValue?: number;
 }
 
-const CartModelFactory: ModelsFactory = {
-  createList: function (list: Array<CartModelData>): Promise<any> {
+const CartModelFactory: ModelsFactory<CartModelData, CartModel> = {
+  createList: function (list: Array<CartModelData>): Promise<Array<CartModel>> {
     try {
       return Promise.all(list.map((d) => this.create(d)));
     } catch (error) {
@@ -19,10 +19,8 @@ const CartModelFactory: ModelsFactory = {
       throw error;
     }
   },
-  create: function (data: CartModelData): Promise<any> {
-    return Promise.resolve(CartModel.query().insert(data)).catch((error) =>
-      console.log(error)
-    );
+  create: function (data: CartModelData): Promise<CartModel> {
+    return Promise.resolve(CartModel.query().insert(data))
   },
 };
 

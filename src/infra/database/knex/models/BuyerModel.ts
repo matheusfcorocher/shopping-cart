@@ -15,12 +15,12 @@ class BuyerModel extends Model {
   static tableName = "buyers";
 
   public static get relationMappings(): RelationMappings | RelationMappingsThunk {
-    const Carts = require("./CartModel");
+    const CartModel = require("./CartModel");
 
     return {
       owner: {
         relation: Model.BelongsToOneRelation,
-        modelClass: Carts,
+        modelClass: CartModel,
         join: {
           from: "buyers.uuid",
           to: "carts.buyerId",

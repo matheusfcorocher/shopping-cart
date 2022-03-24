@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { Voucher } from "../../../domain/entities";
 import { VoucherRepository } from "../../../domain/repositories/VoucherRepository";
-import { VoucherModel } from "../../database/knex/models/index";
+import { VoucherModel } from "../../database/knex/models/VoucherModel";
 import { ObjectionVoucherMapper } from "./ObjectionVoucherMapper";
 
 class ObjectionVoucherRepository implements VoucherRepository {

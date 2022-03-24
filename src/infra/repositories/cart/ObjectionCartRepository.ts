@@ -2,13 +2,14 @@ import { v4 as uuidv4 } from "uuid";
 import { transaction } from "objection";
 import { Cart, Voucher } from "../../../domain/entities";
 import { LineItem } from "../../../domain/entities/Cart";
-import { VoucherType } from "../../../domain/entities/Voucher";
 import { appliedFactory } from "../../../domain/factories/AppliedVoucherFactory";
+import { VoucherType } from "../../../domain/entities/Voucher";
 import { CartRepository } from "../../../domain/repositories/CartRepository";
 import { AppliedVoucher } from "../../../domain/valueObjects/AppliedVoucher";
-import { CartModel, LineItemModel } from "../../database/knex/models";
 import { ObjectionLineItemMapper } from "../lineItem/ObjectionLineItemMapper";
 import { ObjectionCartMapper } from "./ObjectionCartMapper";
+import { CartModel } from "../../database/knex/models/CartModel";
+import { LineItemModel } from "../../database/knex/models/LineItemModel";
 interface Owner {
   ownerId: string;
   ownerType: string;
@@ -24,35 +25,34 @@ class ObjectionCartRepository implements CartRepository {
   public async delete(cart: Cart): Promise<string> {
     // return transaction(
     //   CartModel,
-    //   LineItemModel,
-    //   async (CartModel, LineItemModel) => {
-    const { buyerId, id, lineItems } = cart;
+    //   async (BoundCartModel) => {
+        const { buyerId, id, lineItems } = cart;
 
-    const owner = {
-      ownerId: id,
-      ownerType: "cart",
-    };
-    const promises = lineItems.map((l) =>
-      this.deleteLineItem(owner, l.productId, LineItemModel)
-    );
-    await Promise.all(promises);
+        const owner = {
+          ownerId: id,
+          ownerType: "cart",
+        };
+        const productIds = lineItems.map((l) => l.productId);
 
-    return CartModel.query()
-      .delete()
-      .where({
-        buyerId,
-        uuid: id,
-      })
-      .then(() => "Cart was deleted successfully.")
-      .catch(() => {
-        const notFoundError = new Error("Not Found Error");
-        //   notFoundError.CODE = "NOTFOUND_ERROR";
-        notFoundError.message = `Cart with id ${id} and buyerId ${buyerId} can't be found.`;
-        return Promise.reject(notFoundError);
-      });
-    // }
+        await this.deleteLineItems(owner, productIds, CartModel);
+
+        return CartModel.query()
+          .delete()
+          .where({
+            buyerId,
+            uuid: id,
+          })
+          .then(() => "Cart was deleted successfully.")
+          .catch(() => {
+            const notFoundError = new Error("Not Found Error");
+            //   notFoundError.CODE = "NOTFOUND_ERROR";
+            notFoundError.message = `Cart with id ${id} and buyerId ${buyerId} can't be found.`;
+            return Promise.reject(notFoundError);
+          });
+      // }
     // );
   }
+
   public getAllCarts(): Promise<Cart[]> {
     return CartModel.query().then((data) =>
       Promise.all(
@@ -142,23 +142,19 @@ class ObjectionCartRepository implements CartRepository {
 
   //private methods
 
-  private async deleteLineItem(
+  private async deleteLineItems(
     owner: Owner,
-    productId: string,
-    lineItemModel: typeof LineItemModel
+    productIds: Array<string>,
+    cartModel: typeof CartModel
   ): Promise<String> {
-    const lineItem = await this.getLineItemsModelByOwnerAndProductId(
-      owner,
-      productId,
-      lineItemModel
-    );
-    const id = lineItem.id;
-
-    return lineItem
-      .$query()
+    const { ownerId, ownerType } = owner;
+    return cartModel
+      .relatedQuery('lineItems')
+      .for([productIds])
       .delete()
       .where({
-        id,
+        ownerId,
+        ownerType,
       })
       .then(() => Promise.resolve("LineItem was deleted successfully."));
   }

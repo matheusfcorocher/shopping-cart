@@ -4,7 +4,7 @@ import {
   LineItems,
 } from "../../../../../../src/domain/entities/Cart";
 import { appliedFactory } from "../../../../../../src/domain/factories/AppliedVoucherFactory";
-import { CartModel } from "../../../../../../src/infra/database/knex/models";
+import { CartModel } from "../../../../../../src/infra/database/knex/models/CartModel";
 import { ObjectionCartRepository } from "../../../../../../src/infra/repositories/cart/ObjectionCartRepository";
 import BuyerModelFactory from "../../../../../support/factories/models/BuyerModelFactory";
 import CartModelFactory from "../../../../../support/factories/models/CartModelFactory";
@@ -127,7 +127,7 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
   describe("#delete", () => {
     describe("when cart doesnt have any lineItems", () => {
       describe("deletes cart from database", () => {
-        it("returns correct result", async () => {
+        it.only("returns correct result", async () => {
           const lineItems: LineItems = [];
           const cart = new Cart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",

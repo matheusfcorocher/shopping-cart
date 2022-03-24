@@ -4,7 +4,7 @@ import {
   ProductDataProps,
   ProductRepository,
 } from "../../../domain/repositories/ProductRepository";
-import { ProductModel } from "../../database/knex/models/index";
+import { ProductModel } from "../../database/knex/models/ProductModel";
 import { ObjectionProductMapper } from "./ObjectionProductMapper";
 
 class ObjectionProductRepository implements ProductRepository {

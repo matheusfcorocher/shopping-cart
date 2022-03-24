@@ -1,7 +1,7 @@
 import { Cart } from "../../../domain/entities";
 import { LineItems } from "../../../domain/entities/Cart";
 import { AppliedVoucher } from "../../../domain/valueObjects/AppliedVoucher";
-import { CartModel } from "../../database/knex/models";
+import { CartModel } from "../../database/knex/models/CartModel";
 
 interface AditionalProps {
   lineItems: LineItems; 

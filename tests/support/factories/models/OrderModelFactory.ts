@@ -1,5 +1,5 @@
 import { PaymentMethod } from "../../../../src/domain/entities/Order";
-import { OrderModel } from "../../../../src/infra/database/knex/models";
+import { OrderModel } from "../../../../src/infra/database/knex/models/OrderModel";
 import { ModelsFactory } from "./ModelsFactory";
 
 interface OrderModelData {
@@ -9,8 +9,8 @@ interface OrderModelData {
   paymentMethod: PaymentMethod;
 }
 
-const OrderModelFactory: ModelsFactory = {
-  createList: function (list: Array<OrderModelData>): Promise<any> {
+const OrderModelFactory: ModelsFactory<OrderModelData, OrderModel> = {
+  createList: function (list: Array<OrderModelData>): Promise<Array<OrderModel>> {
     try {
       return Promise.all(list.map((d) => this.create(d)));
     } catch (error) {
@@ -18,10 +18,8 @@ const OrderModelFactory: ModelsFactory = {
       throw error;
     }
   },
-  create: function (data: OrderModelData): Promise<any> {
-    return Promise.resolve(OrderModel.query().insert(data)).catch((error) =>
-      console.log(error)
-    );
+  create: function (data: OrderModelData): Promise<OrderModel> {
+    return Promise.resolve(OrderModel.query().insert(data))
   },
 };
 

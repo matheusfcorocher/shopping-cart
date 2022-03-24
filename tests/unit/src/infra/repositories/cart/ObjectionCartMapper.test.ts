@@ -2,7 +2,7 @@ import { Cart, Voucher } from "../../../../../../src/domain/entities";
 import { LineItem } from "../../../../../../src/domain/entities/Cart";
 import { VoucherType } from "../../../../../../src/domain/entities/Voucher";
 import { appliedFactory } from "../../../../../../src/domain/factories/AppliedVoucherFactory";
-import { CartModel } from "../../../../../../src/infra/database/knex/models";
+import { CartModel } from "../../../../../../src/infra/database/knex/models/CartModel";
 import { ObjectionCartMapper } from "../../../../../../src/infra/repositories/cart/ObjectionCartMapper";
 import { CartModelData } from "../../../../../support/factories/models/CartModelFactory";
 

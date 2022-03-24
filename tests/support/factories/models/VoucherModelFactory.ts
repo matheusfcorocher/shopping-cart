@@ -1,5 +1,5 @@
 import { VoucherType } from "../../../../src/domain/entities/Voucher";
-import { VoucherModel } from "../../../../src/infra/database/knex/models";
+import { VoucherModel } from "../../../../src/infra/database/knex/models/VoucherModel";
 import { ModelsFactory } from "./ModelsFactory";
 
 interface VoucherModelData {
@@ -10,8 +10,8 @@ interface VoucherModelData {
   minValue?: number;
 }
 
-const VoucherModelFactory: ModelsFactory = {
-  createList: function (list: Array<VoucherModelData>): Promise<any> {
+const VoucherModelFactory: ModelsFactory<VoucherModelData, VoucherModel> = {
+  createList: function (list: Array<VoucherModelData>): Promise<Array<VoucherModel>> {
     try {
       return Promise.all(list.map((d) => this.create(d)));
     } catch (error) {
@@ -19,10 +19,8 @@ const VoucherModelFactory: ModelsFactory = {
       throw error;
     }
   },
-  create: function (data: VoucherModelData): Promise<any> {
-    return Promise.resolve(VoucherModel.query().insert(data)).catch((error) =>
-      console.log(error)
-    );
+  create: function (data: VoucherModelData): Promise<VoucherModel> {
+    return Promise.resolve(VoucherModel.query().insert(data))
   },
 };
 

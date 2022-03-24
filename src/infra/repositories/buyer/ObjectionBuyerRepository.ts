@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { Buyer } from "../../../domain/entities";
 import { BuyerRepository } from "../../../domain/repositories/BuyerRepository";
-import { BuyerModel } from "../../database/knex/models/index";
+import { BuyerModel } from "../../database/knex/models/BuyerModel";
 import { ObjectionBuyerMapper } from "./ObjectionBuyerMapper";
 
 class ObjectionBuyerRepository implements BuyerRepository {

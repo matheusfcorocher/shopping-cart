@@ -1,6 +1,6 @@
 import { Buyer } from "../../../domain/entities";
 import { Address } from "../../../domain/entities/Buyer";
-import { BuyerModel } from "../../database/knex/models";
+import { BuyerModel } from "../../database/knex/models/BuyerModel";
 
 const ObjectionBuyerMapper = {
   toEntity(dataValues: BuyerModel) {

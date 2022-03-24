@@ -1,4 +1,4 @@
-import { LineItemModel } from "../../../../src/infra/database/knex/models";
+import { LineItemModel } from "../../../../src/infra/database/knex/models/LineItemModel";
 import { ModelsFactory } from "./ModelsFactory";
 
 interface LineItemModelData {
@@ -10,19 +10,16 @@ interface LineItemModelData {
   ownerType: string;
 }
 
-const LineItemModelFactory: ModelsFactory = {
-  createList: function (list: Array<LineItemModelData>): Promise<any> {
+const LineItemModelFactory: ModelsFactory<LineItemModelData, LineItemModel> = {
+  createList: function (list: Array<LineItemModelData>): Promise<Array<LineItemModel>> {
     try {
       return Promise.all(list.map((d) => this.create(d)));
     } catch (error) {
-      console.log(error);
       throw error;
     }
   },
-  create: function (data: LineItemModelData): Promise<any> {
-    return Promise.resolve(LineItemModel.query().insert(data)).catch((error) =>
-      console.log(error)
-    );
+  create: function (data: LineItemModelData): Promise<LineItemModel> {
+    return Promise.resolve(LineItemModel.query().insert(data))
   },
 };
 

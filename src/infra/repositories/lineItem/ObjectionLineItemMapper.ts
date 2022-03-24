@@ -1,5 +1,5 @@
 import { LineItem } from "../../../domain/entities/Cart";
-import { LineItemModel } from "../../database/knex/models";
+import { LineItemModel } from "../../database/knex/models/LineItemModel";
 
 interface AdditionalProps {
     uuid: string;

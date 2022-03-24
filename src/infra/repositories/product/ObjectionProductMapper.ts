@@ -1,5 +1,5 @@
 import { Product } from "../../../domain/entities";
-import { ProductModel } from "../../database/knex/models";
+import { ProductModel } from "../../database/knex/models/ProductModel";
 
 const ObjectionProductMapper = {
   toEntity(dataValues: ProductModel) {

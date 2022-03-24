@@ -1,4 +1,5 @@
 import { Model, RelationMappings, RelationMappingsThunk } from "objection";
+
 class CartModel extends Model {
   id!: number;
   uuid!: string;
@@ -11,14 +12,14 @@ class CartModel extends Model {
   static tableName = "carts";
 
   public static get relationMappings(): RelationMappings | RelationMappingsThunk {
-    const Buyers = require("./BuyerModel");
-    const LineItems = require("./LineItemModel");
-    const Vouchers = require("./VoucherModel");
+    const BuyerModel = require("./BuyerModel");
+    const LineItemModel = require("./LineItemModel");
+    const VoucherModel = require("./VoucherModel");
 
     return {
       buyer: {
         relation: Model.HasOneRelation,
-        modelClass: Buyers,
+        modelClass: BuyerModel,
         join: {
           from: "carts.buyerId",
           to: "buyers.uuid",
@@ -26,7 +27,7 @@ class CartModel extends Model {
       },
       voucher: {
         relation: Model.HasOneRelation,
-        modelClass: Vouchers,
+        modelClass: VoucherModel,
         join: {
           from: "carts.voucherId",
           to: "vouchers.uuid",
@@ -34,15 +35,15 @@ class CartModel extends Model {
       },
       lineItems: {
         relation: Model.HasManyRelation,
-        modelClass: LineItems,
+        modelClass: LineItemModel,
 
-        filter(builder : any) {
-          builder.where('lineItemableType', 'Carts');
-        },
+        // filter(builder : any) {
+        //   builder.where('lineItemableType', 'Carts');
+        // },
 
-        beforeInsert(model : any) {
-          model.lineItemableType = 'Carts';
-        },
+        // beforeInsert(model : any) {
+        //   model.lineItemableType = 'Carts';
+        // },
 
         join: {
           from: 'carts.uuid',
@@ -54,3 +55,4 @@ class CartModel extends Model {
 }
 
 export { CartModel };
+  

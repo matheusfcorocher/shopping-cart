@@ -1,4 +1,4 @@
-import { ProductModel } from "../../../../src/infra/database/knex/models";
+import { ProductModel } from "../../../../src/infra/database/knex/models/ProductModel";
 import { ModelsFactory } from "./ModelsFactory";
 
 interface ProductModelData {
@@ -8,8 +8,8 @@ interface ProductModelData {
   available: number;
 }
 
-const ProductModelFactory: ModelsFactory = {
-  createList: function (list: Array<ProductModelData>): Promise<any> {
+const ProductModelFactory: ModelsFactory<ProductModelData, ProductModel> = {
+  createList: function (list: Array<ProductModelData>): Promise<Array<ProductModel>> {
     try {
       return Promise.all(list.map((d) => this.create(d)));
     } catch (error) {
@@ -17,10 +17,8 @@ const ProductModelFactory: ModelsFactory = {
       throw error;
     }
   },
-  create: function (data: ProductModelData): Promise<any> {
-    return Promise.resolve(ProductModel.query().insert(data)).catch((error) =>
-      console.log(error)
-    );
+  create: function (data: ProductModelData): Promise<ProductModel> {
+    return Promise.resolve(ProductModel.query().insert(data))
   },
 };
 

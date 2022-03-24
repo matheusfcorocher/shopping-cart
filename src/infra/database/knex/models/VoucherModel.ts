@@ -1,5 +1,6 @@
 import { Model, RelationMappings, RelationMappingsThunk} from "objection";
 import { VoucherType } from "../../../../domain/entities/Voucher";
+
 class VoucherModel extends Model {
   id!: number;
   uuid!: string;

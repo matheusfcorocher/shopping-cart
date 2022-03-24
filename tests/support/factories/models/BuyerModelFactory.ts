@@ -1,4 +1,4 @@
-import { BuyerModel } from "../../../../src/infra/database/knex/models";
+import { BuyerModel } from "../../../../src/infra/database/knex/models/BuyerModel";
 import { ModelsFactory } from "./ModelsFactory";
 
 interface BuyerModelData {
@@ -13,8 +13,8 @@ interface BuyerModelData {
   country: string;
 }
 
-const BuyerModelFactory: ModelsFactory = {
-  createList: function (list: Array<BuyerModelData>): Promise<any> {
+const BuyerModelFactory: ModelsFactory<BuyerModelData, BuyerModel> = {
+  createList: function (list: Array<BuyerModelData>): Promise<Array<BuyerModel>> {
     try {
       return Promise.all(list.map((d) => this.create(d)));
     } catch (error) {
@@ -22,10 +22,8 @@ const BuyerModelFactory: ModelsFactory = {
       throw error;
     }
   },
-  create: function (data: BuyerModelData): Promise<any> {
-    return Promise.resolve(BuyerModel.query().insert(data)).catch((error) =>
-      console.log(error)
-    );
+  create: function (data: BuyerModelData): Promise<BuyerModel> {
+    return Promise.resolve(BuyerModel.query().insert(data));
   },
 };
 

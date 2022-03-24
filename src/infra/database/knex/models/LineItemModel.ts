@@ -1,5 +1,7 @@
 import { Model, RelationMappings, RelationMappingsThunk } from "objection";
+
 class LineItemModel extends Model {
+  id!: number;
   uuid!: string;
   productId!: string;
   unitPrice!: number;
@@ -10,12 +12,12 @@ class LineItemModel extends Model {
   static tableName = "lineItems";
 
   public static get relationMappings(): RelationMappings | RelationMappingsThunk {
-    const Products = require("./ProductModel");
+    const ProductModel = require("./ProductModel");
 
     return {
       product: {
         relation: Model.HasOneRelation,
-        modelClass: Products,
+        modelClass: ProductModel,
         join: {
           from: "lineItems.productId",
           to: "products.uuid",
