@@ -16,6 +16,7 @@ interface Owner {
 }
 
 interface LineItemProps {
+  productId: string;
   unitPrice?: number;
   quantity?: number;
 }
@@ -23,19 +24,18 @@ class ObjectionCartRepository implements CartRepository {
   //public methods
 
   public async delete(cart: Cart): Promise<string> {
-    return transaction(CartModel, LineItemModel, async (BoundCartModel, BoundLineItemModel) => {
+    return transaction(CartModel, async (BoundCartModel) => {
       const { buyerId, id, lineItems } = cart;
 
       const productIds = lineItems.map((l) => l.productId);
 
-      await this.deleteLineItems(productIds, BoundLineItemModel);
-
-      return BoundCartModel.query()
+      const boundCartModel = await this.getCartModelById(id, BoundCartModel);
+      
+      await this.deleteLineItems(productIds, boundCartModel);
+    
+      return boundCartModel
+        .$query()
         .delete()
-        .where({
-          buyerId,
-          uuid: id,
-        })
         .then(() => "Cart was deleted successfully.")
         .catch(() => {
           const notFoundError = new Error("Not Found Error");
@@ -90,60 +90,93 @@ class ObjectionCartRepository implements CartRepository {
   }
 
   public async update(cart: Cart): Promise<Cart> {
-    return Promise.resolve(cart);
-    // return transaction(
-    //   CartModel,
-    //   LineItemModel,
-    //   async (CartModel, LineItemModel) => {
-    //     const { id, lineItems } = cart;
-    //     const owner = {
-    //       ownerId: id,
-    //       ownerType: "cart",
-    //     };
-    //     const promises = lineItems.map(async (l) => {
-    //       const hasLineItem = await this.hasLineItem(
-    //         owner,
-    //         l.productId,
-    //         LineItemModel
-    //       );
-    //       if (hasLineItem && l.quantity == 0)
-    //         return this.deleteLineItem(owner, l.productId, LineItemModel);
-    //       else if (hasLineItem && l.quantity > 0) {
-    //         return this.updateLineItem(
-    //           owner,
-    //           l.productId,
-    //           {
-    //             unitPrice: l.unitPrice,
-    //             quantity: l.quantity,
-    //           },
-    //           LineItemModel
-    //         );
-    //       } else return this.storeLineItem(l, owner, LineItemModel);
-    //     });
+    return transaction(CartModel, async (BoundCartModel) => {
+      const { id, lineItems } = cart;
+      
+      const boundCartModel = await this.getCartModelById(id, BoundCartModel);
+      
+      const promises = lineItems.map(async (lineItem) => {
+        const hasLineItem = await this.hasLineItem(
+          lineItem.productId,
+          boundCartModel
+        );
 
-    //     await Promise.all(promises);
-
-    //     const data = ObjectionCartMapper.toDatabase(cart);
-    //     return CartModel.query()
-    //       .patchAndFetch(data)
-    //       .then((result) => {
-    //         return this.transformCartModelToCart(result);
-    //       });
-    //   }
-    // );
+        if (hasLineItem && lineItem.quantity == 0) {
+          return this.deleteLineItem(lineItem.productId, boundCartModel);
+        }
+        else if (hasLineItem && lineItem.quantity > 0) {
+          const { unitPrice, quantity, productId } = lineItem;
+          return this.updateLineItem(
+            {
+              unitPrice,
+              quantity,
+              productId,
+            },
+            boundCartModel
+          );
+        } else return this.storeLineItem(lineItem, boundCartModel);
+      });
+      
+      await Promise.all(promises);
+      const data = ObjectionCartMapper.toDatabase(cart);
+      
+      return boundCartModel
+        .$query()
+        .patchAndFetch(data)
+        .then((result) => {
+          return this.transformCartModelToCart(result);
+      });
+    });
   }
 
   //private methods
 
-  private async deleteLineItems(
-    productIds: Array<string>,
-    lineItemModel: typeof LineItemModel
-  ): Promise<String> {
-    return lineItemModel
+  private getCartModelById(
+    id: string,
+    cartModel = CartModel
+  ): Promise<CartModel> {
+    return cartModel
       .query()
-      .whereIn("productId", productIds)
+      .findOne({
+        uuid: id,
+      })
+      .then((data) => {
+        return data!;
+      })
+      .catch((err) => {
+        const notFoundError = new Error("Not Found Error");
+        //   notFoundError.CODE = "NOTFOUND_ERROR";
+        notFoundError.message = `Cart with id ${id} can't be found.`;
+        return Promise.reject(notFoundError);
+      });
+  }
+
+  private async deleteLineItem(
+    productId: string,
+    cartModel: CartModel
+  ): Promise<String> {
+    return cartModel
+      .$relatedQuery("lineItems")
+      .where({ productId })
       .delete()
       .then(() => Promise.resolve("LineItem was deleted successfully."))
+      .catch(() => {
+        const notFoundError = new Error("Not Found Error");
+        //   notFoundError.CODE = "NOTFOUND_ERROR";
+        notFoundError.message = `LineItem with productId ${productId} can't be found.`;
+        return Promise.reject(notFoundError);
+      });
+  }
+
+  private async deleteLineItems(
+    productIds: Array<string>,
+    cartModel: CartModel
+  ): Promise<String> {
+    return cartModel
+      .$relatedQuery("lineItems")
+      .whereIn("productId", productIds)
+      .delete()
+      .then(() => Promise.resolve("LineItems was deleted successfully."))
       .catch(() => {
         const notFoundError = new Error("Not Found Error");
         //   notFoundError.CODE = "NOTFOUND_ERROR";
@@ -173,21 +206,14 @@ class ObjectionCartRepository implements CartRepository {
   }
 
   private async updateLineItem(
-    owner: Owner,
-    productId: string,
     data: LineItemProps,
-    lineItemModel: typeof LineItemModel
-  ): Promise<LineItem> {
-    const lineItem = await this.getLineItemsModelByOwnerAndProductId(
-      owner,
-      productId,
-      lineItemModel
-    );
-
-    return lineItem
-      .$query()
-      .patchAndFetch(data)
-      .then((result) => ObjectionLineItemMapper.toEntity(result));
+    cartModel: CartModel
+  ): Promise<String> {
+    return cartModel
+      .$relatedQuery("lineItems")
+      .where({ productId: data.productId })
+      .update(data)
+      .then(() => `LineItem was updated`);
   }
 
   //private methods - dead ends
@@ -253,42 +279,34 @@ class ObjectionCartRepository implements CartRepository {
   }
 
   private hasLineItem(
-    owner: Owner,
     productId: string,
-    lineItemModel: typeof LineItemModel
+    cartModel: CartModel
   ): Promise<boolean> {
-    const { ownerId, ownerType } = owner;
-    return lineItemModel
-      .query()
+    return cartModel
+      .$relatedQuery("lineItems")
       .findOne({
         productId,
-        ownerId,
-        ownerType,
       })
-      .then(() => Promise.resolve(true))
-      .catch(() => Promise.resolve(false));
+      .then((d) => d?true:false)
+      .catch(() => false);
   }
 
   private storeLineItem(
     lineItem: LineItem,
-    owner: Owner,
-    lineItemModel: typeof LineItemModel
-  ): Promise<LineItem> {
+    cartModel: CartModel
+  ): Promise<String> {
     const uuid = this.getNextId();
-    const { ownerId, ownerType } = owner;
-
-    return lineItemModel
-      .query()
-      .insertAndFetch(
-        ObjectionLineItemMapper.toDatabase(lineItem, {
-          uuid,
-          ownerId,
-          ownerType,
-        })
-      )
-      .then((data) => {
-        return ObjectionLineItemMapper.toEntity(data);
-      });
+    const { productId, unitPrice, quantity } = lineItem;
+    const data = {
+      uuid,
+      productId,
+      unitPrice,
+      quantity,
+    };
+    return cartModel
+      .$relatedQuery("lineItems")
+      .insert(data)
+      .then(() => "LineItem was created with success!");
   }
 }
 
