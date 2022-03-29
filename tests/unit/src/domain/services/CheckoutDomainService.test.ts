@@ -48,7 +48,7 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
     });
     describe("when query in products and service is unavailable", () => {
       it("returns error", async () => {
-        const lineItems: LineItems = [];
+        const lineItems: LineItems = [new LineItem('aad', 20, 2),];
         const cart = new Cart({
           id: 'aad',
           lineItems,
@@ -347,6 +347,46 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
           paymentMethod: "pix",
         };
         await expect(() => checkout.execute(data)).rejects.toThrow(error);
+      });
+    });
+    describe("when try to checkout cart but doesnt have any line items", () => {
+      it("returns validation error", async () => {
+        const lineItems: LineItems = [];
+        const cart = new Cart({
+          id: 'abc',
+          lineItems,
+        });
+        const carts = [cart];
+
+        const products: Array<Product> = [
+          new Product({
+            id: 'abc',
+            name: "Chocolate",
+            price: 20,
+            available: 5,
+          }),
+        ];
+        const orders: Array<Order> = [];
+
+        const cartRepository = new FakeCartRepository(carts);
+        const productRepository = new FakeProductRepository(products);
+        const orderRepository = new FakeOrderRepository(orders);
+
+        const validationError = new Error('Validation Error');
+        validationError.message = "cart must have line items to become a order."
+    
+        const checkout = new CheckoutDomainService(
+          cartRepository,
+          productRepository,
+          orderRepository
+        );
+
+        const data: CheckoutDomainServiceProps = {
+          cartdId: 'abc',
+          buyerId: 'abc',
+          paymentMethod: "pix",
+        };
+        await expect(() => checkout.execute(data)).rejects.toThrow(validationError);
       });
     });
 
