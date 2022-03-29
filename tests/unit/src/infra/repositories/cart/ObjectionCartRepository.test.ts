@@ -238,22 +238,6 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       });
     });
     describe("when try to delete cart", () => {
-      describe("but service is unavailable", () => {
-        it("returns error", async () => {
-          const lineItems: LineItems = [];
-          const cart = new Cart({
-            id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
-            buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
-            lineItems,
-          });
-          const error = new Error("Service Unavailable");
-          cartRepository.delete = () => Promise.reject(error);
-
-          await expect(() => cartRepository.delete(cart)).rejects.toThrow(
-            error
-          );
-        });
-      });
       describe("but cart isn't found", () => {
         it("returns not found error", async () => {
           const lineItems: LineItems = [];
@@ -263,8 +247,7 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
             lineItems,
           });
           const notFoundError = new Error("Not Found Error");
-          notFoundError.message = `Cart with id ${cart.id} and buyerId ${cart.buyerId} can't be found.`;
-          cartRepository.delete = () => Promise.reject(notFoundError);
+          notFoundError.message = `Cart with id ${cart.id} can't be found.`;
 
           await expect(() => cartRepository.delete(cart)).rejects.toThrow(
             notFoundError
@@ -290,8 +273,7 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
             appliedVoucher,
           });
           const notFoundError = new Error("Not Found Error");
-          notFoundError.message = `Line with ownerId 7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf and productId 7ea29c37-f9e7-4453-bc58-50ed4b5c0fcs can't be found for cart.`;
-          cartRepository.delete = () => Promise.reject(notFoundError);
+          notFoundError.message = `LineItems can't be found.`;
 
           await expect(() => cartRepository.delete(cart)).rejects.toThrow(
             notFoundError
@@ -335,7 +317,7 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
 
   describe("#getAllCarts", () => {
     describe("When method is called", () => {
-      describe("result is a array instance of lineItems", () => {
+      describe("result is a array instance of cart", () => {
         it("returns correct result", async () => {
           const carts = await cartRepository.getAllCarts();
 

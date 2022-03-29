@@ -32,7 +32,7 @@ class ObjectionCartRepository implements CartRepository {
       const boundCartModel = await this.getCartModelById(id, BoundCartModel);
       
       await this.deleteLineItems(productIds, boundCartModel);
-    
+  
       return boundCartModel
         .$query()
         .delete()

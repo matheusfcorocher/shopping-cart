@@ -1,6 +1,6 @@
 import { Order } from "../../../domain/entities";
 import { LineItems } from "../../../domain/entities/Cart";
-import { OrderModel } from "../../database/knex/models";
+import { OrderModel } from "../../database/knex/models/OrderModel";
 
 const ObjectionOrderMapper = {
   toEntity(orderModel: OrderModel, lineItems: LineItems) {
