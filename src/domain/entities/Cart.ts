@@ -118,4 +118,4 @@ export default class Cart {
  
 }
 
-export { LineItems, LineItem };
+export { LineItems, LineItem, CartProps };

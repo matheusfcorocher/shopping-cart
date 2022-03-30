@@ -310,4 +310,4 @@ class ObjectionCartRepository implements CartRepository {
   }
 }
 
-export { ObjectionCartRepository };
+export default ObjectionCartRepository;

@@ -6,7 +6,7 @@ import {
 import { appliedFactory } from "../../../../../../src/domain/factories/AppliedVoucherFactory";
 import { CartModel } from "../../../../../../src/infra/database/knex/models/CartModel";
 import { LineItemModel } from "../../../../../../src/infra/database/knex/models/LineItemModel";
-import { ObjectionCartRepository } from "../../../../../../src/infra/repositories/cart/ObjectionCartRepository";
+import ObjectionCartRepository from "../../../../../../src/infra/repositories/cart/ObjectionCartRepository";
 import { ObjectionLineItemMapper } from "../../../../../../src/infra/repositories/lineItem/ObjectionLineItemMapper";
 import { ObjectionCartMapper } from "../../../../../../src/infra/repositories/cart/ObjectionCartMapper";
 import BuyerModelFactory from "../../../../../support/factories/models/BuyerModelFactory";

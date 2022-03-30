@@ -98,4 +98,4 @@ class ObjectionOrderRepository implements OrderRepository {
   }
 }
 
-export { ObjectionOrderRepository };
+export default ObjectionOrderRepository;

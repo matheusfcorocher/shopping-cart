@@ -6,6 +6,7 @@
   "author": "Matheus <matheuscorocher@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@sinclair/typebox": "^0.23.4",
     "@types/config": "^0.0.41",
     "config": "^3.3.7",
     "dotenv": "^16.0.0",

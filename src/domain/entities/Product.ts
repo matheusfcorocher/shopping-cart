@@ -21,3 +21,5 @@ export default class Product {
     return this.available > 0;
   }
 }
+
+export { ProductProps };

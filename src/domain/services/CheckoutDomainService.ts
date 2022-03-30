@@ -33,9 +33,9 @@ export default class CheckoutDomainService {
 
   public async execute(data: CheckoutDomainServiceProps): Promise<string> {
     const cart = await this.cartRepository.getCartById(data.cartdId);
-    // const validationError = new Error('Validation Error');
-    // validationError.message = "cart must have line items to become a order."
-    // cart.lineItems.length == 0??validationError;
+    const validationError = new Error('Validation Error');
+    validationError.message = "cart must have line items to become a order."
+    if(cart.lineItems.length == 0)throw validationError;
     const products = await this.productRepository.getAllProducts();
     const productsData = products.map((product) => {
       const { id, name, available } = product;

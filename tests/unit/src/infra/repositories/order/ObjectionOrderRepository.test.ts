@@ -10,7 +10,7 @@ import LineItemModelFactory from "../../../../../support/factories/models/LineIt
 import ProductModelFactory from "../../../../../support/factories/models/ProductModelFactory";
 import mockModel from "../../../../../support/objection";
 import OrderModelFactory from "../../../../../support/factories/models/OrderModelFactory";
-import { ObjectionOrderRepository } from "../../../../../../src/infra/repositories/order/ObjectionOrderRepository";
+import ObjectionOrderRepository from "../../../../../../src/infra/repositories/order/ObjectionOrderRepository";
 import { OrderModel } from "../../../../../../src/infra/database/knex/models/OrderModel";
 import { ObjectionOrderMapper } from "../../../../../../src/infra/repositories/order/ObjectionOrderMapper";
 
