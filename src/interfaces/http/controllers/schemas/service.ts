@@ -7,11 +7,7 @@ const checkoutObj = Type.Object({
 });
 
 const checkoutSchema = {
-    body: {
-        type: 'object',
-        required: ['cartId', 'buyerId', 'paymentMethod'],
-        properties: checkoutObj,
-    },
+    body: checkoutObj,
     response: {
       200: Type.String()
     },

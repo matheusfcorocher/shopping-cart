@@ -29,7 +29,7 @@ const config: { [key: string]: Knex.Config } = {
     client: "pg",
     connection: {
       host: DB_HOST,
-      port: DB_PORT?parseInt(DB_PORT):3333,
+      port: DB_PORT?parseInt(DB_PORT):5432,
       database: DB_TEST_DATABASE,
       user: DB_USERNAME,
       password: DB_PASSWORD,

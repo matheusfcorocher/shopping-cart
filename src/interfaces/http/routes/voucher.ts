@@ -13,6 +13,7 @@ const vouchersRoutes: FastifyPluginCallback = (
   done
 ) => {
   fastify.get("/api/vouchers", listVouchersOpts);
+  done();
 };
 
 export { vouchersRoutes };

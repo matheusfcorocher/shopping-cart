@@ -1,5 +1,8 @@
 import { Model, RelationMappings, RelationMappingsThunk } from "objection";
+import knexInstance from "../knex";
 
+//only need one Model.knex receiving knexInstance to work Objection Model
+Model.knex(knexInstance);
 class BuyerModel extends Model {
   id!: number;
   uuid!: string;

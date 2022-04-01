@@ -43,6 +43,7 @@ const cartsRoutes: FastifyPluginCallback = (fastify, options, done) => {
   fastify.get("/api/carts/:buyerId", getCurrentCartOpts);
   fastify.put("/api/carts/removeLineItem", removeLineItemOpts);
   fastify.put("/api/carts/removeVoucher/:buyerId", removeVoucherOpts);
+  done();
 };
 
 export { cartsRoutes };
