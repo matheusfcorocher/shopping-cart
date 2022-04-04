@@ -7,12 +7,11 @@ const productObj = Type.Object({
     available: Type.Number(),
 });
 
+const productArray = Type.Array(productObj);
+
 const listProductsSchema = {
     response: {
-      200: {
-        type: "array",
-        items: productObj,
-      },
+      200: productArray,
     },
 };
 

@@ -4,6 +4,7 @@ import {
   ProductDataProps,
   ProductRepository,
 } from "../../../domain/repositories/ProductRepository";
+import { DbError } from "../../../lib/CustomError";
 import { ProductModel } from "../../database/knex/models/ProductModel";
 import { ObjectionProductMapper } from "./ObjectionProductMapper";
 
@@ -16,7 +17,7 @@ class ObjectionProductRepository implements ProductRepository {
 
   public getProductById(id: string): Promise<Product> {
     return this.getProductModelById(id).then((data) =>
-      ObjectionProductMapper.toEntity(data)
+      ObjectionProductMapper.toEntity(data!)
     );
   }
 
@@ -38,13 +39,18 @@ class ObjectionProductRepository implements ProductRepository {
         uuid: id,
       })
       .then((data) => {
-        if (data === undefined) {
-          const notFoundError = new Error("Not Found Error");
-          //   notFoundError.CODE = "NOTFOUND_ERROR";
-          notFoundError.message = `Product with id ${id} can't be found.`;
-          return Promise.reject(notFoundError);
-        }
-        return data;
+        if(!data)
+          throw new Error('Not Found Error')
+        return data!;
+      })
+      .catch((err) => {
+        const notFoundError = new DbError({
+          title: "Not Found Error",
+          status: 404,
+          detail: `Couldn't find product with id: ${id} in database. Verify if you are passing the correct productId.`,
+          stack: err.stack,
+        });
+        return Promise.reject(notFoundError);
       });
   }
 }

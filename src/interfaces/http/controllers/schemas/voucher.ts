@@ -8,12 +8,11 @@ const voucherObj = Type.Object({
     minValue: Type.Optional(Type.Union([Type.Number(), Type.Null()]))
 });
 
+const voucherArray = Type.Array(voucherObj);
+
 const listVouchersSchema = {
     response: {
-      200: {
-        type: "array",
-        items: voucherObj,
-      },
+      200: voucherArray
     },
 };
 

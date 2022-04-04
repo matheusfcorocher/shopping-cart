@@ -88,4 +88,4 @@ class ShippingVoucher extends AppliedVoucher {
   }
 }
 
-export { FixedVoucher, PercentualVoucher, ShippingVoucher, AppliedVoucher };
+export { FixedVoucher, PercentualVoucher, ShippingVoucher, AppliedVoucher, AppliedVoucherProps };

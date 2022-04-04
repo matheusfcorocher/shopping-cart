@@ -25,7 +25,7 @@ const ObjectionCartMapper = {
   },
   toDatabase(cart: Cart) {
     const { id, buyerId} = cart;
-    const { voucherId, type, amount, minValue} = cart.appliedVoucher || {};
+    const { voucherId, type, amount, minValue} = (cart.appliedVoucher || {});
     return {
       uuid: id,
       buyerId,

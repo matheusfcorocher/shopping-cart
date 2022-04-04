@@ -1,4 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify";
+import { HttpResponseError } from "../../../../lib/CustomError";
 import { CartSerializer } from "../serializers/CartSerializer";
 
 const addLineItemHandler = async (
@@ -16,10 +17,16 @@ const addLineItemHandler = async (
     const result = await addLineItem.execute(buyerId, productId);
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
-    switch (error.CODE) {
-      default:
-        const { message, details } = error;
-        return reply.status(500).send({ message, details });
+    const httpResponseError = new HttpResponseError({
+      title: error.title,
+      status: error.status,
+      detail: error.detail,
+    });  
+    switch (error.status) {
+      case 404:
+        return reply.status(404).send(httpResponseError.toJson());
+      default:  
+        return reply.status(500).send(httpResponseError);
     }
   }
 };
@@ -108,8 +115,7 @@ const removeVoucherHandler = async (
   } catch (error: any) {
     switch (error.CODE) {
       default:
-        const { message, details } = error;
-        return reply.status(500).send({ message, details });
+        return reply.status(500).send(error);
     }
   }
 };

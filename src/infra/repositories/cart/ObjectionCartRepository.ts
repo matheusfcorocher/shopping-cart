@@ -10,6 +10,7 @@ import { ObjectionLineItemMapper } from "../lineItem/ObjectionLineItemMapper";
 import { ObjectionCartMapper } from "./ObjectionCartMapper";
 import { CartModel } from "../../database/knex/models/CartModel";
 import { LineItemModel } from "../../database/knex/models/LineItemModel";
+import { DbError } from "../../../lib/CustomError";
 interface Owner {
   ownerId: string;
   ownerType: string;
@@ -30,9 +31,9 @@ class ObjectionCartRepository implements CartRepository {
       const productIds = lineItems.map((l) => l.productId);
 
       const boundCartModel = await this.getCartModelById(id, BoundCartModel);
-      
+
       await this.deleteLineItems(productIds, boundCartModel);
-  
+
       return boundCartModel
         .$query()
         .delete()
@@ -79,9 +80,12 @@ class ObjectionCartRepository implements CartRepository {
         return this.transformCartModelToCart(data!);
       })
       .catch((err) => {
-        const notFoundError = new Error("Not Found Error");
-        //   notFoundError.CODE = "NOTFOUND_ERROR";
-        notFoundError.message = `Cart with buyerId ${buyerId} can't be found.`;
+        const notFoundError = new DbError({
+          title: "Not Found Error",
+          status: 404,
+          detail: `Couldn't find cart with buyerId: ${buyerId} in database. Verify if you are passing the correct buyerId.`,
+          stack: err.stack,
+        });
         return Promise.reject(notFoundError);
       });
   }
@@ -92,9 +96,9 @@ class ObjectionCartRepository implements CartRepository {
   public async update(cart: Cart): Promise<Cart> {
     return transaction(CartModel, async (BoundCartModel) => {
       const { id, lineItems } = cart;
-      
+
       const boundCartModel = await this.getCartModelById(id, BoundCartModel);
-      
+
       const promises = lineItems.map(async (lineItem) => {
         const hasLineItem = await this.hasLineItem(
           lineItem.productId,
@@ -103,8 +107,7 @@ class ObjectionCartRepository implements CartRepository {
 
         if (hasLineItem && lineItem.quantity == 0) {
           return this.deleteLineItem(lineItem.productId, boundCartModel);
-        }
-        else if (hasLineItem && lineItem.quantity > 0) {
+        } else if (hasLineItem && lineItem.quantity > 0) {
           const { unitPrice, quantity, productId } = lineItem;
           return this.updateLineItem(
             {
@@ -116,16 +119,16 @@ class ObjectionCartRepository implements CartRepository {
           );
         } else return this.storeLineItem(lineItem, boundCartModel);
       });
-      
+
       await Promise.all(promises);
       const data = ObjectionCartMapper.toDatabase(cart);
-      
+
       return boundCartModel
         .$query()
         .patchAndFetch(data)
         .then((result) => {
           return this.transformCartModelToCart(result);
-      });
+        });
     });
   }
 
@@ -287,7 +290,7 @@ class ObjectionCartRepository implements CartRepository {
       .findOne({
         productId,
       })
-      .then((d) => d?true:false)
+      .then((d) => (d ? true : false))
       .catch(() => false);
   }
 

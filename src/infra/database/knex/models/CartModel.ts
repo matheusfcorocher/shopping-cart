@@ -1,4 +1,5 @@
 import { Model, RelationMappings, RelationMappingsThunk } from "objection";
+
 class CartModel extends Model {
   id!: number;
   uuid!: string;

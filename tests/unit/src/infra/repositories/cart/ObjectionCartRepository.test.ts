@@ -15,6 +15,7 @@ import LineItemModelFactory from "../../../../../support/factories/models/LineIt
 import ProductModelFactory from "../../../../../support/factories/models/ProductModelFactory";
 import VoucherModelFactory from "../../../../../support/factories/models/VoucherModelFactory";
 import mockModel from "../../../../../support/objection";
+import { DbError } from "../../../../../../src/lib/CustomError";
 
 const { setupIntegrationTest } = require("../../../../../support/setup");
 const cartRepository = new ObjectionCartRepository();
@@ -426,8 +427,12 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       describe("but cart isn't found", () => {
         it("returns not found error", async () => {
           const buyerId = "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcs";
-          const notFoundError = new Error("Not Found Error");
-          notFoundError.message = `Cart with buyerId ${buyerId} can't be found.`;
+          const notFoundError = new DbError({
+            title: "Not Found Error",
+            status: 404,
+            detail: `Couldn't find cart with buyerId: ${buyerId} in database. Verify if you are passing the correct buyerId.`,
+            // stack: err.stack,
+          });
           cartRepository.delete = () => Promise.reject(notFoundError);
 
           await expect(() =>

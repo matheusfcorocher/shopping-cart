@@ -13,6 +13,7 @@ const productsRoutes: FastifyPluginCallback = (
   done
 ) => {
   fastify.get("/api/products", listProductsOpts);
+  done();
 };
 
 export { productsRoutes };
