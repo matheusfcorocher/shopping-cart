@@ -17,7 +17,7 @@ class ObjectionProductRepository implements ProductRepository {
 
   public getProductById(id: string): Promise<Product> {
     return this.getProductModelById(id).then((data) =>
-      ObjectionProductMapper.toEntity(data)
+      ObjectionProductMapper.toEntity(data!)
     );
   }
 
@@ -39,6 +39,8 @@ class ObjectionProductRepository implements ProductRepository {
         uuid: id,
       })
       .then((data) => {
+        if(!data)
+          throw new Error('Not Found Error')
         return data!;
       })
       .catch((err) => {

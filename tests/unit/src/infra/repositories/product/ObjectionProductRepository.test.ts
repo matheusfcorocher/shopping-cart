@@ -1,5 +1,6 @@
 import { Product } from "../../../../../../src/domain/entities";
 import ObjectionProductRepository from "../../../../../../src/infra/repositories/product/ObjectionProductRepository";
+import { DbError } from "../../../../../../src/lib/CustomError";
 import ProductModelFactory from "../../../../../support/factories/models/ProductModelFactory";
 
 const { setupIntegrationTest } = require("../../../../../support/setup");
@@ -105,8 +106,12 @@ describe("Infra :: Product :: ObjectionProductRepository", () => {
     describe("When doesn't find a product by id", () => {
       it("returns error", async () => {
         const id = "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd";
-        const notFoundError = new Error("Not Found Error");
-        notFoundError.message = `Product with id ${id} can't be found.`;
+        const notFoundError = new DbError({
+          title: "Not Found Error",
+          status: 404,
+          detail: `Couldn't find product with id: ${id} in database. Verify if you are passing the correct productId.`,
+          // stack: err.stack,
+        });
 
         await expect(() =>
           productRepository.getProductById(id)
@@ -139,11 +144,15 @@ describe("Infra :: Product :: ObjectionProductRepository", () => {
         const productData = {
           available: 28,
         };
-        const notFoundError = new Error("Not Found Error");
-        notFoundError.message = `Product with id ${id} can't be found.`;
+        const notFoundError = new DbError({
+          title: "Not Found Error",
+          status: 404,
+          detail: `Couldn't find product with id: ${id} in database. Verify if you are passing the correct productId.`,
+          // stack: err.stack,
+        });
 
         await expect(() =>
-        productRepository.update(id, productData)
+          productRepository.update(id, productData)
         ).rejects.toThrow(notFoundError);
       });
     });
