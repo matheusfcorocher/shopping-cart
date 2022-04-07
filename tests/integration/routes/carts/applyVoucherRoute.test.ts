@@ -177,6 +177,10 @@ describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
               type: "fixed",
               amount: 40,
             },
+            discount: 40,
+            shipping: 0,
+            subtotal: 0,
+            total: 0,
           };
 
           expect(response.body).toEqual(expected);
@@ -203,6 +207,10 @@ describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
               type: "fixed",
               amount: 40,
             },
+            discount: 40,
+            shipping: 0,
+            subtotal: 0,
+            total: 0,
           };
 
           expect(response.body).toEqual(expected);
@@ -242,6 +250,10 @@ describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
               type: "fixed",
               amount: 40,
             },
+            discount: 40,
+            shipping: 0,
+            subtotal: 679.96,
+            total: 639.96,
           };
 
           expect(response.body).toEqual(expected);
@@ -273,6 +285,11 @@ describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
               type: "fixed",
               amount: 40,
             },
+            discount: 40,
+            shipping: 30,
+            subtotal: 159.98,
+            total: 149.98,
+            
           };
 
           expect(response.body).toEqual(expected);

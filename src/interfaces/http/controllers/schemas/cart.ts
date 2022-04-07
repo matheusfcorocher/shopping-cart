@@ -5,7 +5,7 @@ import { Type } from "@sinclair/typebox";
 const addLineItemObj = Type.Object({
   buyerId: Type.String(),
   productId: Type.String(),
-}); 
+});
 
 const applyVoucherObj = Type.Object({
   buyerId: Type.String(),
@@ -31,6 +31,10 @@ const cartObj = Type.Object({
   id: Type.String(),
   buyerId: Type.Optional(Type.String()),
   lineItems: lineItemsObj,
+  subtotal: Type.Number(),
+  shipping: Type.Number(),
+  discount: Type.Number(),
+  total: Type.Number(),
   appliedVoucher: Type.Union([Type.Optional(appliedVoucherObj), Type.Null()]),
 });
 
@@ -40,47 +44,53 @@ const httpResponseError = Type.Object({
   status: Type.String(),
   detail: Type.String(),
   instance: Type.Optional(Type.String()),
-})
+});
 
 //schemas
 
 const addLineItemSchema = {
   body: addLineItemObj,
   response: {
-    200: cartObj
+    200: cartObj,
   },
 };
 
 const applyVoucherSchema = {
   body: applyVoucherObj,
   response: {
-    200: cartObj
+    200: cartObj,
   },
 };
 
 const getCurrentCartSchema = {
   params: {
-    buyerId: Type.String()
+    buyerId: Type.String(),
   },
   response: {
-    200: cartObj
+    200: cartObj,
   },
 };
 
 const removeLineItemSchema = {
   body: addLineItemObj,
   response: {
-    200: cartObj
+    200: cartObj,
   },
 };
 
 const removeVoucherSchema = {
   params: {
-    buyerId: Type.String()
+    buyerId: Type.String(),
   },
   response: {
-    200: cartObj
+    200: cartObj,
   },
 };
 
-export { addLineItemSchema, applyVoucherSchema, getCurrentCartSchema, removeLineItemSchema, removeVoucherSchema};
+export {
+  addLineItemSchema,
+  applyVoucherSchema,
+  getCurrentCartSchema,
+  removeLineItemSchema,
+  removeVoucherSchema,
+};

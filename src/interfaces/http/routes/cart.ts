@@ -2,12 +2,14 @@ import { FastifyPluginCallback } from "fastify";
 import {
   addLineItemHandler,
   applyVoucherHandler,
+  getCurrentCartHandler,
   removeLineItemHandler,
   removeVoucherHandler,
 } from "../controllers/handlers/cart";
 import {
   addLineItemSchema,
   applyVoucherSchema,
+  getCurrentCartSchema,
   removeLineItemSchema,
   removeVoucherSchema,
 } from "../controllers/schemas/cart";
@@ -23,8 +25,8 @@ const applyVoucherOpts = {
 };
 
 const getCurrentCartOpts = {
-  handler: applyVoucherHandler,
-  schema: applyVoucherSchema,
+  handler: getCurrentCartHandler,
+  schema: getCurrentCartSchema,
 };
 
 const removeLineItemOpts = {
