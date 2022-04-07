@@ -3,6 +3,7 @@ import { LineItem, LineItems } from "../../../../../src/domain/entities/Cart";
 import CheckoutDomainService, {
   CheckoutDomainServiceProps,
 } from "../../../../../src/domain/services/CheckoutDomainService";
+import { createMoney } from "../../../../../src/domain/valueObjects/Money";
 import { FakeCartRepository } from "../../../../support/repositories/FakeCartRepository";
 import { FakeOrderRepository } from "../../../../support/repositories/FakeOrderRepository";
 import { FakeProductRepository } from "../../../../support/repositories/FakeProductRepository";
@@ -12,9 +13,9 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
     describe("when cartId doesn't exist", () => {
       it("returns not found error", async () => {
         const lineItems: LineItems = [];
-        
+
         const cart = new Cart({
-          id: 'aad',
+          id: "aad",
           lineItems,
         });
         const carts = [cart];
@@ -36,8 +37,8 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         notFoundError.message = `Cart with id asd can't be found.`;
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: 'asd',
-          buyerId: 'aad',
+          cartdId: "asd",
+          buyerId: "aad",
           paymentMethod: "pix",
         };
 
@@ -48,9 +49,9 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
     });
     describe("when query in products and service is unavailable", () => {
       it("returns error", async () => {
-        const lineItems: LineItems = [new LineItem('aad', 20, 2),];
+        const lineItems: LineItems = [new LineItem("aad", createMoney(20), 2)];
         const cart = new Cart({
-          id: 'aad',
+          id: "aad",
           lineItems,
         });
         const carts = [cart];
@@ -74,8 +75,8 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: 'aad',
-          buyerId: 'aad',
+          cartdId: "aad",
+          buyerId: "aad",
           paymentMethod: "pix",
         };
 
@@ -85,20 +86,20 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
     describe("when a line item is not found in products data", () => {
       it("returns internal error", async () => {
         const lineItems: LineItems = [
-          new LineItem('abc', 20, 2),
-          new LineItem('abd', 40, 1),
+          new LineItem("abc", createMoney(20), 2),
+          new LineItem("abd", createMoney(40), 1),
         ];
         const cart = new Cart({
-          id: 'adds',
+          id: "adds",
           lineItems,
         });
         const carts = [cart];
 
         const products: Array<Product> = [
           new Product({
-            id: 'abe',
+            id: "abe",
             name: "Chocolate",
-            price: 20,
+            price: createMoney(20),
             available: 0,
           }),
         ];
@@ -109,7 +110,7 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         const orderRepository = new FakeOrderRepository(orders);
 
         const internalError = new Error("Internal Error");
-        internalError.message = `Product with id abc was not found in products data`
+        internalError.message = `Product with id abc was not found in products data`;
 
         const checkout = new CheckoutDomainService(
           cartRepository,
@@ -118,30 +119,30 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: 'adds',
-          buyerId: 'adds',
+          cartdId: "adds",
+          buyerId: "adds",
           paymentMethod: "pix",
         };
 
-        await expect(() => checkout.execute(data)).rejects.toThrow(internalError);
+        await expect(() => checkout.execute(data)).rejects.toThrow(
+          internalError
+        );
       });
     });
     describe("when request a line item but it's out of stock", () => {
       it("returns bad request error", async () => {
-        const lineItems: LineItems = [
-          new LineItem('abc', 20, 2),
-        ];
+        const lineItems: LineItems = [new LineItem("abc", createMoney(20), 2)];
         const cart = new Cart({
-          id: 'cbc',
+          id: "cbc",
           lineItems,
         });
         const carts = [cart];
 
         const products: Array<Product> = [
           new Product({
-            id: 'abc',
+            id: "abc",
             name: "Chocolate",
-            price: 20,
+            price: createMoney(20),
             available: 0,
           }),
         ];
@@ -151,12 +152,11 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         const productRepository = new FakeProductRepository(products);
         const orderRepository = new FakeOrderRepository(orders);
 
-        const badRequestError = new Error("Bad request Error")
-        badRequestError.message = `Product Chocolate is out of stock`
+        const badRequestError = new Error("Bad request Error");
+        badRequestError.message = `Product Chocolate is out of stock`;
         const errors = [badRequestError];
-        const aggregateError = new AggregateError(errors)
-        
-      
+        const aggregateError = new AggregateError(errors);
+
         const checkout = new CheckoutDomainService(
           cartRepository,
           productRepository,
@@ -164,29 +164,29 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: 'cbc',
-          buyerId: 'cbc',
+          cartdId: "cbc",
+          buyerId: "cbc",
           paymentMethod: "pix",
         };
-        await expect(() => checkout.execute(data)).rejects.toThrow(aggregateError);
+        await expect(() => checkout.execute(data)).rejects.toThrow(
+          aggregateError
+        );
       });
     });
     describe("when request a line item but its quantity surpass the quantity available of that product", () => {
       it("returns bad request error", async () => {
-        const lineItems: LineItems = [
-          new LineItem('abc', 20, 4),
-        ];
+        const lineItems: LineItems = [new LineItem("abc", createMoney(20), 4)];
         const cart = new Cart({
-          id: 'abc',
+          id: "abc",
           lineItems,
         });
         const carts = [cart];
 
         const products: Array<Product> = [
           new Product({
-            id: 'abc',
+            id: "abc",
             name: "Chocolate",
-            price: 20,
+            price: createMoney(20),
             available: 3,
           }),
         ];
@@ -196,12 +196,11 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         const productRepository = new FakeProductRepository(products);
         const orderRepository = new FakeOrderRepository(orders);
 
-        const badRequestError = new Error("Bad request Error")
-        badRequestError.message = `Can't buy the product Chocolate with quantity 4 due it's only available 3 units`
+        const badRequestError = new Error("Bad request Error");
+        badRequestError.message = `Can't buy the product Chocolate with quantity 4 due it's only available 3 units`;
         const errors = [badRequestError];
-        const aggregateError = new AggregateError(errors)
-        
-      
+        const aggregateError = new AggregateError(errors);
+
         const checkout = new CheckoutDomainService(
           cartRepository,
           productRepository,
@@ -209,30 +208,30 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: 'abc',
-          buyerId: 'abc',
+          cartdId: "abc",
+          buyerId: "abc",
           paymentMethod: "pix",
         };
-        await expect(() => checkout.execute(data)).rejects.toThrow(aggregateError);
+        await expect(() => checkout.execute(data)).rejects.toThrow(
+          aggregateError
+        );
       });
     });
 
     describe("when try to create order but its fail", () => {
       it("returns internal error", async () => {
-        const lineItems: LineItems = [
-          new LineItem('abc', 20, 3),
-        ];
+        const lineItems: LineItems = [new LineItem("abc", createMoney(20), 3)];
         const cart = new Cart({
-          id: 'abc',
+          id: "abc",
           lineItems,
         });
         const carts = [cart];
 
         const products: Array<Product> = [
           new Product({
-            id: 'abc',
+            id: "abc",
             name: "Chocolate",
-            price: 20,
+            price: createMoney(20),
             available: 5,
           }),
         ];
@@ -246,7 +245,7 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         orderRepository.store = () => {
           throw error;
         };
-    
+
         const checkout = new CheckoutDomainService(
           cartRepository,
           productRepository,
@@ -254,8 +253,8 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: 'abc',
-          buyerId: 'abc',
+          cartdId: "abc",
+          buyerId: "abc",
           paymentMethod: "pix",
         };
         await expect(() => checkout.execute(data)).rejects.toThrow(error);
@@ -263,20 +262,18 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
     });
     describe("when try to update products but its fail", () => {
       it("returns internal error", async () => {
-        const lineItems: LineItems = [
-          new LineItem('abc', 20, 3),
-        ];
+        const lineItems: LineItems = [new LineItem("abc", createMoney(20), 3)];
         const cart = new Cart({
-          id: 'abc',
+          id: "abc",
           lineItems,
         });
         const carts = [cart];
 
         const products: Array<Product> = [
           new Product({
-            id: 'abc',
+            id: "abc",
             name: "Chocolate",
-            price: 20,
+            price: createMoney(20),
             available: 5,
           }),
         ];
@@ -290,7 +287,7 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         productRepository.update = () => {
           throw error;
         };
-    
+
         const checkout = new CheckoutDomainService(
           cartRepository,
           productRepository,
@@ -298,8 +295,8 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: 'abc',
-          buyerId: 'abc',
+          cartdId: "abc",
+          buyerId: "abc",
           paymentMethod: "pix",
         };
         await expect(() => checkout.execute(data)).rejects.toThrow(error);
@@ -307,20 +304,18 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
     });
     describe("when try to delete cart but its fail", () => {
       it("returns internal error", async () => {
-        const lineItems: LineItems = [
-          new LineItem('abc', 20, 3),
-        ];
+        const lineItems: LineItems = [new LineItem("abc", createMoney(20), 3)];
         const cart = new Cart({
-          id: 'abc',
+          id: "abc",
           lineItems,
         });
         const carts = [cart];
 
         const products: Array<Product> = [
           new Product({
-            id: 'abc',
+            id: "abc",
             name: "Chocolate",
-            price: 20,
+            price: createMoney(20),
             available: 5,
           }),
         ];
@@ -334,7 +329,7 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         cartRepository.delete = () => {
           throw error;
         };
-    
+
         const checkout = new CheckoutDomainService(
           cartRepository,
           productRepository,
@@ -342,8 +337,8 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: 'abc',
-          buyerId: 'abc',
+          cartdId: "abc",
+          buyerId: "abc",
           paymentMethod: "pix",
         };
         await expect(() => checkout.execute(data)).rejects.toThrow(error);
@@ -353,16 +348,16 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
       it("returns validation error", async () => {
         const lineItems: LineItems = [];
         const cart = new Cart({
-          id: 'abc',
+          id: "abc",
           lineItems,
         });
         const carts = [cart];
 
         const products: Array<Product> = [
           new Product({
-            id: 'abc',
+            id: "abc",
             name: "Chocolate",
-            price: 20,
+            price: createMoney(20),
             available: 5,
           }),
         ];
@@ -372,9 +367,10 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         const productRepository = new FakeProductRepository(products);
         const orderRepository = new FakeOrderRepository(orders);
 
-        const validationError = new Error('Validation Error');
-        validationError.message = "cart must have line items to become a order."
-    
+        const validationError = new Error("Validation Error");
+        validationError.message =
+          "cart must have line items to become a order.";
+
         const checkout = new CheckoutDomainService(
           cartRepository,
           productRepository,
@@ -382,30 +378,32 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: 'abc',
-          buyerId: 'abc',
+          cartdId: "abc",
+          buyerId: "abc",
           paymentMethod: "pix",
         };
-        await expect(() => checkout.execute(data)).rejects.toThrow(validationError);
+        await expect(() => checkout.execute(data)).rejects.toThrow(
+          validationError
+        );
       });
     });
 
     describe("when create order", () => {
       it("create order", async () => {
         const lineItems: LineItems = [
-          new LineItem('abc', 20, 3),
+          new LineItem("abc", createMoney(2000), 3),
         ];
         const cart = new Cart({
-          id: 'abc',
+          id: "abc",
           lineItems,
         });
         const carts = [cart];
 
         const products: Array<Product> = [
           new Product({
-            id: 'abc',
+            id: "abc",
             name: "Chocolate",
-            price: 20,
+            price: createMoney(2000),
             available: 5,
           }),
         ];
@@ -422,8 +420,8 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: 'abc',
-          buyerId: 'abc',
+          cartdId: "abc",
+          buyerId: "abc",
           paymentMethod: "pix",
         };
         await checkout.execute(data);
@@ -431,19 +429,19 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
       });
       it("reduce stock", async () => {
         const lineItems: LineItems = [
-          new LineItem('abc', 20, 3),
+          new LineItem("abc", createMoney(2000), 3),
         ];
         const cart = new Cart({
-          id: 'abc',
+          id: "abc",
           lineItems,
         });
         const carts = [cart];
 
         const products: Array<Product> = [
           new Product({
-            id: 'abc',
+            id: "abc",
             name: "Chocolate",
-            price: 20,
+            price: createMoney(2000),
             available: 5,
           }),
         ];
@@ -460,34 +458,36 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: 'abc',
-          buyerId: 'abc',
+          cartdId: "abc",
+          buyerId: "abc",
           paymentMethod: "pix",
         };
         await checkout.execute(data);
         expect(products.length).toBe(1);
-        expect(products[0]).toEqual(new Product({
-          id: 'abc',
-          name: "Chocolate",
-          price: 20,
-          available: 2,
-        }),);
+        expect(JSON.stringify(products[0])).toEqual(
+          JSON.stringify(
+            new Product({
+              id: "abc",
+              name: "Chocolate",
+              price: createMoney(2000),
+              available: 2,
+            })
+          )
+        );
       });
       it("delete cart", async () => {
-        const lineItems: LineItems = [
-          new LineItem('abc', 20, 3),
-        ];
+        const lineItems: LineItems = [new LineItem("abc", createMoney(2000), 3)];
         const cart = new Cart({
-          id: 'abc',
+          id: "abc",
           lineItems,
         });
         const carts = [cart];
 
         const products: Array<Product> = [
           new Product({
-            id: 'abc',
+            id: "abc",
             name: "Chocolate",
-            price: 20,
+            price: createMoney(2000),
             available: 5,
           }),
         ];
@@ -504,28 +504,26 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: 'abc',
-          buyerId: 'abc',
+          cartdId: "abc",
+          buyerId: "abc",
           paymentMethod: "pix",
         };
         await checkout.execute(data);
         expect(carts.length).toBe(0);
       });
       it("returns the right message", async () => {
-        const lineItems: LineItems = [
-          new LineItem('abc', 20, 3),
-        ];
+        const lineItems: LineItems = [new LineItem("abc", createMoney(2000), 3)];
         const cart = new Cart({
-          id: 'abc',
+          id: "abc",
           lineItems,
         });
         const carts = [cart];
 
         const products: Array<Product> = [
           new Product({
-            id: 'abc',
+            id: "abc",
             name: "Chocolate",
-            price: 20,
+            price: createMoney(2000),
             available: 5,
           }),
         ];
@@ -542,11 +540,13 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: 'abc',
-          buyerId: 'abc',
+          cartdId: "abc",
+          buyerId: "abc",
           paymentMethod: "pix",
         };
-        expect(await checkout.execute(data)).toEqual("Order created successfully!");
+        expect(await checkout.execute(data)).toEqual(
+          "Order created successfully!"
+        );
       });
     });
   });

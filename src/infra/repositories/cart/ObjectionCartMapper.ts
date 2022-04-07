@@ -31,8 +31,8 @@ const ObjectionCartMapper = {
       buyerId,
       voucherId,
       type,
-      amount,
-      minValue
+      amount: amount?.getAmount(),
+      minValue: minValue?.getAmount()
     };
   },
 };

@@ -1,4 +1,5 @@
 import { Product } from "../../../../../../../src/domain/entities";
+import { createMoney } from "../../../../../../../src/domain/valueObjects/Money";
 import { ProductSerializer } from "../../../../../../../src/interfaces/http/controllers/serializers/ProductSerializer";
 
 describe("Interfaces :: HTTP :: Product :: ProductSerializer", () => {
@@ -6,7 +7,7 @@ describe("Interfaces :: HTTP :: Product :: ProductSerializer", () => {
     const product = new Product({
       id: "2a20283a-2371-441f-af6e-899fe63def5c",
       name: "Chocolate",
-      price: 29.99,
+      price: createMoney(2999),
       available: 100,
     });
 

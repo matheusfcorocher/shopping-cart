@@ -1,17 +1,18 @@
 import { VoucherType } from "../entities/Voucher";
+import { createMoney, Money } from "./Money";
 
 type AppliedVoucherProps = {
   voucherId: string;
   type: VoucherType;
-  amount?: number | null;
-  minValue?: number | null;
+  amount?: Money | null;
+  minValue?: Money | null;
 };
 
 abstract class AppliedVoucher {
   voucherId: string;
   type: VoucherType;
-  amount?: number | null;
-  minValue?: number | null;
+  amount?: Money | null;
+  minValue?: Money | null;
 
   constructor({
     voucherId,
@@ -25,7 +26,7 @@ abstract class AppliedVoucher {
     this.minValue = minValue;
   }
 
-  abstract apply(subtotal: number, shipping: number): number;
+  abstract apply(subtotal: Money, shipping: Money): Money;
 }
 
 //FixedVoucher
@@ -39,7 +40,7 @@ class FixedVoucher extends AppliedVoucher {
     super({ voucherId, type, amount});
   }
 
-  public apply(subtotal: number, shipping: number): number {
+  public apply(subtotal: Money, shipping: Money): Money {
     return this.amount!;
   }
 }
@@ -60,12 +61,12 @@ class PercentualVoucher extends AppliedVoucher {
     } 
   }
 
-  public apply(subtotal: number, shipping: number): number {
-    return subtotal * this.amount!/100;
+  public apply(subtotal: Money, shipping: Money): Money {
+    return subtotal.multiply(this.amount?.getAmount()!).divide(100);
   }
 
   private isInRange(): boolean {
-    return this.amount! >= 0 && this.amount! <= 100
+    return this.amount!.greaterThanOrEqual(createMoney(0)) && this.amount!.lessThanOrEqual(createMoney(100))
   }
 }
 
@@ -80,11 +81,11 @@ class ShippingVoucher extends AppliedVoucher {
     super({ voucherId, type, minValue});
   }
 
-  public apply(subtotal: number, shipping: number): number {
-    if (subtotal >= this.minValue!) {
+  public apply(subtotal: Money, shipping: Money): Money {
+    if (subtotal.greaterThanOrEqual(this.minValue!)) {
       return shipping;
     }
-    return 0;
+    return createMoney(0);
   }
 }
 

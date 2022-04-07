@@ -8,7 +8,7 @@ export async function up(knex: Knex): Promise<void> {
         table.string('code').notNullable().unique();
         table.string('type').notNullable();
         table.integer('amount').notNullable();
-        table.float('minValue');
+        table.integer('minValue');
         table.timestamp('created_at').defaultTo(knex.fn.now())
         table.timestamp('updated_at').defaultTo(knex.fn.now())
     })

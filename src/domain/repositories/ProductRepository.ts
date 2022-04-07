@@ -1,8 +1,9 @@
 import { Product } from "../entities";
+import { Money } from "../valueObjects/Money";
 
 interface ProductDataProps {
   name?: string;
-  price?: number;
+  price?: Money;
   available?: number;
 }
 interface ProductRepository {

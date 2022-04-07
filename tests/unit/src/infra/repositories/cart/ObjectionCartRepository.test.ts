@@ -16,6 +16,7 @@ import ProductModelFactory from "../../../../../support/factories/models/Product
 import VoucherModelFactory from "../../../../../support/factories/models/VoucherModelFactory";
 import mockModel from "../../../../../support/objection";
 import { DbError } from "../../../../../../src/lib/CustomError";
+import { createMoney } from "../../../../../../src/domain/valueObjects/Money";
 
 const { setupIntegrationTest } = require("../../../../../support/setup");
 const cartRepository = new ObjectionCartRepository();
@@ -29,19 +30,19 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       {
         uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
         name: "Gaming Keyboard",
-        price: 79.99,
+        price: 7999,
         available: 30,
       },
       {
         uuid: "92d91715-34ad-449e-9b81-73f1a74ef44e",
         name: "Gaming Chair",
-        price: 299.99,
+        price: 29999,
         available: 30,
       },
       {
         uuid: "8bc94226-3e20-40cb-a507-554fabf36ffa",
         name: "Gaming Mouse",
-        price: 39.99,
+        price: 3999,
         available: 30,
       },
     ]);
@@ -49,7 +50,7 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       {
         uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
         productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-        unitPrice: 69.99,
+        unitPrice: 6999,
         quantity: 2,
         ownerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
         ownerType: "cart",
@@ -57,7 +58,7 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       {
         uuid: "92d91715-34ad-449e-9b81-73f1a74ef44e",
         productId: "92d91715-34ad-449e-9b81-73f1a74ef44e",
-        unitPrice: 299.99,
+        unitPrice: 29999,
         quantity: 2,
         ownerId: "92d91715-34ad-449e-9b81-73f1a74ef44e",
         ownerType: "cart",
@@ -65,7 +66,7 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       {
         uuid: "8bc94226-3e20-40cb-a507-554fabf36ffa",
         productId: "8bc94226-3e20-40cb-a507-554fabf36ffa",
-        unitPrice: 39.99,
+        unitPrice: 3999,
         quantity: 2,
         ownerId: "8bc94226-3e20-40cb-a507-554fabf36ffa",
         ownerType: "cart",
@@ -73,7 +74,7 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       {
         uuid: "8bc94226-3e20-40cb-a507-554fabf36fff",
         productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-        unitPrice: 69.99,
+        unitPrice: 6999,
         quantity: 2,
         ownerId: "8bc94226-3e20-40cb-a507-554fabf36ffa",
         ownerType: "cart",
@@ -108,20 +109,20 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
         uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
         code: "TEST1",
         type: "percentual",
-        amount: 40,
+        amount: 4000,
       },
       {
         uuid: "92d91715-34ad-449e-9b81-73f1a74ef44e",
         code: "TEST2",
         type: "fixed",
-        amount: 40,
+        amount: 4000,
       },
       {
         uuid: "8bc94226-3e20-40cb-a507-554fabf36ffa",
         code: "TEST3",
         type: "free shipping",
         amount: 2,
-        minValue: 50,
+        minValue: 5000,
       },
     ]);
     await CartModelFactory.createList([
@@ -130,7 +131,7 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
         buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
         voucherId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
         type: "fixed",
-        amount: 50,
+        amount: 5000,
       },
       {
         uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
@@ -172,13 +173,13 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       describe("deletes lineItems from database", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", 69.99, 2),
+            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 2),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "percentual",
-            amount: 40,
+            amount: createMoney(40),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
           const cart = new Cart({
@@ -194,13 +195,13 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       describe("deletes cart from database", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", 69.99, 2),
+            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 2),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "percentual",
-            amount: 40,
+            amount: createMoney(40),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
           const cart = new Cart({
@@ -216,13 +217,13 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       describe("return success message", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", 69.99, 2),
+            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 2),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "percentual",
-            amount: 40,
+            amount: createMoney(40),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
           const cart = new Cart({
@@ -258,13 +259,13 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       describe("but lineItem isn't found", () => {
         it("returns not found error", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcs", 69.99, 2),
+            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcs", createMoney(6999), 2),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "percentual",
-            amount: 40,
+            amount: createMoney(40),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
           const cart = new Cart({
@@ -284,13 +285,13 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       describe("but some operation fail", () => {
         it("database back to initial state by transaction", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", 69.99, 2),
+            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 2),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "fixed",
-            amount: 50,
+            amount: createMoney(5000),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
           const cart = new Cart({
@@ -303,14 +304,15 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
           mockModel(CartModel).reject(error);
           try {
             await cartRepository.delete(cart);
-          } catch {}
+          } catch {
+          }
           jest.restoreAllMocks();
 
           expect(
-            await cartRepository.getCartById(
+            JSON.stringify(await cartRepository.getCartById(
               "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf"
-            )
-          ).toEqual(cart);
+            ))
+          ).toEqual(JSON.stringify(cart));
         });
       });
     });
@@ -336,32 +338,32 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [];
           const lineItems2: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", 69.99, 2),
+            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 2),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "fixed",
-            amount: 50,
+            amount: createMoney(5000),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
 
           const expected = [
-            new Cart({
-              id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
-              buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
-              lineItems,
-            }),
             new Cart({
               id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
               buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
               lineItems: lineItems2,
               appliedVoucher,
             }),
+            new Cart({
+              id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
+              buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
+              lineItems,
+            }),
           ];
           const carts = await cartRepository.getAllCarts();
 
-          expect(carts).toEqual(expect.arrayContaining(expected));
+          expect(JSON.stringify(carts)).toEqual(JSON.stringify(expected));
         });
       });
     });
@@ -430,7 +432,8 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
           const notFoundError = new DbError({
             title: "Not Found Error",
             status: 404,
-            detail: `Couldn't find cart with buyerId: ${buyerId} in database. Verify if you are passing the correct buyerId.`,
+            message: `Couldn't find cart with buyerId: ${buyerId} in database. Verify if you are passing the correct buyerId.`,
+            detail: "",
             // stack: err.stack,
           });
           cartRepository.delete = () => Promise.reject(notFoundError);
@@ -462,13 +465,13 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       describe("delete lineItem from database when quantity is 0", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", 69.99, 0),
+            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 0),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "percentual",
-            amount: 40,
+            amount: createMoney(40),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
           const cart = new Cart({
@@ -493,13 +496,13 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       describe("update lineItem from database when quantity > 0", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", 69.99, 4),
+            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 4),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "percentual",
-            amount: 40,
+            amount: createMoney(40),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
           const cart = new Cart({
@@ -511,26 +514,26 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
           await cartRepository.update(cart);
 
           expect(
-            await LineItemModel.query()
+            JSON.stringify(await LineItemModel.query()
               .findOne({
                 ownerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
                 ownerType: "cart",
                 productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
               })
-              .then((data) => ObjectionLineItemMapper.toEntity(data!))
-          ).toEqual(lineItems[0]);
+              .then((data) => ObjectionLineItemMapper.toEntity(data!)))
+          ).toEqual(JSON.stringify(lineItems[0]));
         });
       });
       describe("store lineItem in database", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", 69.99, 2),
+            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 2),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "percentual",
-            amount: 40,
+            amount: createMoney(40),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
           const cart = new Cart({
@@ -541,27 +544,27 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
           });
           await cartRepository.update(cart);
 
-          expect(
+          expect(JSON.stringify(
             await LineItemModel.query()
               .findOne({
                 ownerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
                 ownerType: "cart",
                 productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
               })
-              .then((data) => ObjectionLineItemMapper.toEntity(data!))
-          ).toEqual(lineItems[0]);
+              .then((data) => ObjectionLineItemMapper.toEntity(data!)))
+          ).toEqual(JSON.stringify(lineItems[0]));
         });
       });
       describe("update cart from database", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", 69.99, 2),
+            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 2),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "percentual",
-            amount: 40,
+            amount: createMoney(40),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
           const cart = new Cart({
@@ -587,13 +590,13 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       describe("return success message", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", 69.99, 2),
+            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 2),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "percentual",
-            amount: 40,
+            amount: createMoney(40),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
           const cart = new Cart({
@@ -603,7 +606,7 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
             appliedVoucher,
           });
 
-          expect(await cartRepository.update(cart)).toEqual(cart);
+          expect(JSON.stringify(await cartRepository.update(cart))).toEqual(JSON.stringify(cart));
         });
       });
     });
@@ -611,7 +614,7 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       describe("but some operation fail", () => {
         it("database back to initial state by transaction", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd", 69.99, 2),
+            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd", createMoney(6999), 2),
           ];
           const cart = new Cart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",

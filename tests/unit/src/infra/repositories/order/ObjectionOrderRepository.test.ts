@@ -13,6 +13,7 @@ import OrderModelFactory from "../../../../../support/factories/models/OrderMode
 import ObjectionOrderRepository from "../../../../../../src/infra/repositories/order/ObjectionOrderRepository";
 import { OrderModel } from "../../../../../../src/infra/database/knex/models/OrderModel";
 import { ObjectionOrderMapper } from "../../../../../../src/infra/repositories/order/ObjectionOrderMapper";
+import { createMoney } from "../../../../../../src/domain/valueObjects/Money";
 
 const { setupIntegrationTest } = require("../../../../../support/setup");
 const orderRepository = new ObjectionOrderRepository();
@@ -26,19 +27,19 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
       {
         uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
         name: "Gaming Keyboard",
-        price: 79.99,
+        price: 7999,
         available: 30,
       },
       {
         uuid: "92d91715-34ad-449e-9b81-73f1a74ef44e",
         name: "Gaming Chair",
-        price: 299.99,
+        price: 29999,
         available: 30,
       },
       {
         uuid: "8bc94226-3e20-40cb-a507-554fabf36ffa",
         name: "Gaming Mouse",
-        price: 39.99,
+        price: 3999,
         available: 30,
       },
     ]);
@@ -46,7 +47,7 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
       {
         uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
         productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-        unitPrice: 69.99,
+        unitPrice: 6999,
         quantity: 2,
         ownerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
         ownerType: "order",
@@ -80,7 +81,7 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
       {
         uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
         buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-        discount: 50,
+        discount: 5000,
         paymentMethod: "debit card",
       },
       {
@@ -112,28 +113,28 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [];
           const lineItems2: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", 69.99, 2),
+            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 2),
           ];
 
           const expected = [
             new Order({
-              id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
-              buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
-              lineItems,
-              discount: 0,
-              paymentMethod: "pix",
-            }),
-            new Order({
               id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
               buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
               lineItems: lineItems2,
-              discount: 50,
+              discount: createMoney(5000),
               paymentMethod: "debit card",
+            }),
+            new Order({
+              id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
+              buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
+              lineItems,
+              discount: createMoney(0),
+              paymentMethod: "pix",
             }),
           ];
           const orders = await orderRepository.getAllOrders();
 
-          expect(orders).toEqual(expect.arrayContaining(expected));
+          expect(JSON.stringify(orders)).toEqual(JSON.stringify(expected));
         });
       });
     });
@@ -159,7 +160,7 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
             id: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             lineItems,
-            discount: 0,
+            discount: createMoney(0),
             paymentMethod: "pix",
           });
 
@@ -173,61 +174,61 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
       describe("store order in database", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("92d91715-34ad-449e-9b81-73f1a74ef44e", 279.99, 2),
+            new LineItem("92d91715-34ad-449e-9b81-73f1a74ef44e", createMoney(27999), 2),
           ];
           const order = new Order({
             id: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             lineItems,
-            discount: 0,
+            discount: createMoney(0),
             paymentMethod: "pix",
           });
           await orderRepository.store(order);
 
           expect(
-            await OrderModel.query()
+            JSON.stringify(await OrderModel.query()
               .findOne({
                 uuid: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",
               })
-              .then((d) => ObjectionOrderMapper.toEntity(d!, lineItems))
-          ).toEqual(order);
+              .then((d) => ObjectionOrderMapper.toEntity(d!, lineItems)))
+          ).toEqual(JSON.stringify(order));
         });
       });
       describe("store lineItem in database", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("92d91715-34ad-449e-9b81-73f1a74ef44e", 279.99, 2),
+            new LineItem("92d91715-34ad-449e-9b81-73f1a74ef44e", createMoney(27999), 2),
           ];
           const order = new Order({
             id: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             lineItems,
-            discount: 0,
+            discount: createMoney(0),
             paymentMethod: "pix",
           });
           await orderRepository.store(order);
 
           expect(
-            await LineItemModel.query()
+            JSON.stringify(await LineItemModel.query()
               .findOne({
                 ownerId: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",
                 ownerType: "order",
                 productId: "92d91715-34ad-449e-9b81-73f1a74ef44e",
               })
-              .then((data) => ObjectionLineItemMapper.toEntity(data!))
-          ).toEqual(lineItems[0]);
+              .then((data) => ObjectionLineItemMapper.toEntity(data!)))
+          ).toEqual(JSON.stringify(lineItems[0]));
         });
       });
       describe("return success message", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("92d91715-34ad-449e-9b81-73f1a74ef44e", 279.99, 2),
+            new LineItem("92d91715-34ad-449e-9b81-73f1a74ef44e", createMoney(27999), 2),
           ];
           const order = new Order({
             id: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             lineItems,
-            discount: 0,
+            discount: createMoney(0),
             paymentMethod: "pix",
           });
 
@@ -241,13 +242,13 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
       describe("but some operation fail", () => {
         it("database back to initial state by transaction", async () => {
           const lineItems: LineItems = [
-            new LineItem("92d91715-34ad-449e-9b81-73f1a74ef44e", 279.99, 2),
+            new LineItem("92d91715-34ad-449e-9b81-73f1a74ef44e", createMoney(27999), 2),
           ];
           const order = new Order({
             id: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             lineItems,
-            discount: 0,
+            discount: createMoney(0),
             paymentMethod: "pix",
           });
           const error = new Error("Service Unavailable");

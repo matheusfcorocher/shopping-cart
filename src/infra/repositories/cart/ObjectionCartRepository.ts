@@ -11,6 +11,7 @@ import { ObjectionCartMapper } from "./ObjectionCartMapper";
 import { CartModel } from "../../database/knex/models/CartModel";
 import { LineItemModel } from "../../database/knex/models/LineItemModel";
 import { DbError } from "../../../lib/CustomError";
+import { createMoney } from "../../../domain/valueObjects/Money";
 interface Owner {
   ownerId: string;
   ownerType: string;
@@ -77,17 +78,18 @@ class ObjectionCartRepository implements CartRepository {
         buyerId,
       })
       .then((data) => {
+        if (!data)
+          throw new Error("Cart Model is undefined.");
         return this.transformCartModelToCart(data!);
-      })
-      .catch((err) => {
+      }).catch((err) => {
         const notFoundError = new DbError({
           title: "Not Found Error",
           status: 404,
-          detail: `Couldn't find cart with buyerId: ${buyerId} in database. Verify if you are passing the correct buyerId.`,
-          stack: err.stack,
+          message: `Couldn't find cart with buyerId: ${buyerId} in database. Verify if you are passing the correct buyerId.`,
+          detail: err.message
         });
-        return Promise.reject(notFoundError);
-      });
+        throw notFoundError; 
+      })
   }
   public getNextId(): string {
     return uuidv4();
@@ -111,7 +113,7 @@ class ObjectionCartRepository implements CartRepository {
           const { unitPrice, quantity, productId } = lineItem;
           return this.updateLineItem(
             {
-              unitPrice,
+              unitPrice: unitPrice.getAmount(),
               quantity,
               productId,
             },
@@ -223,14 +225,14 @@ class ObjectionCartRepository implements CartRepository {
 
   private getAppliedVoucher(cartModel: CartModel): AppliedVoucher | undefined {
     const { voucherId, type, amount, minValue } = cartModel;
-    if (voucherId && type && amount) {
+    if (voucherId && type && (amount || minValue)) {
       const voucherType = <VoucherType>type;
       const voucher = new Voucher({
         id: voucherId,
         code: "null",
         type: voucherType,
-        amount,
-        minValue,
+        amount: amount?createMoney(amount):undefined,
+        minValue: minValue?createMoney(minValue):undefined,
       });
       return appliedFactory.fromVoucher(voucher);
     }
@@ -303,7 +305,7 @@ class ObjectionCartRepository implements CartRepository {
     const data = {
       uuid,
       productId,
-      unitPrice,
+      unitPrice: unitPrice.getAmount(),
       quantity,
     };
     return cartModel

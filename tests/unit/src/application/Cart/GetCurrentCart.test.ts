@@ -2,6 +2,7 @@ import GetCurrentCart from "../../../../../src/application/Cart/GetCurrentCart";
 import { Cart, Voucher } from "../../../../../src/domain/entities";
 import { LineItems, LineItem } from "../../../../../src/domain/entities/Cart";
 import { appliedFactory } from "../../../../../src/domain/factories/AppliedVoucherFactory";
+import { createMoney } from "../../../../../src/domain/valueObjects/Money";
 import { FakeCartRepository } from "../../../../support/repositories/FakeCartRepository";
 
 describe("Application :: Cart :: GetCurrentCart", () => {
@@ -31,7 +32,7 @@ describe("Application :: Cart :: GetCurrentCart", () => {
             id: 'aaa',
             code: "#F121221",
             type: "percentual",
-            amount: 30.0,
+            amount: createMoney(30.0),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
           const cart = new Cart({
@@ -55,8 +56,8 @@ describe("Application :: Cart :: GetCurrentCart", () => {
       describe("and cart doesnt have voucher", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [
-            new LineItem('aaa', 20, 2),
-            new LineItem('bbb', 40, 1),
+            new LineItem('aaa', createMoney(20), 2),
+            new LineItem('bbb', createMoney(40), 1),
           ];
           const cart = new Cart({
             id: 'aaa',
@@ -75,14 +76,14 @@ describe("Application :: Cart :: GetCurrentCart", () => {
       describe("and cart has voucher", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [
-            new LineItem('aaa', 20, 2),
-            new LineItem('bbb', 40, 1),
+            new LineItem('aaa', createMoney(20), 2),
+            new LineItem('bbb', createMoney(40), 1),
           ];
           const voucher = new Voucher({
             id: 'aaa',
             code: "#F121221",
             type: "percentual",
-            amount: 30.0,
+            amount: createMoney(30.0),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
           const cart = new Cart({
@@ -105,14 +106,14 @@ describe("Application :: Cart :: GetCurrentCart", () => {
     describe("When buyerId wasn't found", () => {
       it("returns not found error", async () => {
         const lineItems: LineItems = [
-          new LineItem('aaa', 20, 2),
-          new LineItem('bbb', 40, 1),
+          new LineItem('aaa', createMoney(20), 2),
+          new LineItem('bbb', createMoney(40), 1),
         ];
         const voucher = new Voucher({
           id: 'aaa',
           code: "#F121221",
           type: "percentual",
-          amount: 30.0,
+          amount: createMoney(30.0),
         });
         const appliedVoucher = appliedFactory.fromVoucher(voucher);
         const cart = new Cart({

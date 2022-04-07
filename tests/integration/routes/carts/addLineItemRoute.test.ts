@@ -16,19 +16,19 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
         {
           uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           name: "Gaming Keyboard",
-          price: 79.99,
+          price: 7999,
           available: 30,
         },
         {
           uuid: "92d91715-34ad-449e-9b81-73f1a74ef44e",
           name: "Gaming Chair",
-          price: 299.99,
+          price: 29999,
           available: 30,
         },
         {
           uuid: "8bc94226-3e20-40cb-a507-554fabf36ffa",
           name: "Gaming Mouse",
-          price: 39.99,
+          price: 3999,
           available: 30,
         },
       ]);
@@ -36,7 +36,7 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
         {
           uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-          unitPrice: 79.99,
+          unitPrice: 7999,
           quantity: 2,
           ownerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           ownerType: "cart",
@@ -44,7 +44,7 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
         {
           uuid: "92d91715-34ad-449e-9b81-73f1a74ef44e",
           productId: "92d91715-34ad-449e-9b81-73f1a74ef44e",
-          unitPrice: 299.99,
+          unitPrice: 29999,
           quantity: 2,
           ownerId: "dc60209d-1feb-4465-b936-882e93bcd0c9",
           ownerType: "cart",
@@ -52,7 +52,7 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
         {
           uuid: "8bc94226-3e20-40cb-a507-554fabf36ffa",
           productId: "8bc94226-3e20-40cb-a507-554fabf36ffa",
-          unitPrice: 39.99,
+          unitPrice: 3999,
           quantity: 2,
           ownerId: "dc60209d-1feb-4465-b936-882e93bcd0c9",
           ownerType: "cart",
@@ -109,20 +109,20 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
           uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           code: "TEST1",
           type: "percentual",
-          amount: 40,
+          amount: 4000,
         },
         {
           uuid: "92d91715-34ad-449e-9b81-73f1a74ef44e",
           code: "TEST2",
           type: "fixed",
-          amount: 40,
+          amount: 4000,
         },
         {
           uuid: "8bc94226-3e20-40cb-a507-554fabf36ffa",
           code: "TEST3",
           type: "free shipping",
           amount: 2,
-          minValue: 50,
+          minValue: 5000,
         },
       ]);
       await CartModelFactory.createList([
@@ -131,7 +131,7 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
           buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           voucherId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           type: "fixed",
-          amount: 50,
+          amount: 5000,
         },
         {
           uuid: "dc60209d-1feb-4465-b936-882e93bcd0c9",
@@ -146,7 +146,7 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
           buyerId: "45f815f4-a7fd-4e80-89eb-45113d9537df",
           voucherId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           type: "fixed",
-          amount: 50,
+          amount: 5000,
         },
       ]);
     });
@@ -175,7 +175,7 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
             ],
             appliedVoucher: null,
           };
-
+          
           expect(response.body).toEqual(expected);
         });
       });
@@ -207,7 +207,6 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
             amount: 50,
           },
         };
-
         expect(response.body).toEqual(expected);
       });
     });
@@ -292,13 +291,14 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
       const notFoundError = {
         title: "Not Found Error",
         status: 404,
-        detail: `Couldn't find cart with buyerId: ${data.buyerId} in database. Verify if you are passing the correct buyerId.`,
+        message: `Couldn't find cart with buyerId: ${data.buyerId} in database. Verify if you are passing the correct buyerId.`,
+        detail: "select \"carts\".* from \"carts\" where \"buyerId\" = $1 - invalid input syntax for type uuid: \"7ea29c37-f9e7-4453-bc58-50ed4b5c0fcx\""
       };
 
       expect(response.body).toEqual(notFoundError);
     });
   });
-  describe("When update the cart gives error", () => {
+  describe("When productId wasn't found'", () => {
     it("returns error", async () => {
       const data = {
         buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
@@ -312,7 +312,8 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
       const notFoundError = {
         title: "Not Found Error",
         status: 404,
-        detail: `Couldn't find product with id: ${data.productId} in database. Verify if you are passing the correct productId.`,
+        message: `Couldn't find product with id: ${data.productId} in database. Verify if you are passing the correct productId.`,
+        detail: "select \"products\".* from \"products\" where \"uuid\" = $1 - invalid input syntax for type uuid: \"7ea29c37-f9e7-4453-bc58-50ed4b5c0fcx\""
       };
 
       expect(response.body).toEqual(notFoundError);

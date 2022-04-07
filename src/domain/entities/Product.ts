@@ -1,13 +1,15 @@
+import { Money } from "../valueObjects/Money";
+
 type ProductProps = {
   id: string,
   name: string;
-  price: number;
+  price: Money;
   available: number;
 }
 export default class Product {
   id: string;
   name: string;
-  price: number;
+  price: Money;
   available: number;
 
   constructor({id, name, price, available} : ProductProps) {

@@ -1,6 +1,7 @@
 import { Cart, Voucher, Buyer, Product } from "../../../../../src/domain/entities";
 import { LineItem } from "../../../../../src/domain/entities/Cart";
 import { appliedFactory } from "../../../../../src/domain/factories/AppliedVoucherFactory";
+import { createMoney } from "../../../../../src/domain/valueObjects/Money";
 import { FakeBuyerRepository } from "../../../../support/repositories/FakeBuyerRepository";
 import { FakeCartRepository } from "../../../../support/repositories/FakeCartRepository";
 import { FakeProductRepository } from "../../../../support/repositories/FakeProductRepository";
@@ -24,8 +25,8 @@ describe("Domain :: Entity :: Cart", () => {
         const buyerId = cartFactory.getNextId();
         const lineItemId = cartFactory.getNextId();
 
-        const lineItems = [new LineItem(lineItemId, 20, 2)];
-        const lineItemsAnswer = [new LineItem(lineItemId, 20, 3)];
+        const lineItems = [new LineItem(lineItemId, createMoney(20), 2)];
+        const lineItemsAnswer = [new LineItem(lineItemId, createMoney(20), 3)];
         
         const cart = new Cart({
           id,
@@ -40,11 +41,11 @@ describe("Domain :: Entity :: Cart", () => {
         });
         const lineItemData = {
           productId: lineItemId,
-          price: 20
+          price: createMoney(20)
         }
         cart.addLineItem(lineItemData)
 
-        expect(cart).toEqual(answer)
+        expect(JSON.stringify(cart)).toEqual(JSON.stringify(answer))
       });
     });
 
@@ -65,7 +66,7 @@ describe("Domain :: Entity :: Cart", () => {
         const lineItemId = cartFactory.getNextId();
 
         const lineItems : Array<LineItem> = [];
-        const lineItemsAnswer = [new LineItem(lineItemId, 20, 1)];
+        const lineItemsAnswer = [new LineItem(lineItemId, createMoney(20), 1)];
         
         const cart = new Cart({
           id,
@@ -80,11 +81,11 @@ describe("Domain :: Entity :: Cart", () => {
         });
         const lineItemData = {
           productId: lineItemId,
-          price: 20
+          price: createMoney(20)
         }
         cart.addLineItem(lineItemData)
 
-        expect(cart).toEqual(answer)
+        expect(JSON.stringify(cart)).toEqual(JSON.stringify(answer))
       });
     });
   });
@@ -107,14 +108,14 @@ describe("Domain :: Entity :: Cart", () => {
           id: voucherFactory.getNextId(),
           code: "XESBQ",
           type: "fixed",
-          amount: 50,
+          amount: createMoney(50),
         });
 
         const id = cartFactory.getNextId();
         const buyerId = cartFactory.getNextId();
         const lineItemId = cartFactory.getNextId();
 
-        const lineItems = [new LineItem(lineItemId, 20, 3)];
+        const lineItems = [new LineItem(lineItemId, createMoney(20), 3)];
         const appliedVoucher = appliedFactory.fromVoucher(voucher);
 
         const cart = new Cart({
@@ -152,14 +153,14 @@ describe("Domain :: Entity :: Cart", () => {
           id: voucherFactory.getNextId(),
           code: "XESBQ",
           type: "fixed",
-          amount: 50,
+          amount: createMoney(50),
         });
 
         const voucher2 = new Voucher({
           id: voucherFactory.getNextId(),
           code: "XESSQ",
           type: "percentual",
-          amount: 50,
+          amount: createMoney(50),
         });
 
         
@@ -167,7 +168,7 @@ describe("Domain :: Entity :: Cart", () => {
         const buyerId = cartFactory.getNextId();
         const lineItemId = cartFactory.getNextId();
         
-        const lineItems = [new LineItem(lineItemId, 20, 3)];
+        const lineItems = [new LineItem(lineItemId, createMoney(20), 3)];
         const appliedVoucher = appliedFactory.fromVoucher(voucher);
         const appliedVoucher2 = appliedFactory.fromVoucher(voucher2);
         
@@ -206,7 +207,7 @@ describe("Domain :: Entity :: Cart", () => {
         const buyerId = cartFactory.getNextId();
         const lineItemId = cartFactory.getNextId();
 
-        const lineItems = [new LineItem(lineItemId, 20, 3)];
+        const lineItems = [new LineItem(lineItemId, createMoney(20), 3)];
         
         const cart = new Cart({
           id,
@@ -235,8 +236,8 @@ describe("Domain :: Entity :: Cart", () => {
         const buyerId = cartFactory.getNextId();
         const lineItemId = cartFactory.getNextId();
 
-        const lineItems = [new LineItem(lineItemId, 20, 3)];
-        const lineItemsAnswer = [new LineItem(lineItemId, 20, 2)];
+        const lineItems = [new LineItem(lineItemId, createMoney(20), 3)];
+        const lineItemsAnswer = [new LineItem(lineItemId, createMoney(20), 2)];
         
         const cart = new Cart({
           id,
@@ -252,7 +253,7 @@ describe("Domain :: Entity :: Cart", () => {
 
         cart.removeLineItem(lineItemId)
 
-        expect(cart).toEqual(answer)
+        expect(JSON.stringify(cart)).toEqual(JSON.stringify(answer))
       });
     });
 
@@ -272,7 +273,7 @@ describe("Domain :: Entity :: Cart", () => {
         const buyerId = cartFactory.getNextId();
         const lineItemId = cartFactory.getNextId();
 
-        const lineItems = [new LineItem(lineItemId, 20, 1)];
+        const lineItems = [new LineItem(lineItemId, createMoney(20), 1)];
         const lineItemsAnswer: Array<LineItem> = [];
         
         const cart = new Cart({
@@ -309,7 +310,7 @@ describe("Domain :: Entity :: Cart", () => {
         const buyerId = cartFactory.getNextId();
         const lineItemId = cartFactory.getNextId();
 
-        const lineItems = [new LineItem(lineItemId, 20, 3)];
+        const lineItems = [new LineItem(lineItemId, createMoney(20), 3)];
 
         const cart = new Cart({
           id,
@@ -345,7 +346,7 @@ describe("Domain :: Entity :: Cart", () => {
           id: voucherFactory.getNextId(),
           code: "XESBQ",
           type: "fixed",
-          amount: 50,
+          amount: createMoney(50),
         });
 
         
@@ -353,7 +354,7 @@ describe("Domain :: Entity :: Cart", () => {
         const buyerId = cartFactory.getNextId();
         const lineItemId = cartFactory.getNextId();
         
-        const lineItems = [new LineItem(lineItemId, 20, 3)];
+        const lineItems = [new LineItem(lineItemId, createMoney(20), 3)];
         const appliedVoucher = appliedFactory.fromVoucher(voucher);
         
         const cart = new Cart({

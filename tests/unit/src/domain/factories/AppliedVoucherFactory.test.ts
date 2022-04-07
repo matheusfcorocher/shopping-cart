@@ -1,5 +1,6 @@
 import { Voucher } from "../../../../../src/domain/entities";
 import { appliedFactory } from "../../../../../src/domain/factories/AppliedVoucherFactory";
+import { createMoney } from "../../../../../src/domain/valueObjects/Money";
 import { FakeVoucherRepository } from "../../../../support/repositories/FakeVoucherRepository";
 
 describe("Domain :: Factories :: AppliedVoucherFactory", () => {
@@ -12,7 +13,7 @@ describe("Domain :: Factories :: AppliedVoucherFactory", () => {
           id: voucherFactory.getNextId(),
           code: "#F121221",
           type: "percentual",
-          amount: 30.0,
+          amount: createMoney(30.0),
         });
         const result = appliedFactory.fromVoucher(voucher);
 
@@ -27,7 +28,7 @@ describe("Domain :: Factories :: AppliedVoucherFactory", () => {
           id: voucherFactory.getNextId(),
           code: "#F121221",
           type: "fixed",
-          amount: 30.0,
+          amount: createMoney(30.0),
         });
         const result = appliedFactory.fromVoucher(voucher);
 
@@ -43,8 +44,8 @@ describe("Domain :: Factories :: AppliedVoucherFactory", () => {
             id: voucherFactory.getNextId(),
             code: "#F121221",
             type: "free shipping",
-            amount: 30.0,
-            minValue: 20,
+            amount: createMoney(30.0),
+            minValue: createMoney(20),
           });
           const result = appliedFactory.fromVoucher(voucher);
 
@@ -59,7 +60,7 @@ describe("Domain :: Factories :: AppliedVoucherFactory", () => {
             id: voucherFactory.getNextId(),
             code: "#F121221",
             type: "free shipping",
-            amount: 30.0,
+            amount: createMoney(30.0),
           });
           const error = new Error(
             "minValue field not found in free shipping voucher"

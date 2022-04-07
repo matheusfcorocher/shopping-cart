@@ -1,4 +1,5 @@
 import { Product } from "../../../../../src/domain/entities";
+import { createMoney } from "../../../../../src/domain/valueObjects/Money";
 import { FakeProductRepository } from "../../../../support/repositories/FakeProductRepository";
 
 describe("Domain :: Entity :: Product", () => {
@@ -10,7 +11,7 @@ describe("Domain :: Entity :: Product", () => {
         const product = new Product({
           id: productFactory.getNextId(),
           name: "Chocolate",
-          price: 20,
+          price: createMoney(20),
           available: 100,
           }
         );
@@ -24,7 +25,7 @@ describe("Domain :: Entity :: Product", () => {
         const product = new Product({
           id: productFactory.getNextId(),
           name: "Chocolate",
-          price: 20,
+          price: createMoney(20),
           available: 0,
           }
         );

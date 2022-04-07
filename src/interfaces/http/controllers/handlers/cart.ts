@@ -20,13 +20,16 @@ const addLineItemHandler = async (
     const httpResponseError = new HttpResponseError({
       title: error.title,
       status: error.status,
+      message: error.message,
       detail: error.detail,
-    });  
+    });
     switch (error.status) {
       case 404:
         return reply.status(404).send(httpResponseError.toJson());
-      default:  
-        return reply.status(500).send(httpResponseError);
+      default:
+        httpResponseError.title = "Internal Server Error";
+        httpResponseError.status = 500;
+        return reply.status(500).send(httpResponseError.toJson());
     }
   }
 };
@@ -46,10 +49,19 @@ const applyVoucherHandler = async (
     const result = await applyVoucher.execute(buyerId, code);
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
-    switch (error.CODE) {
+    const httpResponseError = new HttpResponseError({
+      title: error.title,
+      status: error.status,
+      message: error.message,
+      detail: error.detail,
+    });
+    switch (error.status) {
+      case 404:
+        return reply.status(404).send(httpResponseError.toJson());
       default:
-        const { message, details } = error;
-        return reply.status(500).send({ message, details });
+        httpResponseError.title = "Internal Server Error";
+        httpResponseError.status = 500;
+        return reply.status(500).send(httpResponseError.toJson());
     }
   }
 };
@@ -58,7 +70,7 @@ const getCurrentCartHandler = async (
   req: FastifyRequest<{
     Params: {
       buyerId: string;
-    }
+    };
   }>,
   reply: FastifyReply
 ) => {
@@ -68,10 +80,19 @@ const getCurrentCartHandler = async (
     const result = await getCurrentCart.execute(buyerId);
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
-    switch (error.CODE) {
+    const httpResponseError = new HttpResponseError({
+      title: error.title,
+      status: error.status,
+      message: error.message,
+      detail: error.detail,
+    });
+    switch (error.status) {
+      case 404:
+        return reply.status(404).send(httpResponseError.toJson());
       default:
-        const { message, details } = error;
-        return reply.status(500).send({ message, details });
+        httpResponseError.title = "Internal Server Error";
+        httpResponseError.status = 500;
+        return reply.status(500).send(httpResponseError.toJson());
     }
   }
 };
@@ -91,10 +112,19 @@ const removeLineItemHandler = async (
     const result = await removeLineItem.execute(buyerId, productId);
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
-    switch (error.CODE) {
+    const httpResponseError = new HttpResponseError({
+      title: error.title,
+      status: error.status,
+      message: error.message,
+      detail: error.detail,
+    });
+    switch (error.status) {
+      case 404:
+        return reply.status(404).send(httpResponseError.toJson());
       default:
-        const { message, details } = error;
-        return reply.status(500).send({ message, details });
+        httpResponseError.title = "Internal Server Error";
+        httpResponseError.status = 500;
+        return reply.status(500).send(httpResponseError.toJson());
     }
   }
 };
@@ -103,7 +133,7 @@ const removeVoucherHandler = async (
   req: FastifyRequest<{
     Params: {
       buyerId: string;
-    }
+    };
   }>,
   reply: FastifyReply
 ) => {
@@ -113,11 +143,27 @@ const removeVoucherHandler = async (
     const result = await removeVoucher.execute(buyerId);
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
-    switch (error.CODE) {
+    const httpResponseError = new HttpResponseError({
+      title: error.title,
+      status: error.status,
+      message: error.message,
+      detail: error.detail,
+    });
+    switch (error.status) {
+      case 404:
+        return reply.status(404).send(httpResponseError.toJson());
       default:
-        return reply.status(500).send(error);
+        httpResponseError.title = "Internal Server Error";
+        httpResponseError.status = 500;
+        return reply.status(500).send(httpResponseError.toJson());
     }
   }
 };
 
-export { addLineItemHandler, applyVoucherHandler, getCurrentCartHandler, removeLineItemHandler, removeVoucherHandler};
+export {
+  addLineItemHandler,
+  applyVoucherHandler,
+  getCurrentCartHandler,
+  removeLineItemHandler,
+  removeVoucherHandler,
+};

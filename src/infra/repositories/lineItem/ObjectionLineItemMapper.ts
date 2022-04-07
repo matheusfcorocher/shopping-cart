@@ -1,4 +1,5 @@
 import { LineItem } from "../../../domain/entities/Cart";
+import { createMoney } from "../../../domain/valueObjects/Money";
 import { LineItemModel } from "../../database/knex/models/LineItemModel";
 
 interface AdditionalProps {
@@ -11,7 +12,7 @@ const ObjectionLineItemMapper = {
   toEntity(lineItemModel: LineItemModel) {
     const { productId, unitPrice, quantity } = lineItemModel;
 
-    return new LineItem(productId, unitPrice, quantity);
+    return new LineItem(productId, createMoney(unitPrice), quantity);
   },
   toDatabase(lineItem: LineItem, additionalProps: AdditionalProps) {
     const { productId, unitPrice, quantity } = lineItem;
@@ -19,7 +20,7 @@ const ObjectionLineItemMapper = {
     return {
       uuid,
       productId,
-      unitPrice,
+      unitPrice: unitPrice.getAmount(),
       quantity,
       ownerId,
       ownerType

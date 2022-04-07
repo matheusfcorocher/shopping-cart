@@ -1,4 +1,5 @@
 import { Voucher } from "../../../../../../src/domain/entities";
+import { createMoney } from "../../../../../../src/domain/valueObjects/Money";
 import { VoucherModel } from "../../../../../../src/infra/database/knex/models/VoucherModel";
 import {
   ObjectionVoucherMapper,
@@ -21,11 +22,11 @@ describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
           id: uuid,
           code,
           type,
-          amount,
+          amount: createMoney(amount),
         });
 
-        expect(ObjectionVoucherMapper.toEntity(voucherModel)).toEqual(
-          answer
+        expect(JSON.stringify(ObjectionVoucherMapper.toEntity(voucherModel))).toEqual(
+          JSON.stringify(answer)
         );
       });
     });
@@ -44,11 +45,11 @@ describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
           id: uuid,
           code,
           type,
-          amount,
+          amount: createMoney(amount),
         });
 
-        expect(ObjectionVoucherMapper.toEntity(voucherModel)).toEqual(
-          answer
+        expect(JSON.stringify(ObjectionVoucherMapper.toEntity(voucherModel))).toEqual(
+          JSON.stringify(answer)
         );
       });
     });
@@ -59,8 +60,8 @@ describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
           uuid: "TEST-TEST",
           code: "TEST",
           type: "free shipping",
-          amount: 20,
-          minValue: 20,
+          amount: 2000,
+          minValue: 2000,
         }
         voucherModel.$setJson(voucherObject);
         const { uuid, code, type, amount, minValue } = voucherObject;
@@ -68,12 +69,12 @@ describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
           id: uuid,
           code,
           type,
-          amount,
-          minValue,
+          amount: createMoney(amount),
+          minValue: createMoney(minValue!),
         });
 
-        expect(ObjectionVoucherMapper.toEntity(voucherModel)).toEqual(
-          answer
+        expect(JSON.stringify(ObjectionVoucherMapper.toEntity(voucherModel))).toEqual(
+          JSON.stringify(answer)
         );
       });
     });
@@ -93,7 +94,7 @@ describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
           id: uuid,
           code,
           type,
-          amount,
+          amount: createMoney(amount),
         });
         const answer = {
           uuid: "TEST-TEST",
@@ -119,7 +120,7 @@ describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
           id: uuid,
           code,
           type,
-          amount,
+          amount: createMoney(amount),
         });
         const answer = {
           uuid: "TEST-TEST",
@@ -146,8 +147,8 @@ describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
           id: uuid,
           code,
           type,
-          amount,
-          minValue,
+          amount: createMoney(amount),
+          minValue: createMoney(minValue!),
         });
         const answer = {
           uuid,

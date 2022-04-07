@@ -88,7 +88,7 @@ class ObjectionOrderRepository implements OrderRepository {
     const data = {
       uuid,
       productId,
-      unitPrice,
+      unitPrice: unitPrice.getAmount(),
       quantity,
     };
     return orderModel

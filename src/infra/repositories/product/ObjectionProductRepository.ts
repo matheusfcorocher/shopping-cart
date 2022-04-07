@@ -27,9 +27,18 @@ class ObjectionProductRepository implements ProductRepository {
 
   public async update(id: string, data: ProductDataProps): Promise<Product> {
     const product = await this.getProductModelById(id);
+    const {
+      name,
+      price,
+      available
+    } = data;
     return product
       .$query()
-      .patchAndFetch(data)
+      .patchAndFetch({
+        name,
+        price: price?.getAmount(),
+        available
+      })
       .then((result) => ObjectionProductMapper.toEntity(result));
   }
 
@@ -39,18 +48,18 @@ class ObjectionProductRepository implements ProductRepository {
         uuid: id,
       })
       .then((data) => {
-        if(!data)
-          throw new Error('Not Found Error')
+        if (!data) throw new Error("Product Model is undefined.");
         return data!;
       })
-      .catch((err) => {
+      .catch((error) => {
         const notFoundError = new DbError({
           title: "Not Found Error",
           status: 404,
-          detail: `Couldn't find product with id: ${id} in database. Verify if you are passing the correct productId.`,
-          stack: err.stack,
+          message: `Couldn't find product with id: ${id} in database. Verify if you are passing the correct productId.`,
+          detail: error.message,
         });
-        return Promise.reject(notFoundError);
+
+        throw notFoundError;
       });
   }
 }

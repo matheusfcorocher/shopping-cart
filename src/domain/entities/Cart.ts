@@ -1,12 +1,13 @@
 import { AppliedVoucher } from "../valueObjects/AppliedVoucher";
+import { createMoney, Money } from "../valueObjects/Money";
 
 type LineItems = Array<LineItem>;
 class LineItem {
   productId: string;
-  unitPrice: number;
+  unitPrice: Money;
   quantity: number;
 
-  constructor(productId: string, unitPrice: number, quantity: number) {
+  constructor(productId: string, unitPrice: Money, quantity: number) {
     this.productId = productId;
     this.unitPrice = unitPrice;
     this.quantity = quantity;
@@ -22,7 +23,7 @@ type CartProps = {
 
 type LineItemDataProps = {
   productId: string;
-  price: number;
+  price: Money;
 };
 export default class Cart {
   id: string;
@@ -37,33 +38,33 @@ export default class Cart {
     this.appliedVoucher = appliedVoucher;
   }
 
-  public get discount(): number {
+  public get discount(): Money {
     return this.appliedVoucher
       ? this.appliedVoucher.apply(this.shipping, this.subtotal)
-      : 0;
+      : createMoney(0);
   }
 
-  public get subtotal(): number {
+  public get subtotal(): Money {
     return this.lineItems
       ? this.lineItems.reduce(
-          (acc: number, item: LineItem) => acc + item.quantity * item.unitPrice,
-          0
+          (acc: Money, item: LineItem) => acc.add(item.unitPrice.multiply(item.quantity)),
+          createMoney(0)
         )
-      : 0;
+      :createMoney(0);
   }
 
-  public get shipping(): number {
-    if (this.subtotal > 400) {
-      return 0;
+  public get shipping(): Money {
+    if (this.subtotal.greaterThanOrEqual(createMoney(40000))) {
+      return createMoney(0);
     }
     const shippingWeight: number = this.calculateCartWeight();
-    if (shippingWeight <= 10) return 30;
+    if (shippingWeight <= 10) return createMoney(3000);
 
     return this.calculateShippingCost(shippingWeight);
   }
 
-  public get total(): number {
-    return this.subtotal + this.shipping - this.discount;
+  public get total(): Money {
+    return this.subtotal.add(this.shipping).subtract(this.discount);
   }
 
   public addLineItem(lineItemData : LineItemDataProps) : void {
@@ -109,13 +110,12 @@ export default class Cart {
       : 0;
   }
 
-  private calculateShippingCost(weight: number): number {
+  private calculateShippingCost(weight: number): Money {
     //If weight is above 10kg, will charge $7 for each
     //5kg that cart has
-    return Math.floor((weight - 10) / 5) * 7 + 30;
+    return ((createMoney(weight).subtract(createMoney(10))).divide(5)).multiply(700).add(createMoney(3000));
   }
 
- 
 }
 
 export { LineItems, LineItem, CartProps };

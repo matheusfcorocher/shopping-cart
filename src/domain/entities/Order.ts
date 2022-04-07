@@ -1,3 +1,4 @@
+import { createMoney, Money } from "../valueObjects/Money";
 import { LineItem, LineItems } from "./Cart";
 
 type PaymentMethod =
@@ -10,7 +11,7 @@ type PaymentMethod =
 interface OrderData {
   buyerId: string;
   lineItems: LineItems;
-  discount: number;
+  discount: Money;
   paymentMethod: PaymentMethod;
 }
 
@@ -22,10 +23,10 @@ export default class Order {
   id: string;
   buyerId: string;
   lineItems: LineItems;
-  discount: number;
+  discount: Money;
   paymentMethod: PaymentMethod;
 
-  constructor({ id,  buyerId, lineItems, discount, paymentMethod}: OrderProps) {
+  constructor({ id, buyerId, lineItems, discount, paymentMethod }: OrderProps) {
     this.id = id;
     this.buyerId = buyerId;
     this.lineItems = lineItems;
@@ -33,27 +34,28 @@ export default class Order {
     this.paymentMethod = paymentMethod;
   }
 
-  public get subtotal(): number {
+  public get subtotal(): Money {
     return this.lineItems
       ? this.lineItems.reduce(
-          (acc: number, item: LineItem) => acc + item.quantity * item.unitPrice,
-          0
+          (acc: Money, item: LineItem) =>
+            acc.add(item.unitPrice.multiply(item.quantity)),
+          createMoney(0)
         )
-      : 0;
+      : createMoney(0);
   }
 
-  public get shipping(): number {
-    if (this.subtotal > 400) {
-      return 0;
+  public get shipping(): Money {
+    if (this.subtotal.greaterThanOrEqual(createMoney(40000))) {
+      return createMoney(0);
     }
     const shippingWeight: number = this.calculateCartWeight();
-    if (shippingWeight <= 10) return 30;
+    if (shippingWeight <= 10) return createMoney(3000);
 
     return this.calculateShippingCost(shippingWeight);
   }
 
-  public get total(): number {
-    return this.subtotal + this.shipping - this.discount;
+  public get total(): Money {
+    return this.subtotal.add(this.shipping).subtract(this.discount);
   }
 
   private calculateCartWeight(): number {
@@ -65,10 +67,10 @@ export default class Order {
       : 0;
   }
 
-  private calculateShippingCost(weight: number): number {
+  private calculateShippingCost(weight: number): Money {
     //If weight is above 10kg, will charge $7 for each
     //5kg that cart has
-    return Math.floor((weight - 10) / 5) * 7 + 30;
+    return ((createMoney(weight).subtract(createMoney(10))).divide(5)).multiply(700).add(createMoney(3000));
   }
 }
 

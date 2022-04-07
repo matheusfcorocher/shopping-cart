@@ -1,4 +1,5 @@
 import { Voucher } from "../../../../../../src/domain/entities";
+import { createMoney } from "../../../../../../src/domain/valueObjects/Money";
 import ObjectionVoucherRepository from "../../../../../../src/infra/repositories/voucher/ObjectionVoucherRepository";
 import VoucherModelFactory from "../../../../../support/factories/models/VoucherModelFactory";
 
@@ -55,26 +56,24 @@ describe("Infra :: Voucher :: ObjectionVoucherRepository", () => {
               id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
               code: "TEST1",
               type: "percentual",
-              amount: 40,
-              minValue: null,
+              amount: createMoney(40),
             }),
             new Voucher({
               id: "92d91715-34ad-449e-9b81-73f1a74ef44e",
               code: "TEST2",
               type: "fixed",
-              amount: 40,
-              minValue: null,
+              amount: createMoney(40),
             }),
             new Voucher({
               id: "8bc94226-3e20-40cb-a507-554fabf36ffa",
               code: "TEST3",
               type: "free shipping",
-              amount: 2,
-              minValue: 50,
+              amount: createMoney(2),
+              minValue: createMoney(50),
             }),
           ];
 
-          expect(vouchers).toEqual(expect.arrayContaining(expected));
+          expect(JSON.stringify(vouchers)).toEqual(JSON.stringify(expected));
         });
       });
     });
@@ -100,11 +99,10 @@ describe("Infra :: Voucher :: ObjectionVoucherRepository", () => {
           id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           code: "TEST1",
           type: "percentual",
-          amount: 40,
-          minValue: null,
+          amount: createMoney(40),
         });
 
-        expect(voucher).toEqual(expected);
+        expect(JSON.stringify(voucher)).toEqual(JSON.stringify(expected));
       });
     });
     describe("When doesn't find a voucher by id", () => {
@@ -130,18 +128,17 @@ describe("Infra :: Voucher :: ObjectionVoucherRepository", () => {
           id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           code: "TEST1",
           type: "percentual",
-          amount: 40,
-          minValue: null,
+          amount: createMoney(40),
         });
 
-        expect(voucher).toEqual(expected);
+        expect(JSON.stringify(voucher)).toEqual(JSON.stringify(expected));
       });
     });
     describe("When doesn't find a voucher by code", () => {
       it("returns error", async () => {
         const code = "XMAS2023";
         const notFoundError = new Error("Not Found Error");
-        notFoundError.message = `Voucher with code ${code} can't be found.`;
+        notFoundError.message = `Couldn't find voucher with code: ${code} in database. Verify if you are passing the correct code.`;
 
         await expect(() => voucherRepository.getVoucherByCode(code)).rejects.toThrow(
           notFoundError

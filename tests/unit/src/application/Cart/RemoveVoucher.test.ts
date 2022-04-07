@@ -3,6 +3,7 @@ import RemoveVoucher from "../../../../../src/application/Cart/RemoveVoucher";
 import { Cart, Voucher } from "../../../../../src/domain/entities";
 import { LineItems, LineItem } from "../../../../../src/domain/entities/Cart";
 import { appliedFactory } from "../../../../../src/domain/factories/AppliedVoucherFactory";
+import { createMoney } from "../../../../../src/domain/valueObjects/Money";
 import { FakeCartRepository } from "../../../../support/repositories/FakeCartRepository";
 import { FakeVoucherRepository } from "../../../../support/repositories/FakeVoucherRepository";
 
@@ -22,7 +23,7 @@ describe("Application :: Cart :: RemoveVoucher", () => {
             id: 'aaa',
             code: "XESBQ",
             type: "fixed",
-            amount: 50,
+            amount: createMoney(50),
           });
           const vouchers = [voucher];
 
@@ -51,7 +52,7 @@ describe("Application :: Cart :: RemoveVoucher", () => {
             id: 'aaa',
             code: "XESBQ",
             type: "fixed",
-            amount: 50,
+            amount: createMoney(50),
           });
 
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
@@ -90,8 +91,8 @@ describe("Application :: Cart :: RemoveVoucher", () => {
       describe("and cart doesnt have voucher", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [
-            new LineItem('aaa', 20, 2),
-            new LineItem('bbb', 40, 1),
+            new LineItem('aaa', createMoney(20), 2),
+            new LineItem('bbb', createMoney(40), 1),
           ];
           const cart = new Cart({
             id: 'aaa',
@@ -103,7 +104,7 @@ describe("Application :: Cart :: RemoveVoucher", () => {
             id: 'aaa',
             code: "XESBQ",
             type: "fixed",
-            amount: 50,
+            amount: createMoney(50),
           });
           const vouchers = [voucher];
 
@@ -128,14 +129,14 @@ describe("Application :: Cart :: RemoveVoucher", () => {
       describe("and cart has voucher", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [
-            new LineItem('aaa', 20, 2),
-            new LineItem('bbb', 40, 1),
+            new LineItem('aaa', createMoney(20), 2),
+            new LineItem('bbb', createMoney(40), 1),
           ];
           const voucher = new Voucher({
             id: 'aaa',
             code: "XESBQ",
             type: "fixed",
-            amount: 50,
+            amount: createMoney(50),
           });
 
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
@@ -183,7 +184,7 @@ describe("Application :: Cart :: RemoveVoucher", () => {
           id: 'aaa',
           code: "XESBQ",
           type: "fixed",
-          amount: 50,
+          amount: createMoney(50),
         });
         const vouchers = [voucher];
 
@@ -222,7 +223,7 @@ describe("Application :: Cart :: RemoveVoucher", () => {
           id: 'aaa',
           code: "XESBQ",
           type: "fixed",
-          amount: 50,
+          amount: createMoney(50),
         });
         const vouchers = [voucher];
 

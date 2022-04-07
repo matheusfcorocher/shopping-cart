@@ -1,5 +1,6 @@
 import { Order } from "../../../domain/entities";
 import { LineItems } from "../../../domain/entities/Cart";
+import { createMoney } from "../../../domain/valueObjects/Money";
 import { OrderModel } from "../../database/knex/models/OrderModel";
 
 const ObjectionOrderMapper = {
@@ -15,7 +16,7 @@ const ObjectionOrderMapper = {
       id: uuid,
       buyerId,
       lineItems,
-      discount,
+      discount: createMoney(discount),
       paymentMethod,
     });
   },
@@ -24,7 +25,7 @@ const ObjectionOrderMapper = {
     return {
       uuid: id,
       buyerId,
-      discount,
+      discount: discount.getAmount(),
       paymentMethod,
     };
   },

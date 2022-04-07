@@ -1,4 +1,5 @@
 import { Product } from "../../../domain/entities";
+import { createMoney } from "../../../domain/valueObjects/Money";
 import { ProductModel } from "../../database/knex/models/ProductModel";
 
 const ObjectionProductMapper = {
@@ -8,7 +9,7 @@ const ObjectionProductMapper = {
     return new Product({
       id: uuid,
       name,
-      price,
+      price: createMoney(price),
       available,
     });
   },
@@ -17,7 +18,7 @@ const ObjectionProductMapper = {
     return {
       uuid: id,
       name,
-      price,
+      price: price.getAmount(),
       available,
     };
   },

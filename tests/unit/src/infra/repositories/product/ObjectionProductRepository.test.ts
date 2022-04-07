@@ -1,4 +1,5 @@
 import { Product } from "../../../../../../src/domain/entities";
+import { createMoney } from "../../../../../../src/domain/valueObjects/Money";
 import ObjectionProductRepository from "../../../../../../src/infra/repositories/product/ObjectionProductRepository";
 import { DbError } from "../../../../../../src/lib/CustomError";
 import ProductModelFactory from "../../../../../support/factories/models/ProductModelFactory";
@@ -13,19 +14,19 @@ describe("Infra :: Product :: ObjectionProductRepository", () => {
       {
         uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
         name: "Gaming Keyboard",
-        price: 79.99,
+        price: 7999,
         available: 30,
       },
       {
         uuid: "92d91715-34ad-449e-9b81-73f1a74ef44e",
         name: "Gaming Chair",
-        price: 299.99,
+        price: 29999,
         available: 30,
       },
       {
         uuid: "8bc94226-3e20-40cb-a507-554fabf36ffa",
         name: "Gaming Mouse",
-        price: 39.99,
+        price: 3999,
         available: 30,
       },
     ]);
@@ -54,24 +55,24 @@ describe("Infra :: Product :: ObjectionProductRepository", () => {
             new Product({
               id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
               name: "Gaming Keyboard",
-              price: 79.99,
+              price: createMoney(7999),
               available: 30,
             }),
             new Product({
               id: "92d91715-34ad-449e-9b81-73f1a74ef44e",
               name: "Gaming Chair",
-              price: 299.99,
+              price: createMoney(29999),
               available: 30,
             }),
             new Product({
               id: "8bc94226-3e20-40cb-a507-554fabf36ffa",
               name: "Gaming Mouse",
-              price: 39.99,
+              price: createMoney(3999),
               available: 30,
             }),
           ];
 
-          expect(products).toEqual(expect.arrayContaining(expected));
+          expect(JSON.stringify(products)).toEqual(JSON.stringify(expected));
         });
       });
     });
@@ -96,11 +97,11 @@ describe("Infra :: Product :: ObjectionProductRepository", () => {
         const expected = new Product({
           id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           name: "Gaming Keyboard",
-          price: 79.99,
+          price: createMoney(7999),
           available: 30,
         });
 
-        expect(product).toEqual(expected);
+        expect(JSON.stringify(product)).toEqual(JSON.stringify(expected));
       });
     });
     describe("When doesn't find a product by id", () => {
@@ -109,7 +110,8 @@ describe("Infra :: Product :: ObjectionProductRepository", () => {
         const notFoundError = new DbError({
           title: "Not Found Error",
           status: 404,
-          detail: `Couldn't find product with id: ${id} in database. Verify if you are passing the correct productId.`,
+          message: `Couldn't find product with id: ${id} in database. Verify if you are passing the correct productId.`,
+          detail: "",
           // stack: err.stack,
         });
 
@@ -131,11 +133,11 @@ describe("Infra :: Product :: ObjectionProductRepository", () => {
         const expected = new Product({
           id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           name: "Gaming Keyboard",
-          price: 79.99,
+          price: createMoney(7999),
           available: 28,
         });
 
-        expect(product).toEqual(expected);
+        expect(JSON.stringify(product)).toEqual(JSON.stringify(expected));
       });
     });
     describe("When doesn't find a product by id", () => {
@@ -147,7 +149,8 @@ describe("Infra :: Product :: ObjectionProductRepository", () => {
         const notFoundError = new DbError({
           title: "Not Found Error",
           status: 404,
-          detail: `Couldn't find product with id: ${id} in database. Verify if you are passing the correct productId.`,
+          message: `Couldn't find product with id: ${id} in database. Verify if you are passing the correct productId.`,
+          detail: "",
           // stack: err.stack,
         });
 
