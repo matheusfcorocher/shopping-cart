@@ -1,19 +1,15 @@
 import supertest from "supertest";
 import { app } from "../../../../app";
-import { CartModel } from "../../../../src/infra/database/knex/models/CartModel";
-import ObjectionCartRepository from "../../../../src/infra/repositories/cart/ObjectionCartRepository";
-import { DbError } from "../../../../src/lib/CustomError";
 import BuyerModelFactory from "../../../support/factories/models/BuyerModelFactory";
 import CartModelFactory from "../../../support/factories/models/CartModelFactory";
 import LineItemModelFactory from "../../../support/factories/models/LineItemModelFactory";
 import ProductModelFactory from "../../../support/factories/models/ProductModelFactory";
 import VoucherModelFactory from "../../../support/factories/models/VoucherModelFactory";
-import mockModel from "../../../support/objection";
 
 const { setupIntegrationTest } = require("../../../support/setup");
-const cartRepository = new ObjectionCartRepository();
-describe("Interfaces :: Cart :: Routes :: GetCurrentCart", () => {
-  describe("API :: GET /api/carts/:buyerId", () => {
+
+describe("Interfaces :: Cart :: Routes :: RemoveLineItem", () => {
+  describe("API :: PUT /api/carts/removeLineItem", () => {
     setupIntegrationTest();
     beforeEach(async () => {
       await ProductModelFactory.createList([
@@ -41,7 +37,7 @@ describe("Interfaces :: Cart :: Routes :: GetCurrentCart", () => {
           uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           unitPrice: 7999,
-          quantity: 2,
+          quantity: 1,
           ownerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           ownerType: "cart",
         },
@@ -157,92 +153,65 @@ describe("Interfaces :: Cart :: Routes :: GetCurrentCart", () => {
 
     describe("When cart doesn't have any line item", () => {
       describe("and cart doesnt have voucher", () => {
-        it("returns correct cart", async () => {
+        it("returns internal server error", async () => {
           const data = {
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
+            productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           };
           const response = await supertest(app.server)
-            .get("/api/carts/" + data.buyerId)
-            .expect(200);
+            .put("/api/carts/removeLineItem")
+            .send(data)
+            .set("Content-type", "application/json")
+            .expect(500);
 
-          const expected = {
-            id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
-            buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
-            lineItems: [],
-            appliedVoucher: null,
-            discount: 0,
-            shipping: 0,
-            subtotal: 0,
-            total: 0,
+          const notFoundError = {
+            title: "Internal Server Error",
+            status: 500,
+            message: `Item with productId ${data.productId} wasn't found in cart!`,
           };
 
-          expect(response.body).toEqual(expected);
+          expect(response.body).toEqual(notFoundError);
         });
       });
       describe("and cart has voucher", () => {
-        it("returns correct cart", async () => {
+        it("returns internal server error", async () => {
           const data = {
             buyerId: "45f815f4-a7fd-4e80-89eb-45113d9537df",
+            productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           };
+
           const response = await supertest(app.server)
-            .get("/api/carts/" + data.buyerId)
-            .expect(200);
+            .put("/api/carts/removeLineItem")
+            .send(data)
+            .set("Content-type", "application/json")
+            .expect(500);
 
-          const expected = {
-            id: "45f815f4-a7fd-4e80-89eb-45113d9537df",
-            buyerId: "45f815f4-a7fd-4e80-89eb-45113d9537df",
-            lineItems: [],
-            appliedVoucher: {
-              voucherId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-              type: "fixed",
-              amount: 50,
-            },
-            discount: 50,
-            shipping: 0,
-            subtotal: 0,
-            total: 0,
+          const notFoundError = {
+            title: "Internal Server Error",
+            status: 500,
+            message: `Item with productId ${data.productId} wasn't found in cart!`,
           };
 
-          expect(response.body).toEqual(expected);
+          expect(response.body).toEqual(notFoundError);
         });
       });
     });
-
     describe("When cart has line items", () => {
       describe("and cart doesnt have voucher", () => {
-        describe("returns correct cart", () => {
-          it("returns correct all other properties without lineItems", async () => {
-            const data = {
-              buyerId: "dc60209d-1feb-4465-b936-882e93bcd0c9",
-            };
-            const response = await supertest(app.server)
-              .get("/api/carts/" + data.buyerId)
-              .expect(200);
-            const expected = {
-              id: "dc60209d-1feb-4465-b936-882e93bcd0c9",
-              buyerId: "dc60209d-1feb-4465-b936-882e93bcd0c9",
-              appliedVoucher: null,
-              discount: 0,
-              shipping: 0,
-              subtotal: 679.96,
-              total: 679.96,
-            };
-            const responseWithoutLineItems = {
-              ...response.body,
-              lineItems: undefined,
-            };
-
-            expect(responseWithoutLineItems).toEqual(expected);
-          });
-          it("returns correct lineItems", async () => {
-            const data = {
-              buyerId: "dc60209d-1feb-4465-b936-882e93bcd0c9",
-            };
-            const response = await supertest(app.server)
-              .get("/api/carts/" + data.buyerId)
-              .expect(200);
-
-            const expectedLineItems = [
+        it("returns correct cart", async () => {
+          const data = {
+            buyerId: "dc60209d-1feb-4465-b936-882e93bcd0c9",
+            productId: "8bc94226-3e20-40cb-a507-554fabf36ffa",
+          };
+          const response = await supertest(app.server)
+            .put("/api/carts/removeLineItem")
+            .send(data)
+            .set("Content-type", "application/json")
+            .expect(200);
+          const expected = {
+            id: "dc60209d-1feb-4465-b936-882e93bcd0c9",
+            buyerId: "dc60209d-1feb-4465-b936-882e93bcd0c9",
+            lineItems: [
               {
                 productId: "92d91715-34ad-449e-9b81-73f1a74ef44e",
                 unitPrice: 299.99,
@@ -251,62 +220,90 @@ describe("Interfaces :: Cart :: Routes :: GetCurrentCart", () => {
               {
                 productId: "8bc94226-3e20-40cb-a507-554fabf36ffa",
                 unitPrice: 39.99,
-                quantity: 2,
+                quantity: 1,
               },
-            ];
+            ],
+            appliedVoucher: null,
+            discount: 0,
+            shipping: 0,
+            subtotal: 639.97,
+            total: 639.97,
+          };
 
-            expect(response.body.lineItems).toEqual(expect.arrayContaining(expectedLineItems));
-          });
+          expect(response.body).toEqual(expected);
         });
       });
       describe("and cart has voucher", () => {
         it("returns correct cart", async () => {
           const data = {
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+            productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           };
           const response = await supertest(app.server)
-            .get("/api/carts/" + data.buyerId)
+            .put("/api/carts/removeLineItem")
+            .send(data)
+            .set("Content-type", "application/json")
             .expect(200);
+
           const expected = {
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-            lineItems: [
-              {
-                productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-                unitPrice: 79.99,
-                quantity: 2,
-              },
-            ],
+            lineItems: [],
             appliedVoucher: {
               voucherId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
               type: "fixed",
               amount: 50,
             },
             discount: 50,
-            shipping: 30,
-            subtotal: 159.98,
-            total: 139.98,
+            shipping: 0,
+            subtotal: 0,
+            total: 0,
           };
 
-          expect(response.body).toMatchObject(expected);
+          expect(response.body).toEqual(expected);
         });
       });
     });
-
     describe("When buyerId wasn't found", () => {
       it("returns correct cart", async () => {
         const data = {
           buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcx",
+          productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
         };
         const response = await supertest(app.server)
-          .get("/api/carts/" + data.buyerId)
+          .put("/api/carts/removeLineItem")
+          .send(data)
+          .set("Content-type", "application/json")
           .expect(404);
+
         const notFoundError = {
           title: "Not Found Error",
           status: 404,
           message: `Couldn't find cart with buyerId: ${data.buyerId} in database. Verify if you are passing the correct buyerId.`,
           detail:
             'select "carts".* from "carts" where "buyerId" = $1 - invalid input syntax for type uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcx"',
+        };
+
+        expect(response.body).toEqual(notFoundError);
+      });
+    });
+    describe("When productId wasn't found'", () => {
+      it("returns error", async () => {
+        const data = {
+          buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+          productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcx",
+        };
+        const response = await supertest(app.server)
+          .put("/api/carts/removeLineItem")
+          .send(data)
+          .set("Content-type", "application/json")
+          .expect(404);
+        const notFoundError = {
+          title: "Not Found Error",
+          status: 404,
+          message: `Couldn't find product with id: ${data.productId} in database. Verify if you are passing the correct productId.`,
+          detail:
+            'select "products".* from "products" where "uuid" = $1 - invalid input syntax for type uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcx"',
         };
 
         expect(response.body).toEqual(notFoundError);
