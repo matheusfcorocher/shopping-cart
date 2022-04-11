@@ -1,8 +1,6 @@
 import supertest from "supertest";
 import { app } from "../../../../app";
-import { ProductModel } from "../../../../src/infra/database/knex/models/ProductModel";
 import ProductModelFactory from "../../../support/factories/models/ProductModelFactory";
-import mockModel from "../../../support/objection";
 
 const { setupIntegrationTest } = require("../../../support/setup");
 
@@ -59,22 +57,6 @@ describe("Interfaces :: Product :: Routes :: ListProducts", () => {
         ];
 
         expect(response.body).toEqual(expect.arrayContaining(expected));
-      });
-    });
-  });
-  describe("When service is unavailable", () => {
-    it("returns error", async () => {
-      const error = new Error("Service Unavailable");
-      mockModel(ProductModel).reject(error);
-      const response = await supertest(app.server)
-        .get("/api/products")
-        .expect(500);
-      jest.restoreAllMocks();
-
-      expect(response.body).toEqual({
-        title: "Internal Server Error",
-        status: 500,
-        message: "Service Unavailable",
       });
     });
   });

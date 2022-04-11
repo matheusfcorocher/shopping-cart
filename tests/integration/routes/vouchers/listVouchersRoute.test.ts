@@ -1,8 +1,6 @@
 import supertest from "supertest";
 import { app } from "../../../../app";
-import { VoucherModel } from "../../../../src/infra/database/knex/models/VoucherModel";
 import VoucherModelFactory from "../../../support/factories/models/VoucherModelFactory";
-import mockModel from "../../../support/objection";
 
 const { setupIntegrationTest } = require("../../../support/setup");
 
@@ -61,22 +59,6 @@ describe("Interfaces :: Voucher :: Routes :: ListVouchers", () => {
         ];
 
         expect(response.body).toEqual(expect.arrayContaining(expected));
-      });
-    });
-  });
-  describe("When service is unavailable", () => {
-    it("returns error", async () => {
-      const error = new Error("Service Unavailable");
-      mockModel(VoucherModel).reject(error);
-      const response = await supertest(app.server)
-        .get("/api/vouchers")
-        .expect(500);
-      jest.restoreAllMocks();
-
-      expect(response.body).toEqual({
-        title: "Internal Server Error",
-        status: 500,
-        message: "Service Unavailable",
       });
     });
   });

@@ -1,3 +1,4 @@
+import { DomainError } from "../../lib/CustomError";
 import { VoucherType } from "../entities/Voucher";
 import { createMoney, Money } from "./Money";
 
@@ -55,8 +56,11 @@ class PercentualVoucher extends AppliedVoucher {
   }: AppliedVoucherProps) {
     super({ voucherId, type, amount});
     if(!this.isInRange()) {
-      const internalError = new Error("Internal Error")
-      internalError.message = "PercentualVoucher must have an amount between 0 and 100."
+      const internalError = new DomainError({
+        title: "Internal Error",
+        code: "INTERNAL_ERROR",
+        message: "PercentualVoucher must have an amount between 0 and 100.",
+      });
       throw internalError;
     } 
   }

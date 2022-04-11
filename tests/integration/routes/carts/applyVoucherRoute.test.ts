@@ -2,7 +2,6 @@ import supertest from "supertest";
 import { app } from "../../../../app";
 import { CartModel } from "../../../../src/infra/database/knex/models/CartModel";
 import ObjectionCartRepository from "../../../../src/infra/repositories/cart/ObjectionCartRepository";
-import { DbError } from "../../../../src/lib/CustomError";
 import BuyerModelFactory from "../../../support/factories/models/BuyerModelFactory";
 import CartModelFactory from "../../../support/factories/models/CartModelFactory";
 import LineItemModelFactory from "../../../support/factories/models/LineItemModelFactory";
@@ -289,7 +288,6 @@ describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
             shipping: 30,
             subtotal: 159.98,
             total: 149.98,
-            
           };
 
           expect(response.body).toEqual(expected);
@@ -315,6 +313,7 @@ describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
         message: `Couldn't find cart with buyerId: ${data.buyerId} in database. Verify if you are passing the correct buyerId.`,
         detail:
           'select "carts".* from "carts" where "buyerId" = $1 - invalid input syntax for type uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcx"',
+        hasManyErrors: false,
       };
 
       expect(response.body).toEqual(notFoundError);
@@ -336,6 +335,7 @@ describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
         status: 404,
         message: `Couldn't find voucher with code: ${data.code} in database. Verify if you are passing the correct code.`,
         detail: "Voucher Model is undefined.",
+        hasManyErrors: false,
       };
 
       expect(response.body).toEqual(notFoundError);
@@ -362,6 +362,7 @@ describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
         status: 404,
         message: `Couldn't find cart with buyerId: ${data.buyerId} in database. Verify if you are passing the correct buyerId.`,
         detail: "Service Unavailable",
+        hasManyErrors: false,
       });
     });
   });

@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { HttpResponseError } from "../../../../lib/CustomError";
+import { EHConverter, HttpResponseError } from "../../../../lib/CustomError";
 import { CartSerializer } from "../serializers/CartSerializer";
 
 const addLineItemHandler = async (
@@ -17,20 +17,8 @@ const addLineItemHandler = async (
     const result = await addLineItem.execute(buyerId, productId);
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
-    const httpResponseError = new HttpResponseError({
-      title: error.title,
-      status: error.status,
-      message: error.message,
-      detail: error.detail,
-    });
-    switch (error.status) {
-      case 404:
-        return reply.status(404).send(httpResponseError.toJson());
-      default:
-        httpResponseError.title = "Internal Server Error";
-        httpResponseError.status = 500;
-        return reply.status(500).send(httpResponseError.toJson());
-    }
+    const httpResponseError = EHConverter.convert(error);    
+    return reply.status(httpResponseError.status).send(httpResponseError.toJson());
   }
 };
 
@@ -49,20 +37,8 @@ const applyVoucherHandler = async (
     const result = await applyVoucher.execute(buyerId, code);
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
-    const httpResponseError = new HttpResponseError({
-      title: error.title,
-      status: error.status,
-      message: error.message,
-      detail: error.detail,
-    });
-    switch (error.status) {
-      case 404:
-        return reply.status(404).send(httpResponseError.toJson());
-      default:
-        httpResponseError.title = "Internal Server Error";
-        httpResponseError.status = 500;
-        return reply.status(500).send(httpResponseError.toJson());
-    }
+    const httpResponseError = EHConverter.convert(error);    
+    return reply.status(httpResponseError.status).send(httpResponseError.toJson());
   }
 };
 
@@ -80,20 +56,8 @@ const getCurrentCartHandler = async (
     const result = await getCurrentCart.execute(buyerId);
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
-    const httpResponseError = new HttpResponseError({
-      title: error.title,
-      status: error.status,
-      message: error.message,
-      detail: error.detail,
-    });
-    switch (error.status) {
-      case 404:
-        return reply.status(404).send(httpResponseError.toJson());
-      default:
-        httpResponseError.title = "Internal Server Error";
-        httpResponseError.status = 500;
-        return reply.status(500).send(httpResponseError.toJson());
-    }
+    const httpResponseError = EHConverter.convert(error);    
+    return reply.status(httpResponseError.status).send(httpResponseError.toJson());
   }
 };
 
@@ -112,20 +76,8 @@ const removeLineItemHandler = async (
     const result = await removeLineItem.execute(buyerId, productId);
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
-    const httpResponseError = new HttpResponseError({
-      title: error.title,
-      status: error.status,
-      message: error.message,
-      detail: error.detail,
-    });
-    switch (error.status) {
-      case 404:
-        return reply.status(404).send(httpResponseError.toJson());
-      default:
-        httpResponseError.title = "Internal Server Error";
-        httpResponseError.status = 500;
-        return reply.status(500).send(httpResponseError.toJson());
-    }
+    const httpResponseError = EHConverter.convert(error);    
+    return reply.status(httpResponseError.status).send(httpResponseError.toJson());
   }
 };
 
@@ -143,20 +95,8 @@ const removeVoucherHandler = async (
     const result = await removeVoucher.execute(buyerId);
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
-    const httpResponseError = new HttpResponseError({
-      title: error.title,
-      status: error.status,
-      message: error.message,
-      detail: error.detail,
-    });
-    switch (error.status) {
-      case 404:
-        return reply.status(404).send(httpResponseError.toJson());
-      default:
-        httpResponseError.title = "Internal Server Error";
-        httpResponseError.status = 500;
-        return reply.status(500).send(httpResponseError.toJson());
-    }
+    const httpResponseError = EHConverter.convert(error);    
+    return reply.status(httpResponseError.status).send(httpResponseError.toJson());
   }
 };
 

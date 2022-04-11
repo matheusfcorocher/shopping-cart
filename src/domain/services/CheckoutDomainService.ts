@@ -1,3 +1,4 @@
+import { DomainAggregateError, DomainError } from "../../lib/CustomError";
 import { Cart, Order, Product } from "../entities";
 import { OrderData, PaymentMethod } from "../entities/Order";
 import { CartRepository } from "../repositories/CartRepository";
@@ -5,7 +6,7 @@ import { OrderRepository } from "../repositories/OrderRepository";
 import { ProductRepository } from "../repositories/ProductRepository";
 
 interface CheckoutDomainServiceProps {
-  cartdId: string;
+  cartId: string;
   buyerId: string;
   paymentMethod: PaymentMethod;
 }
@@ -32,10 +33,15 @@ export default class CheckoutDomainService {
   }
 
   public async execute(data: CheckoutDomainServiceProps): Promise<string> {
-    const cart = await this.cartRepository.getCartById(data.cartdId);
-    const validationError = new Error('Validation Error');
-    validationError.message = "cart must have line items to become a order."
-    if(cart.lineItems.length == 0)throw validationError;
+    const cart = await this.cartRepository.getCartById(data.cartId);
+    if (cart.lineItems.length == 0) {
+      const validationError = new DomainError({
+        title: "Bad request Error",
+        code: "BADREQUEST_ERROR",
+        message: "cart must have line items to become a order.",
+      });
+      throw validationError;
+    }
     const products = await this.productRepository.getAllProducts();
     const productsData = products.map((product) => {
       const { id, name, available } = product;
@@ -120,8 +126,11 @@ export default class CheckoutDomainService {
         };
       }
 
-      const internalError = new Error("Internal Error");
-      internalError.message = `Product with id ${lineItem.productId} was not found in products data`;
+      const internalError = new DomainError({
+        title: "Internal Error",
+        code: "INTERNAL_ERROR",
+        message: `Product with id ${lineItem.productId} was not found in products data`
+      });
       throw internalError;
     });
     const messageErrors = buying.reduce((acc: Array<any>, b) => {
@@ -132,11 +141,21 @@ export default class CheckoutDomainService {
     if (messageErrors.length === 0) return true;
 
     const errors = messageErrors.map((m) => {
-      const badRequestError = new Error("Bad request Error");
+      const badRequestError = new DomainError({
+        title: "Bad request Error",
+        code: "BADREQUEST_ERROR",
+        message: m
+      });
       badRequestError.message = m;
       return badRequestError;
     });
-    const aggregateError = new AggregateError(errors);
+    const aggregateError = new DomainAggregateError({
+      title: "Bad Request Error",
+      code: "BADREQUEST_ERROR",
+      errors, 
+      message: "Was found multiple errors in the request. See property errors for details.",
+      name:"",
+    });
 
     throw aggregateError;
   }

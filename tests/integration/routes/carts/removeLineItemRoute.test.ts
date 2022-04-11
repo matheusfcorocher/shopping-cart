@@ -153,7 +153,7 @@ describe("Interfaces :: Cart :: Routes :: RemoveLineItem", () => {
 
     describe("When cart doesn't have any line item", () => {
       describe("and cart doesnt have voucher", () => {
-        it("returns internal server error", async () => {
+        it("returns not found error", async () => {
           const data = {
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
@@ -162,19 +162,20 @@ describe("Interfaces :: Cart :: Routes :: RemoveLineItem", () => {
             .put("/api/carts/removeLineItem")
             .send(data)
             .set("Content-type", "application/json")
-            .expect(500);
+            .expect(404);
 
           const notFoundError = {
-            title: "Internal Server Error",
-            status: 500,
+            title: "Not Found Error",
+            status: 404,
             message: `Item with productId ${data.productId} wasn't found in cart!`,
+            hasManyErrors: false,
           };
 
           expect(response.body).toEqual(notFoundError);
         });
       });
       describe("and cart has voucher", () => {
-        it("returns internal server error", async () => {
+        it("returns not found error", async () => {
           const data = {
             buyerId: "45f815f4-a7fd-4e80-89eb-45113d9537df",
             productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
@@ -184,12 +185,13 @@ describe("Interfaces :: Cart :: Routes :: RemoveLineItem", () => {
             .put("/api/carts/removeLineItem")
             .send(data)
             .set("Content-type", "application/json")
-            .expect(500);
+            .expect(404);
 
           const notFoundError = {
-            title: "Internal Server Error",
-            status: 500,
+            title: "Not Found Error",
+            status: 404,
             message: `Item with productId ${data.productId} wasn't found in cart!`,
+            hasManyErrors: false,
           };
 
           expect(response.body).toEqual(notFoundError);
@@ -249,7 +251,9 @@ describe("Interfaces :: Cart :: Routes :: RemoveLineItem", () => {
             },
           ];
 
-          expect(response.body.lineItems).toEqual(expect.arrayContaining(expectedLineItems));
+          expect(response.body.lineItems).toEqual(
+            expect.arrayContaining(expectedLineItems)
+          );
         });
       });
       describe("and cart has voucher", () => {
@@ -301,6 +305,7 @@ describe("Interfaces :: Cart :: Routes :: RemoveLineItem", () => {
           message: `Couldn't find cart with buyerId: ${data.buyerId} in database. Verify if you are passing the correct buyerId.`,
           detail:
             'select "carts".* from "carts" where "buyerId" = $1 - invalid input syntax for type uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcx"',
+          hasManyErrors: false,
         };
 
         expect(response.body).toEqual(notFoundError);
@@ -323,6 +328,7 @@ describe("Interfaces :: Cart :: Routes :: RemoveLineItem", () => {
           message: `Couldn't find product with id: ${data.productId} in database. Verify if you are passing the correct productId.`,
           detail:
             'select "products".* from "products" where "uuid" = $1 - invalid input syntax for type uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcx"',
+          hasManyErrors: false,
         };
 
         expect(response.body).toEqual(notFoundError);

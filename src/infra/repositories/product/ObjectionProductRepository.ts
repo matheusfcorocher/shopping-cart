@@ -4,7 +4,7 @@ import {
   ProductDataProps,
   ProductRepository,
 } from "../../../domain/repositories/ProductRepository";
-import { DbError } from "../../../lib/CustomError";
+import { InfrastructureError } from "../../../lib/CustomError";
 import { ProductModel } from "../../database/knex/models/ProductModel";
 import { ObjectionProductMapper } from "./ObjectionProductMapper";
 
@@ -52,9 +52,9 @@ class ObjectionProductRepository implements ProductRepository {
         return data!;
       })
       .catch((error) => {
-        const notFoundError = new DbError({
+        const notFoundError = new InfrastructureError({
           title: "Not Found Error",
-          status: 404,
+          code: "NOTFOUND_ERROR",
           message: `Couldn't find product with id: ${id} in database. Verify if you are passing the correct productId.`,
           detail: error.message,
         });

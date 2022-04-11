@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Order } from "../../../domain/entities";
 import { LineItem } from "../../../domain/entities/Cart";
 import { OrderRepository } from "../../../domain/repositories/OrderRepository";
+import { InfrastructureError } from "../../../lib/CustomError";
 import { LineItemModel } from "../../database/knex/models/LineItemModel";
 import { OrderModel } from "../../database/knex/models/OrderModel";
 import { ObjectionLineItemMapper } from "../lineItem/ObjectionLineItemMapper";
@@ -70,9 +71,11 @@ class ObjectionOrderRepository implements OrderRepository {
       })
       .then((data) => {
         if (data === undefined) {
-          const notFoundError = new Error("Not Found Error");
-          //   notFoundError.CODE = "NOTFOUND_ERROR";
-          notFoundError.message = `Line with ownerId ${ownerId} can't be found for ${ownerType}.`;
+          const notFoundError = new InfrastructureError({
+            title: "Not Found Error",
+            code: "NOTFOUND_ERROR",
+            message: `Line with ownerId ${ownerId} can't be found for ${ownerType}.`,
+          });
           return Promise.reject(notFoundError);
         }
         return data;

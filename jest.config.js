@@ -4,5 +4,6 @@ module.exports = {
   testEnvironment: 'node',
   setupFilesAfterEnv: [
     "./tests/integration/config.ts"
-  ]
+  ],
+  "testTimeout": 10000
 };

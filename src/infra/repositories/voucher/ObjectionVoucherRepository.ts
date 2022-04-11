@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { Voucher } from "../../../domain/entities";
 import { VoucherRepository } from "../../../domain/repositories/VoucherRepository";
-import { DbError } from "../../../lib/CustomError";
+import { InfrastructureError } from "../../../lib/CustomError";
 import { VoucherModel } from "../../database/knex/models/VoucherModel";
 import { ObjectionVoucherMapper } from "./ObjectionVoucherMapper";
 
@@ -18,9 +18,11 @@ class ObjectionVoucherRepository implements VoucherRepository {
       })
       .then((data) => {
         if (data === undefined) {
-          const notFoundError = new Error("Not Found Error");
-          //   notFoundError.CODE = "NOTFOUND_ERROR";
-          notFoundError.message = `Voucher with id ${id} can't be found.`;
+          const notFoundError = new InfrastructureError({
+            title: "Not Found Error",
+            code: "NOTFOUND_ERROR",
+            message: `Voucher with id ${id} can't be found.`,
+          });
           return Promise.reject(notFoundError);
         }
         return ObjectionVoucherMapper.toEntity(data);
@@ -36,14 +38,12 @@ class ObjectionVoucherRepository implements VoucherRepository {
         return ObjectionVoucherMapper.toEntity(data);
       })
       .catch((error) => {
-        const notFoundError = new DbError({
+        const notFoundError = new InfrastructureError({
           title: "Not Found Error",
-          status: 404,
+          code: "NOTFOUND_ERROR",
           message: `Couldn't find voucher with code: ${code} in database. Verify if you are passing the correct code.`,
           detail: error.message,
-          stack: error.stack,
         });
-
         throw notFoundError;
       })
   }

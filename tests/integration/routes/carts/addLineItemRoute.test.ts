@@ -220,11 +220,11 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
     });
     describe("When cart has line items", () => {
       describe("and cart doesnt have voucher", () => {
+        const data = {
+          buyerId: "dc60209d-1feb-4465-b936-882e93bcd0c9",
+          productId: "8bc94226-3e20-40cb-a507-554fabf36ffa",
+        };
         it("returns correct cart", async () => {
-          const data = {
-            buyerId: "dc60209d-1feb-4465-b936-882e93bcd0c9",
-            productId: "8bc94226-3e20-40cb-a507-554fabf36ffa",
-          };
           const response = await supertest(app.server)
             .post("/api/carts/addLineItem")
             .send(data)
@@ -233,26 +233,40 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
           const expected = {
             id: "dc60209d-1feb-4465-b936-882e93bcd0c9",
             buyerId: "dc60209d-1feb-4465-b936-882e93bcd0c9",
-            lineItems: [
-              {
-                productId: "92d91715-34ad-449e-9b81-73f1a74ef44e",
-                unitPrice: 299.99,
-                quantity: 2,
-              },
-              {
-                productId: "8bc94226-3e20-40cb-a507-554fabf36ffa",
-                unitPrice: 39.99,
-                quantity: 3,
-              },
-            ],
             appliedVoucher: null,
             discount: 0,
             shipping: 0,
             subtotal: 719.95,
             total: 719.95,
           };
+          const responseWithoutErrors = {
+            ...response.body,
+            lineItems: undefined,
+          };
 
-          expect(response.body).toEqual(expected);
+          expect(responseWithoutErrors).toEqual(expected);
+        });
+        it("returns correct line items", async () => {
+          const response = await supertest(app.server)
+            .post("/api/carts/addLineItem")
+            .send(data)
+            .set("Content-type", "application/json")
+            .expect(200);
+
+          const expected = [
+            {
+              productId: "92d91715-34ad-449e-9b81-73f1a74ef44e",
+              unitPrice: 299.99,
+              quantity: 2,
+            },
+            {
+              productId: "8bc94226-3e20-40cb-a507-554fabf36ffa",
+              unitPrice: 39.99,
+              quantity: 3,
+            },
+          ];
+
+          expect(response.body.lineItems).toEqual(expected);
         });
       });
     });
@@ -294,7 +308,7 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
   });
 
   describe("When buyerId wasn't found", () => {
-    it("returns correct cart", async () => {
+    it("returns not found error", async () => {
       const data = {
         buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcx",
         productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
@@ -310,13 +324,14 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
         message: `Couldn't find cart with buyerId: ${data.buyerId} in database. Verify if you are passing the correct buyerId.`,
         detail:
           'select "carts".* from "carts" where "buyerId" = $1 - invalid input syntax for type uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcx"',
+        hasManyErrors: false,
       };
 
       expect(response.body).toEqual(notFoundError);
     });
   });
   describe("When productId wasn't found'", () => {
-    it("returns error", async () => {
+    it("returns not found error", async () => {
       const data = {
         buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
         productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcx",
@@ -332,6 +347,7 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
         message: `Couldn't find product with id: ${data.productId} in database. Verify if you are passing the correct productId.`,
         detail:
           'select "products".* from "products" where "uuid" = $1 - invalid input syntax for type uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcx"',
+        hasManyErrors: false,
       };
 
       expect(response.body).toEqual(notFoundError);

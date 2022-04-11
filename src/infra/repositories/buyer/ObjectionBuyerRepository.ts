@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { Buyer } from "../../../domain/entities";
 import { BuyerRepository } from "../../../domain/repositories/BuyerRepository";
+import { InfrastructureError } from "../../../lib/CustomError";
 import { BuyerModel } from "../../database/knex/models/BuyerModel";
 import { ObjectionBuyerMapper } from "./ObjectionBuyerMapper";
 
@@ -24,9 +25,11 @@ class ObjectionBuyerRepository implements BuyerRepository {
   public async store(buyer: Buyer): Promise<Buyer> {
     const hasBuyer = await this.hasBuyer(buyer.id);
     if (hasBuyer) {
-      const validationError = new Error("Validation Error");
-      //   notFoundError.CODE = "NOTFOUND_ERROR";
-      validationError.message = `Buyer with id ${buyer.id} already exists.`;
+      const validationError = new InfrastructureError({
+        title: "Validation Error",
+        code: "VALIDATION_ERROR",
+        message: `Buyer with id ${buyer.id} already exists.`
+      });
       return Promise.reject(validationError);
     }
     return BuyerModel.query()
@@ -41,9 +44,11 @@ class ObjectionBuyerRepository implements BuyerRepository {
       })
       .then((data) => {
         if (data === undefined) {
-          const notFoundError = new Error("Not Found Error");
-          //   notFoundError.CODE = "NOTFOUND_ERROR";
-          notFoundError.message = `Buyer with id ${id} can't be found.`;
+          const notFoundError = new InfrastructureError({
+            title: "Not Found Error",
+            code: "NOTFOUND_ERROR",
+            message: `Buyer with id ${id} can't be found.`
+          });
           return Promise.reject(notFoundError);
         }
         return data;

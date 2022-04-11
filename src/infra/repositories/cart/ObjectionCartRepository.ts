@@ -10,7 +10,7 @@ import { ObjectionLineItemMapper } from "../lineItem/ObjectionLineItemMapper";
 import { ObjectionCartMapper } from "./ObjectionCartMapper";
 import { CartModel } from "../../database/knex/models/CartModel";
 import { LineItemModel } from "../../database/knex/models/LineItemModel";
-import { DbError } from "../../../lib/CustomError";
+import { InfrastructureError } from "../../../lib/CustomError";
 import { createMoney } from "../../../domain/valueObjects/Money";
 interface Owner {
   ownerId: string;
@@ -40,9 +40,11 @@ class ObjectionCartRepository implements CartRepository {
         .delete()
         .then(() => "Cart was deleted successfully.")
         .catch(() => {
-          const notFoundError = new Error("Not Found Error");
-          //   notFoundError.CODE = "NOTFOUND_ERROR";
-          notFoundError.message = `Cart with id ${id} and buyerId ${buyerId} can't be found.`;
+          const notFoundError = new InfrastructureError({
+            title: "Not Found Error",
+            code: "NOTFOUND_ERROR",
+            message: `Cart with id ${id} and buyerId ${buyerId} can't be found.`,
+          });
           return Promise.reject(notFoundError);
         });
     });
@@ -63,13 +65,17 @@ class ObjectionCartRepository implements CartRepository {
         uuid: id,
       })
       .then((data) => {
+        if (!data) throw new Error("Cart Model is undefined.");
         return this.transformCartModelToCart(data!);
       })
       .catch((err) => {
-        const notFoundError = new Error("Not Found Error");
-        //   notFoundError.CODE = "NOTFOUND_ERROR";
-        notFoundError.message = `Cart with id ${id} can't be found.`;
-        return Promise.reject(notFoundError);
+        const notFoundError = new InfrastructureError({
+          title: "Not Found Error",
+          code: "NOTFOUND_ERROR",
+          message: `Couldn't find cart with id: ${id} in database. Verify if you are passing the correct id.`,
+          detail: err.message,
+        });
+        throw notFoundError;
       });
   }
   public getCartByBuyerId(buyerId: string): Promise<Cart> {
@@ -78,18 +84,18 @@ class ObjectionCartRepository implements CartRepository {
         buyerId,
       })
       .then((data) => {
-        if (!data)
-          throw new Error("Cart Model is undefined.");
+        if (!data) throw new Error("Cart Model is undefined.");
         return this.transformCartModelToCart(data!);
-      }).catch((err) => {
-        const notFoundError = new DbError({
-          title: "Not Found Error",
-          status: 404,
-          message: `Couldn't find cart with buyerId: ${buyerId} in database. Verify if you are passing the correct buyerId.`,
-          detail: err.message
-        });
-        throw notFoundError; 
       })
+      .catch((err) => {
+        const notFoundError = new InfrastructureError({
+          title: "Not Found Error",
+          code: "NOTFOUND_ERROR",
+          message: `Couldn't find cart with buyerId: ${buyerId} in database. Verify if you are passing the correct buyerId.`,
+          detail: err.message,
+        });
+        throw notFoundError;
+      });
   }
   public getNextId(): string {
     return uuidv4();
@@ -149,9 +155,12 @@ class ObjectionCartRepository implements CartRepository {
         return data!;
       })
       .catch((err) => {
-        const notFoundError = new Error("Not Found Error");
-        //   notFoundError.CODE = "NOTFOUND_ERROR";
-        notFoundError.message = `Cart with id ${id} can't be found.`;
+        const notFoundError = new InfrastructureError({
+          title: "Not Found Error",
+          code: "NOTFOUND_ERROR",
+          message: `Cart with id ${id} can't be found.`,
+          detail: err.message,
+        });
         return Promise.reject(notFoundError);
       });
   }
@@ -166,9 +175,11 @@ class ObjectionCartRepository implements CartRepository {
       .delete()
       .then(() => Promise.resolve("LineItem was deleted successfully."))
       .catch(() => {
-        const notFoundError = new Error("Not Found Error");
-        //   notFoundError.CODE = "NOTFOUND_ERROR";
-        notFoundError.message = `LineItem with productId ${productId} can't be found.`;
+        const notFoundError = new InfrastructureError({
+          title: "Not Found Error",
+          code: "NOTFOUND_ERROR",
+          message: `LineItem with productId ${productId} can't be found.`,
+        });
         return Promise.reject(notFoundError);
       });
   }
@@ -183,9 +194,11 @@ class ObjectionCartRepository implements CartRepository {
       .delete()
       .then(() => Promise.resolve("LineItems was deleted successfully."))
       .catch(() => {
-        const notFoundError = new Error("Not Found Error");
-        //   notFoundError.CODE = "NOTFOUND_ERROR";
-        notFoundError.message = `LineItems can't be found.`;
+        const notFoundError = new InfrastructureError({
+          title: "Not Found Error",
+          code: "NOTFOUND_ERROR",
+          message: `LineItems can't be found.`,
+        });
         return Promise.reject(notFoundError);
       });
   }
@@ -231,8 +244,8 @@ class ObjectionCartRepository implements CartRepository {
         id: voucherId,
         code: "null",
         type: voucherType,
-        amount: amount?createMoney(amount):undefined,
-        minValue: minValue?createMoney(minValue):undefined,
+        amount: amount ? createMoney(amount) : undefined,
+        minValue: minValue ? createMoney(minValue) : undefined,
       });
       return appliedFactory.fromVoucher(voucher);
     }
@@ -255,9 +268,11 @@ class ObjectionCartRepository implements CartRepository {
       })
       .then((data) => {
         if (data === undefined) {
-          const notFoundError = new Error("Not Found Error");
-          //   notFoundError.CODE = "NOTFOUND_ERROR";
-          notFoundError.message = `Line with ownerId ${ownerId} and productId ${productId} can't be found for ${ownerType}.`;
+          const notFoundError = new InfrastructureError({
+            title: "Not Found Error",
+            code: "NOTFOUND_ERROR",
+            message: `Line with ownerId ${ownerId} and productId ${productId} can't be found for ${ownerType}.`,
+          });
           return Promise.reject(notFoundError);
         }
         return data;
@@ -274,9 +289,11 @@ class ObjectionCartRepository implements CartRepository {
       })
       .then((data) => {
         if (data === undefined) {
-          const notFoundError = new Error("Not Found Error");
-          //   notFoundError.CODE = "NOTFOUND_ERROR";
-          notFoundError.message = `Line with ownerId ${ownerId} can't be found for ${ownerType}.`;
+          const notFoundError = new InfrastructureError({
+            title: "Not Found Error",
+            code: "NOTFOUND_ERROR",
+            message: `Line with ownerId ${ownerId} can't be found for ${ownerType}.`,
+          });
           return Promise.reject(notFoundError);
         }
         return data;

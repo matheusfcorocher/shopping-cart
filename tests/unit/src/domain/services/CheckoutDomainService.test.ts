@@ -4,6 +4,10 @@ import CheckoutDomainService, {
   CheckoutDomainServiceProps,
 } from "../../../../../src/domain/services/CheckoutDomainService";
 import { createMoney } from "../../../../../src/domain/valueObjects/Money";
+import {
+  DomainAggregateError,
+  DomainError,
+} from "../../../../../src/lib/CustomError";
 import { FakeCartRepository } from "../../../../support/repositories/FakeCartRepository";
 import { FakeOrderRepository } from "../../../../support/repositories/FakeOrderRepository";
 import { FakeProductRepository } from "../../../../support/repositories/FakeProductRepository";
@@ -37,7 +41,7 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         notFoundError.message = `Cart with id asd can't be found.`;
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: "asd",
+          cartId: "asd",
           buyerId: "aad",
           paymentMethod: "pix",
         };
@@ -75,7 +79,7 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: "aad",
+          cartId: "aad",
           buyerId: "aad",
           paymentMethod: "pix",
         };
@@ -119,7 +123,7 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: "adds",
+          cartId: "adds",
           buyerId: "adds",
           paymentMethod: "pix",
         };
@@ -152,10 +156,20 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         const productRepository = new FakeProductRepository(products);
         const orderRepository = new FakeOrderRepository(orders);
 
-        const badRequestError = new Error("Bad request Error");
-        badRequestError.message = `Product Chocolate is out of stock`;
+        const badRequestError = new DomainError({
+          title: "Bad request Error",
+          code: "BADREQUEST_ERROR",
+          message: `Product Chocolate is out of stock`,
+        });
         const errors = [badRequestError];
-        const aggregateError = new AggregateError(errors);
+        const aggregateError = new DomainAggregateError({
+          title: "Bad Request Error",
+          code: "BADREQUEST_ERROR",
+          errors,
+          message:
+            "Was found multiple errors in the request. See property errors for details.",
+          name: "",
+        });
 
         const checkout = new CheckoutDomainService(
           cartRepository,
@@ -164,7 +178,7 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: "cbc",
+          cartId: "cbc",
           buyerId: "cbc",
           paymentMethod: "pix",
         };
@@ -196,10 +210,20 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         const productRepository = new FakeProductRepository(products);
         const orderRepository = new FakeOrderRepository(orders);
 
-        const badRequestError = new Error("Bad request Error");
-        badRequestError.message = `Can't buy the product Chocolate with quantity 4 due it's only available 3 units`;
+        const badRequestError = new DomainError({
+          title: "Bad request Error",
+          code: "BADREQUEST_ERROR",
+          message: `Can't buy the product Chocolate with quantity 4 due it's only available 3 units`,
+        });
         const errors = [badRequestError];
-        const aggregateError = new AggregateError(errors);
+        const aggregateError = new DomainAggregateError({
+          title: "Bad Request Error",
+          code: "BADREQUEST_ERROR",
+          errors,
+          message:
+            "Was found multiple errors in the request. See property errors for details.",
+          name: "",
+        });
 
         const checkout = new CheckoutDomainService(
           cartRepository,
@@ -208,7 +232,7 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: "abc",
+          cartId: "abc",
           buyerId: "abc",
           paymentMethod: "pix",
         };
@@ -253,7 +277,7 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: "abc",
+          cartId: "abc",
           buyerId: "abc",
           paymentMethod: "pix",
         };
@@ -295,7 +319,7 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: "abc",
+          cartId: "abc",
           buyerId: "abc",
           paymentMethod: "pix",
         };
@@ -337,7 +361,7 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: "abc",
+          cartId: "abc",
           buyerId: "abc",
           paymentMethod: "pix",
         };
@@ -378,7 +402,7 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: "abc",
+          cartId: "abc",
           buyerId: "abc",
           paymentMethod: "pix",
         };
@@ -420,7 +444,7 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: "abc",
+          cartId: "abc",
           buyerId: "abc",
           paymentMethod: "pix",
         };
@@ -458,7 +482,7 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: "abc",
+          cartId: "abc",
           buyerId: "abc",
           paymentMethod: "pix",
         };
@@ -476,7 +500,9 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
       });
       it("delete cart", async () => {
-        const lineItems: LineItems = [new LineItem("abc", createMoney(2000), 3)];
+        const lineItems: LineItems = [
+          new LineItem("abc", createMoney(2000), 3),
+        ];
         const cart = new Cart({
           id: "abc",
           lineItems,
@@ -504,7 +530,7 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: "abc",
+          cartId: "abc",
           buyerId: "abc",
           paymentMethod: "pix",
         };
@@ -512,7 +538,9 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         expect(carts.length).toBe(0);
       });
       it("returns the right message", async () => {
-        const lineItems: LineItems = [new LineItem("abc", createMoney(2000), 3)];
+        const lineItems: LineItems = [
+          new LineItem("abc", createMoney(2000), 3),
+        ];
         const cart = new Cart({
           id: "abc",
           lineItems,
@@ -540,7 +568,7 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         );
 
         const data: CheckoutDomainServiceProps = {
-          cartdId: "abc",
+          cartId: "abc",
           buyerId: "abc",
           paymentMethod: "pix",
         };

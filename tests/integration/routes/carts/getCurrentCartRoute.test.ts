@@ -1,14 +1,11 @@
 import supertest from "supertest";
 import { app } from "../../../../app";
-import { CartModel } from "../../../../src/infra/database/knex/models/CartModel";
 import ObjectionCartRepository from "../../../../src/infra/repositories/cart/ObjectionCartRepository";
-import { DbError } from "../../../../src/lib/CustomError";
 import BuyerModelFactory from "../../../support/factories/models/BuyerModelFactory";
 import CartModelFactory from "../../../support/factories/models/CartModelFactory";
 import LineItemModelFactory from "../../../support/factories/models/LineItemModelFactory";
 import ProductModelFactory from "../../../support/factories/models/ProductModelFactory";
 import VoucherModelFactory from "../../../support/factories/models/VoucherModelFactory";
-import mockModel from "../../../support/objection";
 
 const { setupIntegrationTest } = require("../../../support/setup");
 const cartRepository = new ObjectionCartRepository();
@@ -255,7 +252,9 @@ describe("Interfaces :: Cart :: Routes :: GetCurrentCart", () => {
               },
             ];
 
-            expect(response.body.lineItems).toEqual(expect.arrayContaining(expectedLineItems));
+            expect(response.body.lineItems).toEqual(
+              expect.arrayContaining(expectedLineItems)
+            );
           });
         });
       });
@@ -307,6 +306,7 @@ describe("Interfaces :: Cart :: Routes :: GetCurrentCart", () => {
           message: `Couldn't find cart with buyerId: ${data.buyerId} in database. Verify if you are passing the correct buyerId.`,
           detail:
             'select "carts".* from "carts" where "buyerId" = $1 - invalid input syntax for type uuid: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcx"',
+          hasManyErrors: false,
         };
 
         expect(response.body).toEqual(notFoundError);

@@ -1,3 +1,4 @@
+import { DomainError } from "../../lib/CustomError";
 import { AppliedVoucher } from "../valueObjects/AppliedVoucher";
 import { createMoney, Money } from "../valueObjects/Money";
 
@@ -111,7 +112,11 @@ export default class Cart {
       if (item.quantity <= 0) this.lineItems.splice(index, 1);
       else this.lineItems[index] = item;
     } else {
-      throw new Error(`Item with productId ${productId} wasn't found in cart!`);
+      throw new DomainError({
+        title: "Not Found Error",
+        code: "NOTFOUND_ERROR",
+        message: `Item with productId ${productId} wasn't found in cart!`,
+      });
     }
   }
 
