@@ -19,15 +19,25 @@ In short answer, must attend this gist: <a href="https://gist.github.com/talysso
   <dd>
     This project architecture use principles of <a href="https://8thlight.com/blog/uncle-bob/2012/08/13/the-clean-architecture.html">Clean Architecture</a> focused on codebase scalability.
   </dd>
-
-<dt>Dependency injection</dt>
+  
+  <dt>Domain Driven Design(DDD)</dt>
+  <dd>
+    Uses <a href="https://martinfowler.com/bliki/DomainDrivenDesign.html">DDD</a> approach to reduce domain complexity and focus the development in domain model.
+  </dd>
+  
+  <dt>Uses Money Pattern</dt>
+  <dd>
+    Uses <a href="https://www.npmjs.com/package/dinero.js">Dinero.js</a> for money exchange that follows the <a href="https://martinfowler.com/eaaCatalog/money.html">Money Pattern</a> of Martin Fowler in the book Patterns of Enterprise Application Architecture.
+  </dd>
+  
+  <dt>Dependency injection</dt>
   <dd>
     Use the technique dependency injection for code not be coupled and make easy to mock dependencies during the tests.
   </dd>
 
 <dt>Web Framework</dt>
   <dd>
-    Use <a href="https://www.npmjs.com/package/fastify">Fastify</a> for requests routing and middlewares.
+    Use <a href="https://www.npmjs.com/package/fastify">Fastify</a> for requests routing and middlewares. And also uses <a href="https://www.npmjs.com/package/fastify-swagger">fastify-swagger</a> for creating a doc with SwaggerUI. 
   </dd>
 
 <dt>Database</dt>
@@ -60,3 +70,33 @@ In short answer, must attend this gist: <a href="https://gist.github.com/talysso
     Use <a href="https://www.npmjs.com/package/ts-node-dev">ts-node-dev</a> for compile typescript code to javascript to NodeJS runs it. And also to automatically reload the server after a file change when on development mode, makes the development faster and easier
   </dd>
 </dl>
+
+## Quick start
+
+0. Do you need a POSTGRES server installed in your machine. I suggest to use this tools: <a href="https://www.electronjs.org/apps/postbird">Postbird</a> for verify your Postgres Database and <a href="https://www.postman.com/">Postman</a> to access the routes of API.
+1. Clone the repository with `git clone https://github.com/matheusfcorocher/shopping-cart.git`
+2. Setup the database on `.env` and also `./src/infra/database/config.ts`.
+3. Install the dependencies with `yarn` (click here if [you don't have Yarn installed](https://yarnpkg.com/docs/install)) in your bash terminal
+4. Create the development and test databases you have setup on `./src/infra/database/config.ts`.
+5. Run the database migrations with `yarn knex migrate:latest`. The default environment is dev. To create database for test, change development env for testing env.
+6. Add some seed data to the development database with `knex seed:run`
+7. Run the application in development mode with `yarn build` then `yarn start`
+8. Access `http://localhost:5000/api/` and you're ready to go!
+
+## Aditional info:
+- Don't forget to run the migrations for the test environment as well (including when you create a new migration) with `yarn knex migrate:latest`
+
+## Scripts
+
+This api comes with a collection of npm scripts to make your life easier, you'll run them with `npm run <script name>` or `yarn <script name>`:
+
+- `knex`: Run commands with knex.
+- `build`: Transpile the ts files to js in builder folder.
+- `start`: Start the development server with Node.js
+- `tsnd`: Run a file with typescript ts-node-dev
+- `test`: Run all tests suite with option --runInBand and NODE_ENV=test
+
+## Endpoints of this api and requirements
+
+1. To see all endpoints of this api, you should run `yarn build` then `yarn start`.
+2. After initialize the server you go to address `http://localhost:5000/api/docs` to see all routes of api in Swagger UI.
