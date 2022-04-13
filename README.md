@@ -19,15 +19,25 @@ In short answer, must attend this gist: <a href="https://gist.github.com/talysso
   <dd>
     This project architecture use principles of <a href="https://8thlight.com/blog/uncle-bob/2012/08/13/the-clean-architecture.html">Clean Architecture</a> focused on codebase scalability.
   </dd>
-
-<dt>Dependency injection</dt>
+  
+  <dt>Domain Driven Design(DDD)</dt>
+  <dd>
+    Uses <a href="https://martinfowler.com/bliki/DomainDrivenDesign.html">DDD</a> approach to reduce domain complexity and focus the development in domain model.
+  </dd>
+  
+  <dt>Uses Money Pattern</dt>
+  <dd>
+    Uses <a href="https://www.npmjs.com/package/dinero.js">Dinero.js</a> for money exchange that follows the <a href="https://martinfowler.com/eaaCatalog/money.html">Money Pattern</a> of Martin Fowler in the book Patterns of Enterprise Application Architecture.
+  </dd>
+  
+  <dt>Dependency injection</dt>
   <dd>
     Use the technique dependency injection for code not be coupled and make easy to mock dependencies during the tests.
   </dd>
 
 <dt>Web Framework</dt>
   <dd>
-    Use <a href="https://www.npmjs.com/package/fastify">Fastify</a> for requests routing and middlewares.
+    Use <a href="https://www.npmjs.com/package/fastify">Fastify</a> for requests routing and middlewares. And also uses <a href="https://www.npmjs.com/package/fastify-swagger">fastify-swagger</a> for creating a doc with SwaggerUI. 
   </dd>
 
 <dt>Database</dt>
