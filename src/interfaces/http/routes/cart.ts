@@ -40,11 +40,11 @@ const removeVoucherOpts = {
 };
 
 const cartsRoutes: FastifyPluginCallback = (fastify, options, done) => {
-  fastify.post("/api/carts/addLineItem", addLineItemOpts);
-  fastify.post("/api/carts/applyVoucher", applyVoucherOpts);
+  fastify.post("/api/carts/items", addLineItemOpts);
+  fastify.post("/api/carts/voucher", applyVoucherOpts);
   fastify.get("/api/carts/:buyerId", getCurrentCartOpts);
-  fastify.put("/api/carts/removeLineItem", removeLineItemOpts);
-  fastify.put("/api/carts/removeVoucher/:buyerId", removeVoucherOpts);
+  fastify.delete("/api/carts/items", removeLineItemOpts);
+  fastify.delete("/api/carts/voucher/:buyerId", removeVoucherOpts);
   done();
 };
 

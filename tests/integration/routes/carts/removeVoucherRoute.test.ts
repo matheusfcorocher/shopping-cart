@@ -9,7 +9,7 @@ import VoucherModelFactory from "../../../support/factories/models/VoucherModelF
 const { setupIntegrationTest } = require("../../../support/setup");
 
 describe("Interfaces :: Cart :: Routes :: RemoveVoucher", () => {
-  describe("API :: PUT /api/carts/removeVoucher/:buyerId", () => {
+  describe("API :: PUT /api/carts/voucher/:buyerId", () => {
     setupIntegrationTest();
     beforeEach(async () => {
       await ProductModelFactory.createList([
@@ -158,7 +158,7 @@ describe("Interfaces :: Cart :: Routes :: RemoveVoucher", () => {
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
           };
           const response = await supertest(app.server)
-            .put(`/api/carts/removeVoucher/` + data.buyerId)
+            .del(`/api/carts/voucher/` + data.buyerId)
             .expect(200);
           const expected = {
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
@@ -180,7 +180,7 @@ describe("Interfaces :: Cart :: Routes :: RemoveVoucher", () => {
             buyerId: "45f815f4-a7fd-4e80-89eb-45113d9537df",
           };
           const response = await supertest(app.server)
-            .put(`/api/carts/removeVoucher/` + data.buyerId)
+            .del(`/api/carts/voucher/` + data.buyerId)
             .expect(200);
           const expected = {
             id: "45f815f4-a7fd-4e80-89eb-45113d9537df",
@@ -204,7 +204,7 @@ describe("Interfaces :: Cart :: Routes :: RemoveVoucher", () => {
             buyerId: "dc60209d-1feb-4465-b936-882e93bcd0c9",
           };
           const response = await supertest(app.server)
-            .put(`/api/carts/removeVoucher/` + data.buyerId)
+            .del(`/api/carts/voucher/` + data.buyerId)
             .expect(200);
 
           const expected = {
@@ -238,7 +238,7 @@ describe("Interfaces :: Cart :: Routes :: RemoveVoucher", () => {
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           };
           const response = await supertest(app.server)
-            .put(`/api/carts/removeVoucher/` + data.buyerId)
+            .del(`/api/carts/voucher/` + data.buyerId)
             .expect(200);
 
           const expected = {
@@ -268,7 +268,7 @@ describe("Interfaces :: Cart :: Routes :: RemoveVoucher", () => {
           buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcx",
         };
         const response = await supertest(app.server)
-          .put(`/api/carts/removeVoucher/` + data.buyerId)
+          .del(`/api/carts/voucher/` + data.buyerId)
           .expect(404);
         const notFoundError = {
           title: "Not Found Error",

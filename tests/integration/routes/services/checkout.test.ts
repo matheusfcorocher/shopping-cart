@@ -13,7 +13,7 @@ import VoucherModelFactory from "../../../support/factories/models/VoucherModelF
 const { setupIntegrationTest } = require("../../../support/setup");
 
 describe("Interfaces :: Services :: Routes :: Checkout", () => {
-  describe("API :: POST /api/services/checkout", () => {
+  describe("API :: POST /api/checkout", () => {
     setupIntegrationTest();
     beforeEach(async () => {
       await ProductModelFactory.createList([
@@ -169,7 +169,7 @@ describe("Interfaces :: Services :: Routes :: Checkout", () => {
           paymentMethod: "pix",
         };
         const response = await supertest(app.server)
-          .post("/api/services/checkout")
+          .post("/api/checkout")
           .send(data)
           .set("Content-type", "application/json")
           .expect(404);
@@ -195,7 +195,7 @@ describe("Interfaces :: Services :: Routes :: Checkout", () => {
           paymentMethod: "pix",
         };
         const response = await supertest(app.server)
-          .post("/api/services/checkout")
+          .post("/api/checkout")
           .send(data)
           .set("Content-type", "application/json")
           .expect(400);
@@ -219,7 +219,7 @@ describe("Interfaces :: Services :: Routes :: Checkout", () => {
       };
       it("returns bad request error", async () => {
         const response = await supertest(app.server)
-          .post("/api/services/checkout")
+          .post("/api/checkout")
           .send(data)
           .set("Content-type", "application/json")
           .expect(400);
@@ -240,7 +240,7 @@ describe("Interfaces :: Services :: Routes :: Checkout", () => {
       });
       it("returns correct errors", async () => {
         const response = await supertest(app.server)
-          .post("/api/services/checkout")
+          .post("/api/checkout")
           .send(data)
           .set("Content-type", "application/json")
           .expect(400);
@@ -273,7 +273,7 @@ describe("Interfaces :: Services :: Routes :: Checkout", () => {
 
       it("returns bad request error", async () => {
         const response = await supertest(app.server)
-          .post("/api/services/checkout")
+          .post("/api/checkout")
           .send(data)
           .set("Content-type", "application/json")
           .expect(400);
@@ -294,7 +294,7 @@ describe("Interfaces :: Services :: Routes :: Checkout", () => {
       });
       it("returns correct errors", async () => {
         const response = await supertest(app.server)
-          .post("/api/services/checkout")
+          .post("/api/checkout")
           .send(data)
           .set("Content-type", "application/json")
           .expect(400);
@@ -327,7 +327,7 @@ describe("Interfaces :: Services :: Routes :: Checkout", () => {
         };
 
         await supertest(app.server)
-          .post("/api/services/checkout")
+          .post("/api/checkout")
           .send(data)
           .set("Content-type", "application/json")
           .expect(200);
@@ -344,7 +344,7 @@ describe("Interfaces :: Services :: Routes :: Checkout", () => {
         };
 
         await supertest(app.server)
-          .post("/api/services/checkout")
+          .post("/api/checkout")
           .send(data)
           .set("Content-type", "application/json")
           .expect(200);
@@ -372,7 +372,7 @@ describe("Interfaces :: Services :: Routes :: Checkout", () => {
         };
 
         await supertest(app.server)
-          .post("/api/services/checkout")
+          .post("/api/checkout")
           .send(data)
           .set("Content-type", "application/json")
           .expect(200);
@@ -389,7 +389,7 @@ describe("Interfaces :: Services :: Routes :: Checkout", () => {
         };
 
         const response = await supertest(app.server)
-          .post("/api/services/checkout")
+          .post("/api/checkout")
           .send(data)
           .set("Content-type", "application/json")
           .expect(200);

@@ -12,7 +12,7 @@ import mockModel from "../../../support/objection";
 const { setupIntegrationTest } = require("../../../support/setup");
 const cartRepository = new ObjectionCartRepository();
 describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
-  describe("API :: POST /api/carts/applyVoucher", () => {
+  describe("API :: POST /api/carts/voucher", () => {
     setupIntegrationTest();
     beforeEach(async () => {
       await ProductModelFactory.createList([
@@ -162,7 +162,7 @@ describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
             code: "TEST2",
           };
           const response = await supertest(app.server)
-            .post("/api/carts/applyVoucher")
+            .post("/api/carts/voucher")
             .send(data)
             .set("Content-type", "application/json")
             .expect(200);
@@ -192,7 +192,7 @@ describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
             code: "TEST2",
           };
           const response = await supertest(app.server)
-            .post("/api/carts/applyVoucher")
+            .post("/api/carts/voucher")
             .send(data)
             .set("Content-type", "application/json")
             .expect(200);
@@ -225,7 +225,7 @@ describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
             code: "TEST2",
           };
           const response = await supertest(app.server)
-            .post("/api/carts/applyVoucher")
+            .post("/api/carts/voucher")
             .send(data)
             .set("Content-type", "application/json")
             .expect(200);
@@ -265,7 +265,7 @@ describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
             code: "TEST2",
           };
           const response = await supertest(app.server)
-            .post("/api/carts/applyVoucher")
+            .post("/api/carts/voucher")
             .send(data)
             .set("Content-type", "application/json")
             .expect(200);
@@ -303,7 +303,7 @@ describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
         code: "TEST1",
       };
       const response = await supertest(app.server)
-        .post("/api/carts/applyVoucher")
+        .post("/api/carts/voucher")
         .send(data)
         .set("Content-type", "application/json")
         .expect(404);
@@ -326,7 +326,7 @@ describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
         code: "TEST4",
       };
       const response = await supertest(app.server)
-        .post("/api/carts/applyVoucher")
+        .post("/api/carts/voucher")
         .send(data)
         .set("Content-type", "application/json")
         .expect(404);
@@ -351,7 +351,7 @@ describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
       const error = new Error("Service Unavailable");
       mockModel(CartModel).reject(error);
       const response = await supertest(app.server)
-        .post("/api/carts/applyVoucher")
+        .post("/api/carts/voucher")
         .send(data)
         .set("Content-type", "application/json")
         .expect(404);

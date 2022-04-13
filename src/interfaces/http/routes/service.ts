@@ -12,7 +12,7 @@ const servicesRoutes: FastifyPluginCallback = (
   options,
   done
 ) => {
-  fastify.post("/api/services/checkout", checkoutOpts);
+  fastify.post("/api/checkout", checkoutOpts);
   done(); 
 };
 

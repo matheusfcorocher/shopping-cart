@@ -173,7 +173,11 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       describe("deletes lineItems from database", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 2),
+            new LineItem(
+              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              createMoney(6999),
+              2
+            ),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
@@ -195,7 +199,11 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       describe("deletes cart from database", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 2),
+            new LineItem(
+              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              createMoney(6999),
+              2
+            ),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
@@ -217,7 +225,11 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       describe("return success message", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 2),
+            new LineItem(
+              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              createMoney(6999),
+              2
+            ),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
@@ -259,7 +271,11 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       describe("but lineItem isn't found", () => {
         it("returns not found error", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcs", createMoney(6999), 2),
+            new LineItem(
+              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcs",
+              createMoney(6999),
+              2
+            ),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
@@ -285,7 +301,11 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       describe("but some operation fail", () => {
         it("database back to initial state by transaction", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 2),
+            new LineItem(
+              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              createMoney(6999),
+              2
+            ),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
@@ -304,14 +324,15 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
           mockModel(CartModel).reject(error);
           try {
             await cartRepository.delete(cart);
-          } catch {
-          }
+          } catch {}
           jest.restoreAllMocks();
 
           expect(
-            JSON.stringify(await cartRepository.getCartById(
-              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf"
-            ))
+            JSON.stringify(
+              await cartRepository.getCartById(
+                "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf"
+              )
+            )
           ).toEqual(JSON.stringify(cart));
         });
       });
@@ -338,7 +359,11 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [];
           const lineItems2: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 2),
+            new LineItem(
+              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              createMoney(6999),
+              2
+            ),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
@@ -464,9 +489,7 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
     describe("when cart has lineItems", () => {
       describe("delete lineItem from database when quantity is 0", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 0),
-          ];
+          const lineItems: LineItems = [];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
@@ -496,7 +519,11 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       describe("update lineItem from database when quantity > 0", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 4),
+            new LineItem(
+              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              createMoney(6999),
+              4
+            ),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
@@ -514,20 +541,26 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
           await cartRepository.update(cart);
 
           expect(
-            JSON.stringify(await LineItemModel.query()
-              .findOne({
-                ownerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-                ownerType: "cart",
-                productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-              })
-              .then((data) => ObjectionLineItemMapper.toEntity(data!)))
+            JSON.stringify(
+              await LineItemModel.query()
+                .findOne({
+                  ownerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+                  ownerType: "cart",
+                  productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+                })
+                .then((data) => ObjectionLineItemMapper.toEntity(data!))
+            )
           ).toEqual(JSON.stringify(lineItems[0]));
         });
       });
       describe("store lineItem in database", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 2),
+            new LineItem(
+              "8bc94226-3e20-40cb-a507-554fabf36ffa",
+              createMoney(3999),
+              2
+            ),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
@@ -544,21 +577,29 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
           });
           await cartRepository.update(cart);
 
-          expect(JSON.stringify(
-            await LineItemModel.query()
-              .findOne({
-                ownerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
-                ownerType: "cart",
-                productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-              })
-              .then((data) => ObjectionLineItemMapper.toEntity(data!)))
+          expect(
+            JSON.stringify(
+              await LineItemModel.query()
+                .findOne({
+                  ownerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
+                  ownerType: "cart",
+                  productId: "8bc94226-3e20-40cb-a507-554fabf36ffa",
+                })
+                .then((data) => {
+                  return ObjectionLineItemMapper.toEntity(data!);
+                })
+            )
           ).toEqual(JSON.stringify(lineItems[0]));
         });
       });
       describe("update cart from database", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 2),
+            new LineItem(
+              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              createMoney(6999),
+              2
+            ),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
@@ -590,7 +631,11 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       describe("return success message", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 2),
+            new LineItem(
+              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              createMoney(6999),
+              2
+            ),
           ];
           const voucher = new Voucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
@@ -606,7 +651,9 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
             appliedVoucher,
           });
 
-          expect(JSON.stringify(await cartRepository.update(cart))).toEqual(JSON.stringify(cart));
+          expect(JSON.stringify(await cartRepository.update(cart))).toEqual(
+            JSON.stringify(cart)
+          );
         });
       });
     });
@@ -614,7 +661,11 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       describe("but some operation fail", () => {
         it("database back to initial state by transaction", async () => {
           const lineItems: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd", createMoney(6999), 2),
+            new LineItem(
+              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
+              createMoney(6999),
+              2
+            ),
           ];
           const cart = new Cart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",

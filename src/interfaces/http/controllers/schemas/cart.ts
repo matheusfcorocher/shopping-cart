@@ -64,6 +64,8 @@ const addLineItemSchema = {
   body: addLineItemObj,
   response: {
     200: cartObj,
+    400: httpResponseError,
+    500: httpResponseError
   },
 };
 

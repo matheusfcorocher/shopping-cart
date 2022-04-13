@@ -9,7 +9,7 @@ import VoucherModelFactory from "../../../support/factories/models/VoucherModelF
 const { setupIntegrationTest } = require("../../../support/setup");
 
 describe("Interfaces :: Cart :: Routes :: RemoveLineItem", () => {
-  describe("API :: PUT /api/carts/removeLineItem", () => {
+  describe("API :: PUT /api/carts/items", () => {
     setupIntegrationTest();
     beforeEach(async () => {
       await ProductModelFactory.createList([
@@ -159,7 +159,7 @@ describe("Interfaces :: Cart :: Routes :: RemoveLineItem", () => {
             productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           };
           const response = await supertest(app.server)
-            .put("/api/carts/removeLineItem")
+            .del("/api/carts/items")
             .send(data)
             .set("Content-type", "application/json")
             .expect(404);
@@ -182,7 +182,7 @@ describe("Interfaces :: Cart :: Routes :: RemoveLineItem", () => {
           };
 
           const response = await supertest(app.server)
-            .put("/api/carts/removeLineItem")
+            .del("/api/carts/items")
             .send(data)
             .set("Content-type", "application/json")
             .expect(404);
@@ -206,7 +206,7 @@ describe("Interfaces :: Cart :: Routes :: RemoveLineItem", () => {
             productId: "8bc94226-3e20-40cb-a507-554fabf36ffa",
           };
           const response = await supertest(app.server)
-            .put("/api/carts/removeLineItem")
+            .del("/api/carts/items")
             .send(data)
             .set("Content-type", "application/json")
             .expect(200);
@@ -233,7 +233,7 @@ describe("Interfaces :: Cart :: Routes :: RemoveLineItem", () => {
             productId: "8bc94226-3e20-40cb-a507-554fabf36ffa",
           };
           const response = await supertest(app.server)
-            .put("/api/carts/removeLineItem")
+            .del("/api/carts/items")
             .send(data)
             .set("Content-type", "application/json")
             .expect(200);
@@ -263,7 +263,7 @@ describe("Interfaces :: Cart :: Routes :: RemoveLineItem", () => {
             productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           };
           const response = await supertest(app.server)
-            .put("/api/carts/removeLineItem")
+            .del("/api/carts/items")
             .send(data)
             .set("Content-type", "application/json")
             .expect(200);
@@ -283,7 +283,11 @@ describe("Interfaces :: Cart :: Routes :: RemoveLineItem", () => {
             total: 0,
           };
 
-          expect(response.body).toEqual(expected);
+          const response2 = await supertest(app.server)
+          .get("/api/carts/" + data.buyerId)
+          .expect(200);
+
+          expect(response.body).toEqual(response2.body);
         });
       });
     });
@@ -294,7 +298,7 @@ describe("Interfaces :: Cart :: Routes :: RemoveLineItem", () => {
           productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
         };
         const response = await supertest(app.server)
-          .put("/api/carts/removeLineItem")
+        .del("/api/carts/items")
           .send(data)
           .set("Content-type", "application/json")
           .expect(404);
@@ -318,7 +322,7 @@ describe("Interfaces :: Cart :: Routes :: RemoveLineItem", () => {
           productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcx",
         };
         const response = await supertest(app.server)
-          .put("/api/carts/removeLineItem")
+        .del("/api/carts/items")
           .send(data)
           .set("Content-type", "application/json")
           .expect(404);

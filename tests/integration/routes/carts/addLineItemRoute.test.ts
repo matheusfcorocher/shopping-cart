@@ -9,7 +9,7 @@ import VoucherModelFactory from "../../../support/factories/models/VoucherModelF
 const { setupIntegrationTest } = require("../../../support/setup");
 
 describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
-  describe("API :: POST /api/carts/addLineItem", () => {
+  describe("API :: POST /api/carts/items", () => {
     setupIntegrationTest();
     beforeEach(async () => {
       await ProductModelFactory.createList([
@@ -159,7 +159,7 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
             productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           };
           const response = await supertest(app.server)
-            .post("/api/carts/addLineItem")
+            .post("/api/carts/items")
             .send(data)
             .set("Content-type", "application/json")
             .expect(200);
@@ -191,7 +191,7 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
           productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
         };
         const response = await supertest(app.server)
-          .post("/api/carts/addLineItem")
+          .post("/api/carts/items")
           .send(data)
           .set("Content-type", "application/json")
           .expect(200);
@@ -226,7 +226,7 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
         };
         it("returns correct cart", async () => {
           const response = await supertest(app.server)
-            .post("/api/carts/addLineItem")
+            .post("/api/carts/items")
             .send(data)
             .set("Content-type", "application/json")
             .expect(200);
@@ -248,7 +248,7 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
         });
         it("returns correct line items", async () => {
           const response = await supertest(app.server)
-            .post("/api/carts/addLineItem")
+            .post("/api/carts/items")
             .send(data)
             .set("Content-type", "application/json")
             .expect(200);
@@ -277,7 +277,7 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
           productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
         };
         const response = await supertest(app.server)
-          .post("/api/carts/addLineItem")
+          .post("/api/carts/items")
           .send(data)
           .set("Content-type", "application/json")
           .expect(200);
@@ -314,7 +314,7 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
         productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
       };
       const response = await supertest(app.server)
-        .post("/api/carts/addLineItem")
+        .post("/api/carts/items")
         .send(data)
         .set("Content-type", "application/json")
         .expect(404);
@@ -337,7 +337,7 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
         productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcx",
       };
       const response = await supertest(app.server)
-        .post("/api/carts/addLineItem")
+        .post("/api/carts/items")
         .send(data)
         .set("Content-type", "application/json")
         .expect(404);

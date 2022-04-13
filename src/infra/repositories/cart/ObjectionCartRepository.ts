@@ -104,19 +104,30 @@ class ObjectionCartRepository implements CartRepository {
   public async update(cart: Cart): Promise<Cart> {
     return transaction(CartModel, async (BoundCartModel) => {
       const { id, lineItems } = cart;
-
+      const cartDb = await this.getCartById(id);
       const boundCartModel = await this.getCartModelById(id, BoundCartModel);
 
-      const promises = lineItems.map(async (lineItem) => {
-        const hasLineItem = await this.hasLineItem(
-          lineItem.productId,
-          boundCartModel
+      const promises2 = lineItems.map(async (lineItem) => {
+        const itemDb = cartDb.lineItems.find(
+          (item) => item.productId === lineItem.productId
         );
 
-        if (hasLineItem && lineItem.quantity == 0) {
+        if (!itemDb) {        
+          return this.storeLineItem(lineItem, boundCartModel);
+        }
+        
+        return 'ok';
+      });
+
+      const promises = cartDb.lineItems.map(async (lineItem) => {
+        const itemCart = lineItems.find(
+          (item) => item.productId === lineItem.productId
+        );
+
+        if (!itemCart) {
           return this.deleteLineItem(lineItem.productId, boundCartModel);
-        } else if (hasLineItem && lineItem.quantity > 0) {
-          const { unitPrice, quantity, productId } = lineItem;
+        } else if (itemCart) {
+          const { unitPrice, quantity, productId } = itemCart;
           return this.updateLineItem(
             {
               unitPrice: unitPrice.getAmount(),
@@ -125,10 +136,10 @@ class ObjectionCartRepository implements CartRepository {
             },
             boundCartModel
           );
-        } else return this.storeLineItem(lineItem, boundCartModel);
+        }
       });
 
-      await Promise.all(promises);
+      await Promise.all([promises, promises2]);
       const data = ObjectionCartMapper.toDatabase(cart);
 
       return boundCartModel
