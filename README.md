@@ -70,3 +70,33 @@ In short answer, must attend this gist: <a href="https://gist.github.com/talysso
     Use <a href="https://www.npmjs.com/package/ts-node-dev">ts-node-dev</a> for compile typescript code to javascript to NodeJS runs it. And also to automatically reload the server after a file change when on development mode, makes the development faster and easier
   </dd>
 </dl>
+
+## Quick start
+
+0. Do you need a POSTGRES server installed in your machine. I suggest to use this tools: <a href="https://www.electronjs.org/apps/postbird">Postbird</a> for verify your Postgres Database and <a href="https://www.postman.com/">Postman</a> to access the routes of API.
+1. Clone the repository with `git clone https://github.com/matheusfcorocher/shopping-cart.git`
+2. Setup the database on `.env` and also `./src/infra/database/config.ts`.
+3. Install the dependencies with `yarn` (click here if [you don't have Yarn installed](https://yarnpkg.com/docs/install)) in your bash terminal
+4. Create the development and test databases you have setup on `./src/infra/database/config.ts`.
+5. Run the database migrations with `yarn knex migrate:latest`. The default environment is dev. To create database for test, change development env for testing env.
+6. Add some seed data to the development database with `knex seed:run`
+7. Run the application in development mode with `yarn build` then `yarn start`
+8. Access `http://localhost:5000/api/` and you're ready to go!
+
+## Aditional info:
+- Don't forget to run the migrations for the test environment as well (including when you create a new migration) with `yarn knex migrate:latest`
+
+## Scripts
+
+This api comes with a collection of npm scripts to make your life easier, you'll run them with `npm run <script name>` or `yarn <script name>`:
+
+- `knex`: Run commands with knex.
+- `build`: Transpile the ts files to js in builder folder.
+- `start`: Start the development server with Node.js
+- `tsnd`: Run a file with typescript ts-node-dev
+- `test`: Run all tests suite with option --runInBand and NODE_ENV=test
+
+## Endpoints of this api and requirements
+
+1. To see all endpoints of this api, you should run `yarn build` then `yarn start`.
+2. After initialize the server you go to address `http://localhost:5000/api/docs` to see all routes of api in Swagger UI.
