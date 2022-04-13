@@ -13,6 +13,7 @@
     "dinero.js": "^1.9.1",
     "dotenv": "^16.0.0",
     "fastify": "^3.27.1",
+    "fastify-swagger": "^5.1.0",
     "objection": "^3.0.0",
     "pg": "^8.7.3",
     "uuid": "^8.3.2"
@@ -35,8 +36,8 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "start": "node server.js",
-    "server": "tsnd server.js",
+    "start": "node build/server.js",
+    "server": "tsnd build/server.js",
     "dev": "tsnd --respawn dotenv/config server.ts",
     "knex": "knex",
     "tsnd": "tsnd",

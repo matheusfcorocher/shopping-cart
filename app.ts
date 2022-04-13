@@ -1,10 +1,12 @@
 import fastify from 'fastify';
+import fastswagger from 'fastify-swagger';
 import Ajv from "ajv";
 import { container, Container } from './src/container';
 import { cartsRoutes } from './src/interfaces/http/routes/cart';
 import { productsRoutes } from './src/interfaces/http/routes/product';
 import { servicesRoutes } from './src/interfaces/http/routes/service';
 import { vouchersRoutes } from './src/interfaces/http/routes/voucher';
+import { swaggerOptions } from './src/config/swagger';
 
 
 // this declaration must be in scope of the typescript interpreter to work
@@ -57,6 +59,8 @@ app.decorateRequest("container", null);
 app.addHook("onRequest", async (req, reply) => {
   req.container = container;
 });
+
+app.register(fastswagger, swaggerOptions);
 
 app.register(cartsRoutes);
 app.register(productsRoutes);
