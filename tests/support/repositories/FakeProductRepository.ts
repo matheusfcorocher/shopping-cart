@@ -17,7 +17,7 @@ class FakeProductRepository implements ProductRepository {
     return uuidv4();
   }
   public getProductById(id: string): Promise<Product> {
-    const result = this.products.filter((cargo) => cargo.id.normalize() === id.normalize())[0];
+    const result = this.products.find((cargo) => cargo.id.normalize() === id.normalize());
     if (result === undefined) {
       const notFoundError = new Error("Not Found Error");
     //   notFoundError.CODE = "NOTFOUND_ERROR";
@@ -28,14 +28,14 @@ class FakeProductRepository implements ProductRepository {
   }
 
   public update(id: string, data: ProductDataProps): Promise<Product> {
-    const product = this.products.filter((p) => p.id === id)[0];
+    const product = this.products.find((p) => p.id === id);
     const updatedProduct = new Product({
-      ...product,
+      ...product!,
       ...data
     });
     const index = this.products.findIndex((p) => p.id === id)
     this.products.splice(index, 1, updatedProduct);
-    return Promise.resolve(product);
+    return Promise.resolve(product!);
   }
  
 }

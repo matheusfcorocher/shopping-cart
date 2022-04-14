@@ -18,7 +18,7 @@ class FakeVoucherRepository implements VoucherRepository {
     }
     
     public getVoucherByCode(code: string): Promise<Voucher> {
-        const result = this.vouchers.filter((voucher) => voucher.code.normalize() === code.normalize())[0];
+        const result = this.vouchers.find((voucher) => voucher.code.normalize() === code.normalize());
         if (result === undefined) {
         const notFoundError = new Error("Not Found Error");
         //   notFoundError.CODE = "NOTFOUND_ERROR";
@@ -28,7 +28,7 @@ class FakeVoucherRepository implements VoucherRepository {
         return Promise.resolve(result);
     }
     public getVoucherById(id: string): Promise<Voucher> {
-        const result = this.vouchers.filter((voucher) => voucher.id === id)[0];
+        const result = this.vouchers.find((voucher) => voucher.id === id);
         if (result === undefined) {
         const notFoundError = new Error("Not Found Error");
         //   notFoundError.CODE = "NOTFOUND_ERROR";

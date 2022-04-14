@@ -31,7 +31,7 @@ class FakeCartRepository implements CartRepository {
   }
 
   public getCartById(id: string): Promise<Cart> {
-    const result = this.carts.filter((cart) => cart.id === id)[0];
+    const result = this.carts.find((cart) => cart.id === id);
     if (result === undefined) {
       const notFoundError = new Error("Not Found Error");
       notFoundError.message = `Cart with id ${id} can't be found.`;
