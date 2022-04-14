@@ -8,7 +8,7 @@ type PaymentMethod =
   | "bill"
   | "crypto wallet";
 
-interface OrderData {
+interface OrderProps {
   id: string;
   buyerId: string;
   lineItems: LineItems;
@@ -23,6 +23,28 @@ type Order = {
   discount: Money;
   paymentMethod: PaymentMethod;
 }
+
+function calculateCartWeight(order: Order): number {
+  return order.lineItems
+    ? order.lineItems.reduce(
+        (acc: number, item: LineItem) => acc + item.quantity,
+        0
+      )
+    : 0;
+}
+
+function calculateShippingCost(weight: number): Money {
+  //If weight is above 10kg, will charge $7 for each
+  //5kg that cart has
+  return ((createMoney(weight).subtract(createMoney(10))).divide(5)).multiply(700).add(createMoney(3000));
+}
+
+
+// public functions
+
+function createOrder({ id, buyerId, lineItems, discount, paymentMethod }: OrderProps) : Order {
+  return { id, buyerId, lineItems, discount, paymentMethod };
+};
 
 function subtotal(order: Order): Money {
   return order.lineItems
@@ -48,22 +70,6 @@ function total(order: Order): Money {
   return subtotal(order).add(shipping(order)).subtract(order.discount);
 }
 
-function calculateCartWeight(order: Order): number {
-  return order.lineItems
-    ? order.lineItems.reduce(
-        (acc: number, item: LineItem) => acc + item.quantity,
-        0
-      )
-    : 0;
-}
-
-function calculateShippingCost(weight: number): Money {
-  //If weight is above 10kg, will charge $7 for each
-  //5kg that cart has
-  return ((createMoney(weight).subtract(createMoney(10))).divide(5)).multiply(700).add(createMoney(3000));
-}
 
 
-
-
-export { OrderData, PaymentMethod, subtotal, total, shipping};
+export { OrderProps, PaymentMethod, createOrder, subtotal, total, shipping};
