@@ -388,7 +388,15 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
           ];
           const carts = await cartRepository.getAllCarts();
 
-          expect(JSON.stringify(carts)).toEqual(JSON.stringify(expected));
+          expect(
+            JSON.stringify(
+              carts.sort((a: Cart, b: Cart) => a.id.localeCompare(b.id))
+            )
+          ).toEqual(
+            JSON.stringify(
+              expected.sort((a: Cart, b: Cart) => a.id.localeCompare(b.id))
+            )
+          );
         });
       });
     });

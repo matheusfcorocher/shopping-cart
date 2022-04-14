@@ -199,7 +199,7 @@ describe("Interfaces :: Cart :: Routes :: RemoveVoucher", () => {
     });
     describe("When cart has line items", () => {
       describe("and cart doesnt have voucher", () => {
-        it("returns correct cart", async () => {
+        it("returns correct all other properties without lineItems", async () => {
           const data = {
             buyerId: "dc60209d-1feb-4465-b936-882e93bcd0c9",
           };
@@ -210,18 +210,6 @@ describe("Interfaces :: Cart :: Routes :: RemoveVoucher", () => {
           const expected = {
             id: "dc60209d-1feb-4465-b936-882e93bcd0c9",
             buyerId: "dc60209d-1feb-4465-b936-882e93bcd0c9",
-            lineItems: [
-              {
-                productId: "92d91715-34ad-449e-9b81-73f1a74ef44e",
-                unitPrice: 299.99,
-                quantity: 2,
-              },
-              {
-                productId: "8bc94226-3e20-40cb-a507-554fabf36ffa",
-                unitPrice: 39.99,
-                quantity: 2,
-              },
-            ],
             appliedVoucher: null,
             discount: 0,
             shipping: 0,
@@ -229,7 +217,37 @@ describe("Interfaces :: Cart :: Routes :: RemoveVoucher", () => {
             total: 679.96,
           };
 
-          expect(response.body).toEqual(expected);
+          const responseWithoutLineItems = {
+            ...response.body,
+            lineItems: undefined,
+          };
+
+          expect(responseWithoutLineItems).toEqual(expected);
+        });
+        it("returns correct lineItems", async () => {
+          const data = {
+            buyerId: "dc60209d-1feb-4465-b936-882e93bcd0c9",
+          };
+          const response = await supertest(app.server)
+            .del(`/api/carts/voucher/` + data.buyerId)
+            .expect(200);
+
+          const expectedLineItems = [
+            {
+              productId: "92d91715-34ad-449e-9b81-73f1a74ef44e",
+              unitPrice: 299.99,
+              quantity: 2,
+            },
+            {
+              productId: "8bc94226-3e20-40cb-a507-554fabf36ffa",
+              unitPrice: 39.99,
+              quantity: 2,
+            },
+          ];
+
+          expect(response.body.lineItems).toEqual(
+            expect.arrayContaining(expectedLineItems)
+          );
         });
       });
       describe("and cart has voucher", () => {

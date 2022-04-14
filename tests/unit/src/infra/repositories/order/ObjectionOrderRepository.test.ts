@@ -113,7 +113,11 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [];
           const lineItems2: LineItems = [
-            new LineItem("7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf", createMoney(6999), 2),
+            new LineItem(
+              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              createMoney(6999),
+              2
+            ),
           ];
 
           const expected = [
@@ -134,7 +138,15 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
           ];
           const orders = await orderRepository.getAllOrders();
 
-          expect(JSON.stringify(orders)).toEqual(JSON.stringify(expected));
+          expect(
+            JSON.stringify(
+              orders.sort((a: Order, b: Order) => a.id.localeCompare(b.id))
+            )
+          ).toEqual(
+            JSON.stringify(
+              expected.sort((a: Order, b: Order) => a.id.localeCompare(b.id))
+            )
+          );
         });
       });
     });
@@ -174,7 +186,11 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
       describe("store order in database", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("92d91715-34ad-449e-9b81-73f1a74ef44e", createMoney(27999), 2),
+            new LineItem(
+              "92d91715-34ad-449e-9b81-73f1a74ef44e",
+              createMoney(27999),
+              2
+            ),
           ];
           const order = new Order({
             id: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",
@@ -186,18 +202,24 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
           await orderRepository.store(order);
 
           expect(
-            JSON.stringify(await OrderModel.query()
-              .findOne({
-                uuid: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",
-              })
-              .then((d) => ObjectionOrderMapper.toEntity(d!, lineItems)))
+            JSON.stringify(
+              await OrderModel.query()
+                .findOne({
+                  uuid: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",
+                })
+                .then((d) => ObjectionOrderMapper.toEntity(d!, lineItems))
+            )
           ).toEqual(JSON.stringify(order));
         });
       });
       describe("store lineItem in database", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("92d91715-34ad-449e-9b81-73f1a74ef44e", createMoney(27999), 2),
+            new LineItem(
+              "92d91715-34ad-449e-9b81-73f1a74ef44e",
+              createMoney(27999),
+              2
+            ),
           ];
           const order = new Order({
             id: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",
@@ -209,20 +231,26 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
           await orderRepository.store(order);
 
           expect(
-            JSON.stringify(await LineItemModel.query()
-              .findOne({
-                ownerId: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",
-                ownerType: "order",
-                productId: "92d91715-34ad-449e-9b81-73f1a74ef44e",
-              })
-              .then((data) => ObjectionLineItemMapper.toEntity(data!)))
+            JSON.stringify(
+              await LineItemModel.query()
+                .findOne({
+                  ownerId: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",
+                  ownerType: "order",
+                  productId: "92d91715-34ad-449e-9b81-73f1a74ef44e",
+                })
+                .then((data) => ObjectionLineItemMapper.toEntity(data!))
+            )
           ).toEqual(JSON.stringify(lineItems[0]));
         });
       });
       describe("return success message", () => {
         it("returns correct result", async () => {
           const lineItems: LineItems = [
-            new LineItem("92d91715-34ad-449e-9b81-73f1a74ef44e", createMoney(27999), 2),
+            new LineItem(
+              "92d91715-34ad-449e-9b81-73f1a74ef44e",
+              createMoney(27999),
+              2
+            ),
           ];
           const order = new Order({
             id: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",
@@ -242,7 +270,11 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
       describe("but some operation fail", () => {
         it("database back to initial state by transaction", async () => {
           const lineItems: LineItems = [
-            new LineItem("92d91715-34ad-449e-9b81-73f1a74ef44e", createMoney(27999), 2),
+            new LineItem(
+              "92d91715-34ad-449e-9b81-73f1a74ef44e",
+              createMoney(27999),
+              2
+            ),
           ];
           const order = new Order({
             id: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",

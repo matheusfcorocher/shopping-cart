@@ -17,7 +17,7 @@ class FakeCartRepository implements CartRepository {
   }
 
   public getCartByBuyerId(buyerId: string): Promise<Cart> {
-    const result = this.carts.filter((cart) => cart?.buyerId?.normalize() === buyerId.normalize())[0];
+    const result = this.carts.find((cart) => cart?.buyerId?.normalize() === buyerId.normalize());
     if (result === undefined) {
       const lineItems : Array<LineItem> = []; 
       const newCart = new Cart({

@@ -72,7 +72,19 @@ describe("Infra :: Product :: ObjectionProductRepository", () => {
             }),
           ];
 
-          expect(JSON.stringify(products)).toEqual(JSON.stringify(expected));
+          expect(
+            JSON.stringify(
+              products.sort((a: Product, b: Product) =>
+                a.id.localeCompare(b.id)
+              )
+            )
+          ).toEqual(
+            JSON.stringify(
+              expected.sort((a: Product, b: Product) =>
+                a.id.localeCompare(b.id)
+              )
+            )
+          );
         });
       });
     });

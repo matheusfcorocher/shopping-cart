@@ -37,14 +37,14 @@ describe("Infra :: Voucher :: ObjectionVoucherRepository", () => {
       describe("result is a array instance of vouchers", () => {
         it("returns correct result", async () => {
           const vouchers = await voucherRepository.getAllVouchers();
-          
+
           expect(vouchers[0]).toBeInstanceOf(Voucher);
         });
       });
       describe("result has correct length", () => {
         it("returns correct result", async () => {
           const vouchers = await voucherRepository.getAllVouchers();
-          
+
           expect(vouchers.length).toBe(3);
         });
       });
@@ -73,7 +73,19 @@ describe("Infra :: Voucher :: ObjectionVoucherRepository", () => {
             }),
           ];
 
-          expect(JSON.stringify(vouchers)).toEqual(JSON.stringify(expected));
+          expect(
+            JSON.stringify(
+              vouchers.sort((a: Voucher, b: Voucher) =>
+                a.id.localeCompare(b.id)
+              )
+            )
+          ).toEqual(
+            JSON.stringify(
+              expected.sort((a: Voucher, b: Voucher) =>
+                a.id.localeCompare(b.id)
+              )
+            )
+          );
         });
       });
     });
@@ -111,9 +123,9 @@ describe("Infra :: Voucher :: ObjectionVoucherRepository", () => {
         const notFoundError = new Error("Not Found Error");
         notFoundError.message = `Voucher with id ${id} can't be found.`;
 
-        await expect(() => voucherRepository.getVoucherById(id)).rejects.toThrow(
-          notFoundError
-        );
+        await expect(() =>
+          voucherRepository.getVoucherById(id)
+        ).rejects.toThrow(notFoundError);
       });
     });
   });
@@ -121,9 +133,7 @@ describe("Infra :: Voucher :: ObjectionVoucherRepository", () => {
   describe("#getVoucherByCode", () => {
     describe("result is a voucher instance", () => {
       it("returns the correct result", async () => {
-        const voucher = await voucherRepository.getVoucherByCode(
-          "TEST1"
-        );
+        const voucher = await voucherRepository.getVoucherByCode("TEST1");
         const expected = new Voucher({
           id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           code: "TEST1",
@@ -140,9 +150,9 @@ describe("Infra :: Voucher :: ObjectionVoucherRepository", () => {
         const notFoundError = new Error("Not Found Error");
         notFoundError.message = `Couldn't find voucher with code: ${code} in database. Verify if you are passing the correct code.`;
 
-        await expect(() => voucherRepository.getVoucherByCode(code)).rejects.toThrow(
-          notFoundError
-        );
+        await expect(() =>
+          voucherRepository.getVoucherByCode(code)
+        ).rejects.toThrow(notFoundError);
       });
     });
   });
@@ -150,10 +160,12 @@ describe("Infra :: Voucher :: ObjectionVoucherRepository", () => {
     describe("result is a uuid", () => {
       it("returns the correct result", () => {
         const uuid = voucherRepository.getNextId();
-        const expected = [expect.stringMatching(/^\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b/)]
-        expect([uuid]).toEqual(
-          expect.arrayContaining(expected),
-        );
+        const expected = [
+          expect.stringMatching(
+            /^\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b/
+          ),
+        ];
+        expect([uuid]).toEqual(expect.arrayContaining(expected));
       });
     });
   });
