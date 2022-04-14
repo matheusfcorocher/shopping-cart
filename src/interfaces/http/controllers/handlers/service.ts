@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { CheckoutDomainServiceProps } from "../../../../domain/services/CheckoutDomainService";
-import { EHConverter, HttpResponseError } from "../../../../lib/CustomError";
+import { EHConverter } from "../../../../lib/CustomError";
 
 const checkoutHandler = async (
   req: FastifyRequest<{

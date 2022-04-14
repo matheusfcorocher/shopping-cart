@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { EHConverter, HttpResponseError } from "../../../../lib/CustomError";
+import { EHConverter } from "../../../../lib/CustomError";
 import { CartSerializer } from "../serializers/CartSerializer";
 
 const addLineItemHandler = async (

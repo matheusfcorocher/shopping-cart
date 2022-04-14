@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { EHConverter, HttpResponseError } from "../../../../lib/CustomError";
+import { EHConverter } from "../../../../lib/CustomError";
 import { VoucherSerializer } from "../serializers/VoucherSerializer";
 
 const getVouchersListHandler = async (

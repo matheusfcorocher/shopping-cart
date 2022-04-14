@@ -1,11 +1,9 @@
-import ApplyVoucher from "../../../../../src/application/Cart/ApplyVoucher";
 import RemoveVoucher from "../../../../../src/application/Cart/RemoveVoucher";
 import { Cart, Voucher } from "../../../../../src/domain/entities";
 import { LineItems, LineItem } from "../../../../../src/domain/entities/Cart";
 import { appliedFactory } from "../../../../../src/domain/factories/AppliedVoucherFactory";
 import { createMoney } from "../../../../../src/domain/valueObjects/Money";
 import { FakeCartRepository } from "../../../../support/repositories/FakeCartRepository";
-import { FakeVoucherRepository } from "../../../../support/repositories/FakeVoucherRepository";
 
 describe("Application :: Cart :: RemoveVoucher", () => {
   describe("#execute", () => {
@@ -14,33 +12,21 @@ describe("Application :: Cart :: RemoveVoucher", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [];
           const cart = new Cart({
-            id: 'aaa',
+            id: "aaa",
             buyerId: "aaa",
             lineItems,
           });
           const carts = [cart];
-          const voucher = new Voucher({
-            id: 'aaa',
-            code: "XESBQ",
-            type: "fixed",
-            amount: createMoney(50),
-          });
-          const vouchers = [voucher];
-
           const newCart = new Cart({
-            id: 'aaa',
+            id: "aaa",
             buyerId: "aaa",
             lineItems,
           });
 
           const cartRepository = new FakeCartRepository(carts);
-          const voucherRepository = new FakeVoucherRepository(vouchers);
-          const removeVoucher = new RemoveVoucher(
-            cartRepository,
-            voucherRepository
-          );
+          const removeVoucher = new RemoveVoucher(cartRepository);
 
-          const result = await removeVoucher.execute('aaa');
+          const result = await removeVoucher.execute("aaa");
 
           expect(result).toEqual(newCart);
         });
@@ -49,7 +35,7 @@ describe("Application :: Cart :: RemoveVoucher", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [];
           const voucher = new Voucher({
-            id: 'aaa',
+            id: "aaa",
             code: "XESBQ",
             type: "fixed",
             amount: createMoney(50),
@@ -58,29 +44,25 @@ describe("Application :: Cart :: RemoveVoucher", () => {
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
 
           const cart = new Cart({
-            id: 'aaa',
+            id: "aaa",
             buyerId: "aaa",
             lineItems,
             appliedVoucher: appliedVoucher,
           });
           const carts = [cart];
 
-          const vouchers = [voucher];
-
           const newCart = new Cart({
-            id: 'aaa',
+            id: "aaa",
             buyerId: "aaa",
             lineItems,
           });
 
           const cartRepository = new FakeCartRepository(carts);
-          const voucherRepository = new FakeVoucherRepository(vouchers);
           const removeVoucher = new RemoveVoucher(
-            cartRepository,
-            voucherRepository
+            cartRepository
           );
 
-          const result = await removeVoucher.execute('aaa');
+          const result = await removeVoucher.execute("aaa");
 
           expect(result).toEqual(newCart);
         });
@@ -91,37 +73,28 @@ describe("Application :: Cart :: RemoveVoucher", () => {
       describe("and cart doesnt have voucher", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [
-            new LineItem('aaa', createMoney(20), 2),
-            new LineItem('bbb', createMoney(40), 1),
+            new LineItem("aaa", createMoney(20), 2),
+            new LineItem("bbb", createMoney(40), 1),
           ];
           const cart = new Cart({
-            id: 'aaa',
+            id: "aaa",
             buyerId: "aaa",
             lineItems,
           });
           const carts = [cart];
-          const voucher = new Voucher({
-            id: 'aaa',
-            code: "XESBQ",
-            type: "fixed",
-            amount: createMoney(50),
-          });
-          const vouchers = [voucher];
-
+          
           const newCart = new Cart({
-            id: 'aaa',
+            id: "aaa",
             buyerId: "aaa",
             lineItems,
           });
 
           const cartRepository = new FakeCartRepository(carts);
-          const voucherRepository = new FakeVoucherRepository(vouchers);
           const removeVoucher = new RemoveVoucher(
-            cartRepository,
-            voucherRepository
+            cartRepository
           );
 
-          const result = await removeVoucher.execute('aaa');
+          const result = await removeVoucher.execute("aaa");
 
           expect(result).toEqual(newCart);
         });
@@ -129,11 +102,11 @@ describe("Application :: Cart :: RemoveVoucher", () => {
       describe("and cart has voucher", () => {
         it("returns correct cart", async () => {
           const lineItems: LineItems = [
-            new LineItem('aaa', createMoney(20), 2),
-            new LineItem('bbb', createMoney(40), 1),
+            new LineItem("aaa", createMoney(20), 2),
+            new LineItem("bbb", createMoney(40), 1),
           ];
           const voucher = new Voucher({
-            id: 'aaa',
+            id: "aaa",
             code: "XESBQ",
             type: "fixed",
             amount: createMoney(50),
@@ -142,29 +115,25 @@ describe("Application :: Cart :: RemoveVoucher", () => {
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
 
           const cart = new Cart({
-            id: 'aaa',
+            id: "aaa",
             buyerId: "aaa",
             lineItems,
             appliedVoucher: appliedVoucher,
           });
           const carts = [cart];
 
-          const vouchers = [voucher];
-
           const newCart = new Cart({
-            id: 'aaa',
+            id: "aaa",
             buyerId: "aaa",
             lineItems,
           });
 
           const cartRepository = new FakeCartRepository(carts);
-          const voucherRepository = new FakeVoucherRepository(vouchers);
           const removeVoucher = new RemoveVoucher(
-            cartRepository,
-            voucherRepository
+            cartRepository
           );
 
-          const result = await removeVoucher.execute('aaa');
+          const result = await removeVoucher.execute("aaa");
 
           expect(result).toEqual(newCart);
         });
@@ -175,37 +144,26 @@ describe("Application :: Cart :: RemoveVoucher", () => {
       it("returns not found error", async () => {
         const lineItems: LineItems = [];
         const cart = new Cart({
-          id: 'aaa',
+          id: "aaa",
           buyerId: "aaa",
           lineItems,
         });
         const carts = [cart];
-        const voucher = new Voucher({
-          id: 'aaa',
-          code: "XESBQ",
-          type: "fixed",
-          amount: createMoney(50),
-        });
-        const vouchers = [voucher];
-
+        
         const cartRepository = new FakeCartRepository(carts);
-        const voucherRepository = new FakeVoucherRepository(vouchers);
         const removeVoucher = new RemoveVoucher(
-          cartRepository,
-          voucherRepository
+          cartRepository
         );
 
         const notFoundError = new Error("Not Found Error");
         notFoundError.message = `Cart with id bbb can't be found.`;
 
-        expect(await removeVoucher.execute('bbb')).toEqual(
-          expect.objectContaining(
-            {
-              id: expect.any(String),
-              buyerId: expect.any(String),
-              lineItems,
-            }
-          )
+        expect(await removeVoucher.execute("bbb")).toEqual(
+          expect.objectContaining({
+            id: expect.any(String),
+            buyerId: expect.any(String),
+            lineItems,
+          })
         );
       });
     });
@@ -214,18 +172,11 @@ describe("Application :: Cart :: RemoveVoucher", () => {
       it("returns error", async () => {
         const lineItems: LineItems = [];
         const cart = new Cart({
-          id: 'aaa',
+          id: "aaa",
           buyerId: "aaa",
           lineItems,
         });
         const carts = [cart];
-        const voucher = new Voucher({
-          id: 'aaa',
-          code: "XESBQ",
-          type: "fixed",
-          amount: createMoney(50),
-        });
-        const vouchers = [voucher];
 
         const error = new Error("Service Unavailable");
 
@@ -233,13 +184,11 @@ describe("Application :: Cart :: RemoveVoucher", () => {
         cartRepository.update = () => {
           throw error;
         };
-        const voucherRepository = new FakeVoucherRepository(vouchers);
         const removeVoucher = new RemoveVoucher(
-          cartRepository,
-          voucherRepository
+          cartRepository
         );
 
-        await expect(() => removeVoucher.execute('aaa')).rejects.toThrow(error);
+        await expect(() => removeVoucher.execute("aaa")).rejects.toThrow(error);
       });
     });
   });

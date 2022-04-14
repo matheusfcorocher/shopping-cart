@@ -2,13 +2,13 @@ import { Voucher } from "../../domain/entities";
 import { VoucherRepository } from "../../domain/repositories/VoucherRepository";
 
 export default class ListVouchers {
-  productRepository: VoucherRepository;
+  voucherRepository: VoucherRepository;
 
-  constructor(productRepository: VoucherRepository) {
-    this.productRepository = productRepository;
+  constructor(voucherRepository: VoucherRepository) {
+    this.voucherRepository = voucherRepository;
   }
 
   public async execute(): Promise<Array<Voucher>> {
-      return await this.productRepository.getAllVouchers();
+      return await this.voucherRepository.getAllVouchers();
   }
 }

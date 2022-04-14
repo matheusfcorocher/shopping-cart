@@ -1,14 +1,10 @@
 import { Cart } from "../../domain/entities";
-import { appliedFactory } from "../../domain/factories/AppliedVoucherFactory";
 import { CartRepository } from "../../domain/repositories/CartRepository";
-import { VoucherRepository } from "../../domain/repositories/VoucherRepository";
 export default class RemoveVoucher {
   cartRepository: CartRepository;
-  voucherRepository: VoucherRepository;
 
-  constructor(cartRepository: CartRepository, voucherRepository: VoucherRepository) {
+  constructor(cartRepository: CartRepository) {
     this.cartRepository = cartRepository;
-    this.voucherRepository = voucherRepository;
   }
 
   public async execute(buyerId: string): Promise<Cart> {

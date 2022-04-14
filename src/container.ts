@@ -33,7 +33,7 @@ const addLineItem = new AddLineItem(cartRepo, productRepo);
 const applyVoucher = new ApplyVoucher(cartRepo, voucherRepo);
 const getCurrentCart = new GetCurrentCart(cartRepo);
 const removeLineItem = new RemoveLineItem(cartRepo, productRepo);
-const removeVoucher = new RemoveVoucher(cartRepo, voucherRepo);
+const removeVoucher = new RemoveVoucher(cartRepo);
 
 //Product Use Cases
 const listProducts = new ListProducts(productRepo);

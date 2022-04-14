@@ -1,5 +1,4 @@
 import { Cart } from "../../domain/entities";
-import { LineItem } from "../../domain/entities/Cart";
 import { CartRepository } from "../../domain/repositories/CartRepository";
 import { ProductRepository } from "../../domain/repositories/ProductRepository";
 export default class RemoveLineItem {
