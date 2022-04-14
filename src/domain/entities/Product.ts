@@ -5,23 +5,21 @@ type ProductProps = {
   name: string;
   price: Money;
   available: number;
-}
-export default class Product {
-  id: string;
+};
+
+type Product = {
+  id: string,
   name: string;
   price: Money;
   available: number;
+};
 
-  constructor({id, name, price, available} : ProductProps) {
-    this.id = id;
-    this.name = name;
-    this.price = price;
-    this.available = available;
-  }
-
-  public isAvailable(): boolean {
-    return this.available > 0;
-  }
+function isProductAvailable(product: Product) : boolean {
+  return product.available > 0
 }
 
-export { ProductProps };
+function createProduct({ id, name, price, available}: ProductProps) : Product {
+  return { id, name, price, available };
+};
+
+export { createProduct, isProductAvailable, ProductProps };
