@@ -1,4 +1,4 @@
-import { Cart } from "../entities";
+import { Cart } from "../entities/Cart";
 
 interface CartRepository {
   getAllCarts(): Promise<Array<Cart>>;

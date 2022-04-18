@@ -1,4 +1,12 @@
-type BuyerProps = {
+type Address = {
+  postalCode: string;
+  street: string;
+  district: string;
+  city: string;
+  country: string;
+};
+
+type Buyer = {
   id: string;
   name: string;
   birthDate: Date;
@@ -6,27 +14,17 @@ type BuyerProps = {
   address: Address;
 };
 
-type Address = {
-    postalCode: string;
-    street: string;
-    district: string;
-    city: string;
-    country: string;
-}
-export default class Buyer {
-  id: string;
-  name: string;
-  birthDate: Date;
-  email: string;
-  address: Address;
-
-  constructor({ id, name, birthDate, email, address }: BuyerProps) {
-    this.id = id;
-    this.name = name;
-    this.birthDate = birthDate;
-    this.email = email;
-    this.address = address;
-  }
+//public functions
+function createBuyer({
+  id,
+  name,
+  birthDate,
+  email,
+  address,
+}: Buyer): Buyer {
+  return { id, name, birthDate, email, address };
 }
 
-export { Address };
+export { Address, Buyer};
+
+export { createBuyer };

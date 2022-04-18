@@ -8,7 +8,7 @@ type PaymentMethod =
   | "bill"
   | "crypto wallet";
 
-interface OrderProps {
+type Order = {
   id: string;
   buyerId: string;
   lineItems: LineItems;
@@ -16,8 +16,7 @@ interface OrderProps {
   paymentMethod: PaymentMethod;
 }
 
-type Order = {
-  id: string;
+type OrderData = {
   buyerId: string;
   lineItems: LineItems;
   discount: Money;
@@ -42,7 +41,7 @@ function calculateShippingCost(weight: number): Money {
 
 // public functions
 
-function createOrder({ id, buyerId, lineItems, discount, paymentMethod }: OrderProps) : Order {
+function createOrder({ id, buyerId, lineItems, discount, paymentMethod }: Order) : Order {
   return { id, buyerId, lineItems, discount, paymentMethod };
 };
 
@@ -70,6 +69,7 @@ function total(order: Order): Money {
   return subtotal(order).add(shipping(order)).subtract(order.discount);
 }
 
+export { Order, OrderData, PaymentMethod };
 
+export {createOrder, subtotal, total, shipping};
 
-export { OrderProps, PaymentMethod, createOrder, subtotal, total, shipping};

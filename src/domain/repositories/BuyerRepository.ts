@@ -1,4 +1,4 @@
-import Buyer from "../entities/Buyer";
+import { Buyer } from "../entities/Buyer";
 
 interface BuyerRepository {
   getAllBuyers(): Promise<Array<Buyer>>;

@@ -1,4 +1,4 @@
-import { Order } from "../entities";
+import { Order } from "../entities/Order";
 
 interface OrderRepository {
   getAllOrders(): Promise<Array<Order>>;

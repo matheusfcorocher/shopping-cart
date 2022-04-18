@@ -1,4 +1,4 @@
-import { Product } from "../entities";
+import { Product } from "../entities/Product";
 import { Money } from "../valueObjects/Money";
 
 interface ProductDataProps {

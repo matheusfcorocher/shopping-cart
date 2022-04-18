@@ -1,12 +1,5 @@
 import { Money } from "../valueObjects/Money";
 
-type ProductProps = {
-  id: string,
-  name: string;
-  price: Money;
-  available: number;
-};
-
 type Product = {
   id: string,
   name: string;
@@ -18,8 +11,10 @@ function isProductAvailable(product: Product) : boolean {
   return product.available > 0
 }
 
-function createProduct({ id, name, price, available}: ProductProps) : Product {
+function createProduct({ id, name, price, available}: Product) : Product {
   return { id, name, price, available };
 };
 
-export { createProduct, isProductAvailable, ProductProps };
+export { Product };
+
+export { createProduct, isProductAvailable };

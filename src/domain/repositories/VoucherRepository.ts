@@ -1,4 +1,4 @@
-import { Voucher } from "../entities";
+import { Voucher } from "../entities/Voucher";
 
 interface VoucherRepository {
     getAllVouchers(): Promise<Array<Voucher>>

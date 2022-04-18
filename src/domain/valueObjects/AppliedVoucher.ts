@@ -1,96 +1,111 @@
 import { DomainError } from "../../lib/CustomError";
-import { VoucherType } from "../entities/Voucher";
+import { Voucher, VoucherType } from "../entities/Voucher";
 import { createMoney, Money } from "./Money";
 
-type AppliedVoucherProps = {
+type AppliedVoucher = {
   voucherId: string;
   type: VoucherType;
   amount?: Money | null;
   minValue?: Money | null;
+  // apply: ({subtotal, shipping} : ApplyProps) => Money;
 };
 
-abstract class AppliedVoucher {
-  voucherId: string;
-  type: VoucherType;
-  amount?: Money | null;
-  minValue?: Money | null;
+type ApplyProps = {
+  subtotal: Money;
+  shipping: Money;
+  appliedVoucher: AppliedVoucher;
+};
 
-  constructor({
-    voucherId,
-    type,
-    amount,
-    minValue
-  }: AppliedVoucherProps) {
-    this.voucherId = voucherId;
-    this.type = type;
-    this.amount = amount;
-    this.minValue = minValue;
-  }
+type ApplyPercentualVoucherProps = {
+  subtotal: Money;
+  appliedVoucher: AppliedVoucher;
+};
 
-  abstract apply(subtotal: Money, shipping: Money): Money;
+//public functions
+
+function createFixedVoucher({
+  voucherId,
+  type,
+  amount,
+}: AppliedVoucher): AppliedVoucher {
+  return { voucherId, type, amount };
 }
 
-//FixedVoucher
-
-class FixedVoucher extends AppliedVoucher {
-  constructor({
-    voucherId,
-    type,
-    amount,
-  }: AppliedVoucherProps) {
-    super({ voucherId, type, amount});
+function createPercentualVoucher({
+  voucherId,
+  type,
+  amount,
+}: AppliedVoucher): AppliedVoucher {
+  if (!isInRange({ voucherId, type, amount })) {
+    const internalError = new DomainError({
+      title: "Internal Error",
+      code: "INTERNAL_ERROR",
+      message: "PercentualVoucher must have an amount between 0 and 100.",
+    });
+    throw internalError;
   }
-
-  public apply(subtotal: Money, shipping: Money): Money {
-    return this.amount!;
-  }
+  return { voucherId, type, amount };
 }
 
-//PercentualVoucher
-
-class PercentualVoucher extends AppliedVoucher {
-  constructor({
-    voucherId,
-    type,
-    amount,
-  }: AppliedVoucherProps) {
-    super({ voucherId, type, amount});
-    if(!this.isInRange()) {
-      const internalError = new DomainError({
-        title: "Internal Error",
-        code: "INTERNAL_ERROR",
-        message: "PercentualVoucher must have an amount between 0 and 100.",
-      });
-      throw internalError;
-    } 
-  }
-
-  public apply(subtotal: Money, shipping: Money): Money {
-    return subtotal.multiply(this.amount?.getAmount()!).divide(100);
-  }
-
-  private isInRange(): boolean {
-    return this.amount!.greaterThanOrEqual(createMoney(0)) && this.amount!.lessThanOrEqual(createMoney(100))
-  }
+function createFreeShippingVoucher({
+  voucherId,
+  type,
+  minValue,
+}: AppliedVoucher): AppliedVoucher {
+  return { voucherId, type, minValue };
 }
 
-//ShippingVoucher
-class ShippingVoucher extends AppliedVoucher {
-
-  constructor({
-    voucherId,
-    type,
-    minValue,
-  }: AppliedVoucherProps) {
-    super({ voucherId, type, minValue});
+function applyDiscount({
+  subtotal,
+  shipping,
+  appliedVoucher,
+}: ApplyProps): Money {
+  function applyFixedDiscount(appliedVoucher: AppliedVoucher): Money {
+    return appliedVoucher.amount!;
   }
 
-  public apply(subtotal: Money, shipping: Money): Money {
-    if (subtotal.greaterThanOrEqual(this.minValue!)) {
+  function applyFreeShippingDiscount({
+    subtotal,
+    shipping,
+    appliedVoucher,
+  }: ApplyProps): Money {
+    if (subtotal.greaterThanOrEqual(appliedVoucher.minValue!)) {
       return shipping;
     }
     return createMoney(0);
   }
+
+  function applyPercentualDiscount({
+    subtotal,
+    appliedVoucher,
+  }: ApplyPercentualVoucherProps): Money {
+    return subtotal.multiply(appliedVoucher.amount?.getAmount()!).divide(100);
+  }
+
+  switch (appliedVoucher.type) {
+    case "fixed":
+      return applyFixedDiscount(appliedVoucher);
+    case "percentual":
+      return applyPercentualDiscount({ subtotal, appliedVoucher });
+    case "free shipping":
+      return applyFreeShippingDiscount({ subtotal, shipping, appliedVoucher });
+  }
 }
 
-export { FixedVoucher, PercentualVoucher, ShippingVoucher, AppliedVoucher, AppliedVoucherProps };
+//private functions
+
+function isInRange(appliedVoucher: AppliedVoucher): boolean {
+  return (
+    appliedVoucher.amount!.greaterThanOrEqual(createMoney(0)) &&
+    appliedVoucher.amount!.lessThanOrEqual(createMoney(100))
+  );
+}
+
+export { AppliedVoucher };
+
+export {
+  createFixedVoucher,
+  createPercentualVoucher,
+  createFreeShippingVoucher,
+  applyDiscount,
+};

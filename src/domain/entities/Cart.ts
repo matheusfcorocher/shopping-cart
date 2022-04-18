@@ -1,147 +1,156 @@
 import { DomainError } from "../../lib/CustomError";
-import { AppliedVoucher } from "../valueObjects/AppliedVoucher";
+import { AppliedVoucher, applyDiscount } from "../valueObjects/AppliedVoucher";
 import { createMoney, Money } from "../valueObjects/Money";
 
-type LineItems = Array<LineItem>;
-class LineItem {
-  productId: string;
-  unitPrice: Money;
-  quantity: number;
-
-  constructor(productId: string, unitPrice: Money, quantity: number) {
-    this.productId = productId;
-    this.unitPrice = unitPrice;
-    this.quantity = quantity;
-  }
-}
-
-type CartProps = {
+type Cart = {
   id: string;
   buyerId?: string;
   lineItems: LineItems;
   appliedVoucher?: AppliedVoucher;
 };
+
+type LineItem = {
+  productId: string;
+  unitPrice: Money;
+  quantity: number;
+};
+
+type LineItems = Array<LineItem>;
 
 type LineItemDataProps = {
   productId: string;
   price: Money;
 };
-export default class Cart {
-  id: string;
-  buyerId?: string;
-  lineItems: LineItems;
-  appliedVoucher?: AppliedVoucher;
 
-  constructor({ id, buyerId, lineItems, appliedVoucher }: CartProps) {
-    this.id = id;
-    this.buyerId = buyerId;
-    this.lineItems = lineItems;
-    this.appliedVoucher = appliedVoucher;
+//public functions
+
+function createCart({ id, buyerId, lineItems, appliedVoucher }: Cart): Cart {
+  return { id, buyerId, lineItems, appliedVoucher };
+}
+
+function createLineItem({
+  productId,
+  unitPrice,
+  quantity,
+}: LineItem): LineItem {
+  return { productId, unitPrice, quantity };
+}
+
+function discount(cart: Cart): Money {
+  return cart.appliedVoucher
+    ? applyDiscount({
+        subtotal: subtotal(cart),
+        shipping: shipping(cart),
+        appliedVoucher: cart.appliedVoucher,
+      })
+    : createMoney(0);
+}
+
+function subtotal(cart: Cart): Money {
+  return cart.lineItems
+    ? cart.lineItems.reduce(
+        (acc: Money, item: LineItem) =>
+          acc.add(item.unitPrice.multiply(item.quantity)),
+        createMoney(0)
+      )
+    : createMoney(0);
+}
+
+function shipping(cart: Cart): Money {
+  if (subtotal(cart).greaterThanOrEqual(createMoney(40000))) {
+    return createMoney(0);
   }
+  const shippingWeight: number = calculateCartWeight(cart);
+  if (shippingWeight <= 10) return createMoney(3000);
 
-  public get discount(): Money {
-    return this.appliedVoucher
-      ? this.appliedVoucher.apply(this.subtotal, this.shipping)
-      : createMoney(0);
-  }
+  return calculateShippingCost(shippingWeight);
+}
 
-  public get subtotal(): Money {
-    return this.lineItems
-      ? this.lineItems.reduce(
-          (acc: Money, item: LineItem) =>
-            acc.add(item.unitPrice.multiply(item.quantity)),
-          createMoney(0)
-        )
-      : createMoney(0);
-  }
+function total(cart: Cart): Money {
+  return subtotal(cart).add(shipping(cart)).subtract(discount(cart));
+}
 
-  public get shipping(): Money {
-    if (
-      this.subtotal.greaterThanOrEqual(createMoney(40000)) || this.subtotal.equalsTo(createMoney(0))) {
-      return createMoney(0);
-    }
-    const shippingWeight: number = this.calculateCartWeight();
-
-    if (shippingWeight <= 10)
-      return createMoney(3000);
-
-    return this.calculateShippingCost(shippingWeight);
-  }
-
-  public get total(): Money {
-    if(this.discount.greaterThanOrEqual(this.subtotal))
-      return this.shipping;
-    return this.subtotal.add(this.shipping).subtract(this.discount);
-  }
-
-  public addLineItem(lineItemData: LineItemDataProps): void {
-    const item = this.lineItems.find(
-      (item) =>
-        item.productId.normalize() === lineItemData.productId.normalize()
+function addLineItem(cart: Cart, lineItemData: LineItemDataProps): void {
+  const item = cart.lineItems.find(
+    (item) => item.productId.normalize() === lineItemData.productId.normalize()
+  );
+  if (item) {
+    item.quantity += 1;
+    const index = cart.lineItems.findIndex(
+      (lineItem) =>
+        lineItem.productId.normalize() === lineItemData.productId.normalize()
     );
-    if (item) {
-      item.quantity += 1;
-      const index = this.lineItems.findIndex(
-        (lineItem) =>
-          lineItem.productId.normalize() === lineItemData.productId.normalize()
-      );
-      this.lineItems[index] = item;
-    } else {
-      const newLineItem = new LineItem(
-        lineItemData.productId,
-        lineItemData.price,
-        1
-      );
-      this.lineItems = [...this.lineItems, newLineItem];
-    }
-  }
-
-  public applyVoucher(appliedVoucher: AppliedVoucher): void {
-    this.appliedVoucher = appliedVoucher;
-  }
-
-  public removeLineItem(productId: string): void {
-    const item = this.lineItems.find(
-      (item) => item.productId.normalize() === productId.normalize()
-    );
-    if (item) {
-      item.quantity -= 1;
-      const index = this.lineItems.findIndex(
-        (lineItem) => lineItem.productId.normalize() === productId.normalize()
-      );
-      if (item.quantity <= 0) this.lineItems.splice(index, 1);
-      else this.lineItems[index] = item;
-    } else {
-      throw new DomainError({
-        title: "Not Found Error",
-        code: "NOTFOUND_ERROR",
-        message: `Item with productId ${productId} wasn't found in cart!`,
-      });
-    }
-  }
-
-  public removeVoucher(): void {
-    this.appliedVoucher = undefined;
-  }
-
-  private calculateCartWeight(): number {
-    return this.lineItems
-      ? this.lineItems.reduce(
-          (acc: number, item: LineItem) => acc + item.quantity,
-          0
-        )
-      : 0;
-  }
-
-  private calculateShippingCost(weight: number): Money {
-    //If weight is above 10kg, will charge $7 for each
-    //5kg that cart has
-    return createMoney(weight)
-      .subtract(createMoney(10))
-      .divide(5)
-      .multiply(700)
-      .add(createMoney(3000));
+    cart.lineItems[index] = item;
+  } else {
+    const newLineItem = createLineItem({
+      productId: lineItemData.productId,
+      unitPrice: lineItemData.price,
+      quantity: 1,
+    });
+    cart.lineItems = [...cart.lineItems, newLineItem];
   }
 }
 
-export { LineItems, LineItem, CartProps };
+function applyVoucher(cart: Cart, appliedVoucher: AppliedVoucher): void {
+  cart.appliedVoucher = appliedVoucher;
+}
+
+function removeLineItem(cart: Cart, productId: string): void {
+  const item = cart.lineItems.find(
+    (item) => item.productId.normalize() === productId.normalize()
+  );
+  if (item) {
+    item.quantity -= 1;
+    const index = cart.lineItems.findIndex(
+      (lineItem) => lineItem.productId.normalize() === productId.normalize()
+    );
+    if (item.quantity <= 0) cart.lineItems.splice(index, 1);
+    else cart.lineItems[index] = item;
+  } else {
+    throw new DomainError({
+      title: "Not Found Error",
+      code: "NOTFOUND_ERROR",
+      message: `Item with productId ${productId} wasn't found in cart!`,
+    });
+  }
+}
+
+function removeVoucher(cart: Cart): void {
+  cart.appliedVoucher = undefined;
+}
+
+//private functions
+
+function calculateCartWeight(cart: Cart): number {
+  return cart.lineItems
+    ? cart.lineItems.reduce(
+        (acc: number, item: LineItem) => acc + item.quantity,
+        0
+      )
+    : 0;
+}
+
+function calculateShippingCost(weight: number): Money {
+  //If weight is above 10kg, will charge $7 for each
+  //5kg that cart has
+  return createMoney(weight)
+    .subtract(createMoney(10))
+    .divide(5)
+    .multiply(700)
+    .add(createMoney(3000));
+}
+
+export { Cart, LineItems, LineItem };
+
+export {
+  createCart,
+  createLineItem,
+  discount,
+  subtotal,
+  shipping,
+  total,
+  addLineItem,
+  applyVoucher,
+  removeLineItem,
+  removeVoucher,
+};
