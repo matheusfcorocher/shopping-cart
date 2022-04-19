@@ -1,20 +1,36 @@
 import * as Cart from "../../domain/entities/Cart";
 import { CartRepository } from "../../domain/repositories/CartRepository";
 import { ProductRepository } from "../../domain/repositories/ProductRepository";
-export default class RemoveLineItem {
+
+type makeRemoveLineItemProps = {
   cartRepository: CartRepository;
   productRepository: ProductRepository;
+};
 
-  constructor(cartRepository: CartRepository, productRepository: ProductRepository) {
-    this.cartRepository = cartRepository;
-    this.productRepository = productRepository;
-  }
+type removeLineItemProps = {
+  buyerId: string;
+  productId: string;
+};
 
-  public async execute(buyerId: string, productId: string): Promise<Cart.Cart> {
-    const cart = await this.cartRepository.getCartByBuyerId(buyerId);
-    await this.productRepository.getProductById(productId);
+function makeRemoveLineItem({
+  cartRepository,
+  productRepository,
+}: makeRemoveLineItemProps) {
+  async function removeLineItem({
+    buyerId,
+    productId,
+  }: removeLineItemProps): Promise<Cart.Cart> {
+    const cart = await cartRepository.getCartByBuyerId(buyerId);
+    await productRepository.getProductById(productId);
     Cart.removeLineItem(cart, productId);
-    await this.cartRepository.update(cart);
-    return cart
+    await cartRepository.update(cart);
+    return cart;
   }
+
+  return removeLineItem;
 }
+
+
+export { removeLineItemProps };
+
+export { makeRemoveLineItem };

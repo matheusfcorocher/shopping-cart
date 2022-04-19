@@ -1,14 +1,21 @@
 import * as Voucher from "../../domain/entities/Voucher";
 import { VoucherRepository } from "../../domain/repositories/VoucherRepository";
 
-export default class ListVouchers {
+type makeListVouchersProps = {
   voucherRepository: VoucherRepository;
+};
 
-  constructor(voucherRepository: VoucherRepository) {
-    this.voucherRepository = voucherRepository;
+function makeListVouchers({
+  voucherRepository,
+}: makeListVouchersProps) {
+  async function listVouchers(): Promise<Array<Voucher.Voucher>> {
+    return await voucherRepository.getAllVouchers();
   }
 
-  public async execute(): Promise<Array<Voucher.Voucher>> {
-      return await this.voucherRepository.getAllVouchers();
-  }
+  return listVouchers;
 }
+
+export { makeListVouchersProps };
+
+export { makeListVouchers };
+

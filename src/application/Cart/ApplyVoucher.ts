@@ -2,21 +2,38 @@ import * as Cart from "../../domain/entities/Cart";
 import { appliedFactory } from "../../domain/factories/AppliedVoucherFactory";
 import { CartRepository } from "../../domain/repositories/CartRepository";
 import { VoucherRepository } from "../../domain/repositories/VoucherRepository";
-export default class ApplyVoucher {
+
+type makeApplyVoucherProps = {
   cartRepository: CartRepository;
   voucherRepository: VoucherRepository;
+};
 
-  constructor(cartRepository: CartRepository, voucherRepository: VoucherRepository) {
-    this.cartRepository = cartRepository;
-    this.voucherRepository = voucherRepository;
-  }
+type applyVoucherProps = {
+  buyerId: string;
+  code: string;
+};
 
-  public async execute(buyerId: string, code: string): Promise<Cart.Cart> {
-    const cart = await this.cartRepository.getCartByBuyerId(buyerId);
-    const voucher = await this.voucherRepository.getVoucherByCode(code);
+function makeApplyVoucher({
+  cartRepository,
+  voucherRepository,
+}: makeApplyVoucherProps) {
+  async function applyVoucher({
+    buyerId,
+    code,
+  }: applyVoucherProps): Promise<Cart.Cart> {
+    const cart = await cartRepository.getCartByBuyerId(buyerId);
+    const voucher = await voucherRepository.getVoucherByCode(code);
     const appliedVoucher = appliedFactory.fromVoucher(voucher);
     Cart.applyVoucher(cart, appliedVoucher);
-    await this.cartRepository.update(cart);
-    return cart
+    await cartRepository.update(cart);
+    return cart;
   }
+
+  return applyVoucher;
 }
+
+
+export { applyVoucherProps };
+
+export { makeApplyVoucher };
+

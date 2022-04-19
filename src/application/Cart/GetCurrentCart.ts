@@ -1,13 +1,20 @@
 import * as Cart from "../../domain/entities/Cart";
 import { CartRepository } from "../../domain/repositories/CartRepository";
-export default class GetCurrentCart {
+
+type makeGetCurrentCartProps = {
   cartRepository: CartRepository;
+};
 
-  constructor(cartRepository: CartRepository) {
-    this.cartRepository = cartRepository;
+function makeGetCurrentCart({
+  cartRepository,
+}: makeGetCurrentCartProps) {
+  async function getCurrentCart(buyerId: string): Promise<Cart.Cart> {
+    return cartRepository.getCartByBuyerId(buyerId);
   }
 
-  public async execute(buyerId: string): Promise<Cart.Cart> {
-    return this.cartRepository.getCartByBuyerId(buyerId);
-  }
+  return getCurrentCart;
 }
+
+export { makeGetCurrentCartProps };
+
+export { makeGetCurrentCart };

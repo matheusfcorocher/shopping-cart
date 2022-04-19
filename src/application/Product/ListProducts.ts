@@ -1,14 +1,21 @@
 import * as Product from "../../domain/entities/Product";
 import { ProductRepository } from "../../domain/repositories/ProductRepository";
 
-export default class ListProducts {
+type makeListProductsProps = {
   productRepository: ProductRepository;
+};
 
-  constructor(productRepository: ProductRepository) {
-    this.productRepository = productRepository;
+function makeListProducts({
+  productRepository,
+}: makeListProductsProps) {
+  async function listProducts(): Promise<Array<Product.Product>> {
+    return await productRepository.getAllProducts();
   }
 
-  public async execute(): Promise<Array<Product.Product>> {
-    return await this.productRepository.getAllProducts();
-  }
+  return listProducts;
 }
+
+export { makeListProductsProps };
+
+export { makeListProducts };
+
