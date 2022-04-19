@@ -1,5 +1,4 @@
-import { ProductProps } from "../../../../domain/entities/Product";
-import { Product } from "../../../../domain/entities/index";
+import * as Product from "../../../../domain/entities/Product";
 
 type SerializedProductProps = {
   id: string,
@@ -9,7 +8,7 @@ type SerializedProductProps = {
 }
 
 const ProductSerializer = {
-  serialize({ id, name, price, available }: Product): SerializedProductProps {
+  serialize({ id, name, price, available }: Product.Product): SerializedProductProps {
     return {
       id,
       name,

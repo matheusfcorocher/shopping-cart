@@ -1,6 +1,6 @@
 import RemoveVoucher from "../../../../../src/application/Cart/RemoveVoucher";
-import { Cart, Voucher } from "../../../../../src/domain/entities";
-import { LineItems, LineItem } from "../../../../../src/domain/entities/Cart";
+import * as Cart from "../../../../../src/domain/entities/Cart";
+import * as Voucher from "../../../../../src/domain/entities/Voucher";
 import { appliedFactory } from "../../../../../src/domain/factories/AppliedVoucherFactory";
 import { createMoney } from "../../../../../src/domain/valueObjects/Money";
 import { FakeCartRepository } from "../../../../support/repositories/FakeCartRepository";
@@ -10,14 +10,14 @@ describe("Application :: Cart :: RemoveVoucher", () => {
     describe("When cart doesn't have any line item", () => {
       describe("and cart doesnt have voucher", () => {
         it("returns correct cart", async () => {
-          const lineItems: LineItems = [];
-          const cart = new Cart({
+          const lineItems: Cart.LineItems = [];
+          const cart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems,
           });
           const carts = [cart];
-          const newCart = new Cart({
+          const newCart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems,
@@ -33,8 +33,8 @@ describe("Application :: Cart :: RemoveVoucher", () => {
       });
       describe("and cart has voucher", () => {
         it("returns correct cart", async () => {
-          const lineItems: LineItems = [];
-          const voucher = new Voucher({
+          const lineItems: Cart.LineItems = [];
+          const voucher = Voucher.createVoucher({
             id: "aaa",
             code: "XESBQ",
             type: "fixed",
@@ -43,7 +43,7 @@ describe("Application :: Cart :: RemoveVoucher", () => {
 
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
 
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems,
@@ -51,16 +51,14 @@ describe("Application :: Cart :: RemoveVoucher", () => {
           });
           const carts = [cart];
 
-          const newCart = new Cart({
+          const newCart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems,
           });
 
           const cartRepository = new FakeCartRepository(carts);
-          const removeVoucher = new RemoveVoucher(
-            cartRepository
-          );
+          const removeVoucher = new RemoveVoucher(cartRepository);
 
           const result = await removeVoucher.execute("aaa");
 
@@ -72,27 +70,33 @@ describe("Application :: Cart :: RemoveVoucher", () => {
     describe("When cart has line items", () => {
       describe("and cart doesnt have voucher", () => {
         it("returns correct cart", async () => {
-          const lineItems: LineItems = [
-            new LineItem("aaa", createMoney(20), 2),
-            new LineItem("bbb", createMoney(40), 1),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "aaa",
+              unitPrice: createMoney(20),
+              quantity: 2,
+            }),
+            Cart.createLineItem({
+              productId: "bbb",
+              unitPrice: createMoney(40),
+              quantity: 1,
+            }),
           ];
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems,
           });
           const carts = [cart];
-          
-          const newCart = new Cart({
+
+          const newCart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems,
           });
 
           const cartRepository = new FakeCartRepository(carts);
-          const removeVoucher = new RemoveVoucher(
-            cartRepository
-          );
+          const removeVoucher = new RemoveVoucher(cartRepository);
 
           const result = await removeVoucher.execute("aaa");
 
@@ -101,11 +105,19 @@ describe("Application :: Cart :: RemoveVoucher", () => {
       });
       describe("and cart has voucher", () => {
         it("returns correct cart", async () => {
-          const lineItems: LineItems = [
-            new LineItem("aaa", createMoney(20), 2),
-            new LineItem("bbb", createMoney(40), 1),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "aaa",
+              unitPrice: createMoney(20),
+              quantity: 2,
+            }),
+            Cart.createLineItem({
+              productId: "bbb",
+              unitPrice: createMoney(40),
+              quantity: 1,
+            }),
           ];
-          const voucher = new Voucher({
+          const voucher = Voucher.createVoucher({
             id: "aaa",
             code: "XESBQ",
             type: "fixed",
@@ -114,7 +126,7 @@ describe("Application :: Cart :: RemoveVoucher", () => {
 
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
 
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems,
@@ -122,16 +134,14 @@ describe("Application :: Cart :: RemoveVoucher", () => {
           });
           const carts = [cart];
 
-          const newCart = new Cart({
+          const newCart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems,
           });
 
           const cartRepository = new FakeCartRepository(carts);
-          const removeVoucher = new RemoveVoucher(
-            cartRepository
-          );
+          const removeVoucher = new RemoveVoucher(cartRepository);
 
           const result = await removeVoucher.execute("aaa");
 
@@ -142,18 +152,16 @@ describe("Application :: Cart :: RemoveVoucher", () => {
 
     describe("When buyerId wasn't found", () => {
       it("returns not found error", async () => {
-        const lineItems: LineItems = [];
-        const cart = new Cart({
+        const lineItems: Cart.LineItems = [];
+        const cart = Cart.createCart({
           id: "aaa",
           buyerId: "aaa",
           lineItems,
         });
         const carts = [cart];
-        
+
         const cartRepository = new FakeCartRepository(carts);
-        const removeVoucher = new RemoveVoucher(
-          cartRepository
-        );
+        const removeVoucher = new RemoveVoucher(cartRepository);
 
         const notFoundError = new Error("Not Found Error");
         notFoundError.message = `Cart with id bbb can't be found.`;
@@ -170,8 +178,8 @@ describe("Application :: Cart :: RemoveVoucher", () => {
 
     describe("When update the cart gives error", () => {
       it("returns error", async () => {
-        const lineItems: LineItems = [];
-        const cart = new Cart({
+        const lineItems: Cart.LineItems = [];
+        const cart = Cart.createCart({
           id: "aaa",
           buyerId: "aaa",
           lineItems,
@@ -184,9 +192,7 @@ describe("Application :: Cart :: RemoveVoucher", () => {
         cartRepository.update = () => {
           throw error;
         };
-        const removeVoucher = new RemoveVoucher(
-          cartRepository
-        );
+        const removeVoucher = new RemoveVoucher(cartRepository);
 
         await expect(() => removeVoucher.execute("aaa")).rejects.toThrow(error);
       });

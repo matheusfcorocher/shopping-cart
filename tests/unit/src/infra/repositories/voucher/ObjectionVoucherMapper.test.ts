@@ -1,4 +1,4 @@
-import { Voucher } from "../../../../../../src/domain/entities";
+import * as Voucher from "../../../../../../src/domain/entities/Voucher";
 import { createMoney } from "../../../../../../src/domain/valueObjects/Money";
 import { VoucherModel } from "../../../../../../src/infra/database/knex/models/VoucherModel";
 import {
@@ -18,7 +18,7 @@ describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
         }
         voucherModel.$setJson(voucherObject);
         const { uuid, code, type, amount } = voucherObject;
-        const answer = new Voucher({
+        const answer = Voucher.createVoucher({
           id: uuid,
           code,
           type,
@@ -41,7 +41,7 @@ describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
         }
         voucherModel.$setJson(voucherObject);
         const { uuid, code, type, amount } = voucherObject;
-        const answer = new Voucher({
+        const answer = Voucher.createVoucher({
           id: uuid,
           code,
           type,
@@ -65,7 +65,7 @@ describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
         }
         voucherModel.$setJson(voucherObject);
         const { uuid, code, type, amount, minValue } = voucherObject;
-        const answer = new Voucher({
+        const answer = Voucher.createVoucher({
           id: uuid,
           code,
           type,
@@ -90,7 +90,7 @@ describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
           amount: 100,
         };
         const { uuid, code, type, amount } = dbVoucherObject;
-        const voucher = new Voucher({
+        const voucher = Voucher.createVoucher({
           id: uuid,
           code,
           type,
@@ -116,7 +116,7 @@ describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
           amount: 100,
         };
         const { uuid, code, type, amount } = dbVoucherObject;
-        const voucher = new Voucher({
+        const voucher = Voucher.createVoucher({
           id: uuid,
           code,
           type,
@@ -143,7 +143,7 @@ describe("Infra :: Voucher :: ObjectionVoucherMapper", () => {
           minValue: 40,
         };
         const { uuid, code, type, amount, minValue } = dbVoucherObject;
-        const voucher = new Voucher({
+        const voucher = Voucher.createVoucher({
           id: uuid,
           code,
           type,

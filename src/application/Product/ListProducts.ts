@@ -1,4 +1,4 @@
-import { Product } from "../../domain/entities";
+import * as Product from "../../domain/entities/Product";
 import { ProductRepository } from "../../domain/repositories/ProductRepository";
 
 export default class ListProducts {
@@ -8,7 +8,7 @@ export default class ListProducts {
     this.productRepository = productRepository;
   }
 
-  public async execute(): Promise<Array<Product>> {
+  public async execute(): Promise<Array<Product.Product>> {
     return await this.productRepository.getAllProducts();
   }
 }

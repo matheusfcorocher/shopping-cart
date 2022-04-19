@@ -1,17 +1,17 @@
 import { v4 as uuidv4 } from "uuid";
-import { Voucher } from "../../../domain/entities";
+import * as Voucher from "../../../domain/entities/Voucher";
 import { VoucherRepository } from "../../../domain/repositories/VoucherRepository";
 import { InfrastructureError } from "../../../lib/CustomError";
 import { VoucherModel } from "../../database/knex/models/VoucherModel";
 import { ObjectionVoucherMapper } from "./ObjectionVoucherMapper";
 
 class ObjectionVoucherRepository implements VoucherRepository {
-  public getAllVouchers(): Promise<Voucher[]> {
+  public getAllVouchers(): Promise<Voucher.Voucher[]> {
     return VoucherModel.query().then((data) =>
       data.map((d) => ObjectionVoucherMapper.toEntity(d))
     );
   }
-  getVoucherById(id: string): Promise<Voucher> {
+  getVoucherById(id: string): Promise<Voucher.Voucher> {
     return VoucherModel.query()
       .findOne({
         uuid: id,
@@ -28,7 +28,7 @@ class ObjectionVoucherRepository implements VoucherRepository {
         return ObjectionVoucherMapper.toEntity(data);
       });
   }
-  getVoucherByCode(code: string): Promise<Voucher> {
+  getVoucherByCode(code: string): Promise<Voucher.Voucher> {
     return VoucherModel.query()
       .findOne({
         code,

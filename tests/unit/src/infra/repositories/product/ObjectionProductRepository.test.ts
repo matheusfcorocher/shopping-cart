@@ -1,4 +1,4 @@
-import { Product } from "../../../../../../src/domain/entities";
+import * as Product from "../../../../../../src/domain/entities/Product";
 import { createMoney } from "../../../../../../src/domain/valueObjects/Money";
 import ObjectionProductRepository from "../../../../../../src/infra/repositories/product/ObjectionProductRepository";
 import { InfrastructureError } from "../../../../../../src/lib/CustomError";
@@ -52,19 +52,19 @@ describe("Infra :: Product :: ObjectionProductRepository", () => {
         it("returns correct result", async () => {
           const products = await productRepository.getAllProducts();
           const expected = [
-            new Product({
+            Product.createProduct({
               id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
               name: "Gaming Keyboard",
               price: createMoney(7999),
               available: 30,
             }),
-            new Product({
+            Product.createProduct({
               id: "92d91715-34ad-449e-9b81-73f1a74ef44e",
               name: "Gaming Chair",
               price: createMoney(29999),
               available: 30,
             }),
-            new Product({
+            Product.createProduct({
               id: "8bc94226-3e20-40cb-a507-554fabf36ffa",
               name: "Gaming Mouse",
               price: createMoney(3999),
@@ -74,13 +74,13 @@ describe("Infra :: Product :: ObjectionProductRepository", () => {
 
           expect(
             JSON.stringify(
-              products.sort((a: Product, b: Product) =>
+              products.sort((a: Product.Product, b: Product.Product) =>
                 a.id.localeCompare(b.id)
               )
             )
           ).toEqual(
             JSON.stringify(
-              expected.sort((a: Product, b: Product) =>
+              expected.sort((a: Product.Product, b: Product.Product) =>
                 a.id.localeCompare(b.id)
               )
             )
@@ -106,7 +106,7 @@ describe("Infra :: Product :: ObjectionProductRepository", () => {
         const product = await productRepository.getProductById(
           "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf"
         );
-        const expected = new Product({
+        const expected = Product.createProduct({
           id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           name: "Gaming Keyboard",
           price: createMoney(7999),
@@ -142,7 +142,7 @@ describe("Infra :: Product :: ObjectionProductRepository", () => {
           available: 28,
         };
         const product = await productRepository.update(id, productData);
-        const expected = new Product({
+        const expected = Product.createProduct({
           id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           name: "Gaming Keyboard",
           price: createMoney(7999),

@@ -1,16 +1,15 @@
-import { VoucherProps, VoucherType } from "../../../../domain/entities/Voucher";
-import { Voucher } from "../../../../domain/entities/index";
+import * as Voucher from "../../../../domain/entities/Voucher";
 
 type SerializedVoucherProps = {
   id: string;
   code: string;
-  type: VoucherType;
+  type: Voucher.VoucherType;
   amount?: number | null;
   minValue?: number | null;
 }
 
 const VoucherSerializer = {
-  serialize({ id, code, type, amount, minValue }: Voucher): SerializedVoucherProps {
+  serialize({ id, code, type, amount, minValue }: Voucher.Voucher): SerializedVoucherProps {
     return {
       id,
       code,

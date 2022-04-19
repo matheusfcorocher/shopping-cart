@@ -1,4 +1,4 @@
-import { Buyer } from "../../../../../../src/domain/entities";
+import * as Buyer from "../../../../../../src/domain/entities/Buyer";
 import { BuyerModel } from "../../../../../../src/infra/database/knex/models/BuyerModel";
 import { ObjectionBuyerMapper } from "../../../../../../src/infra/repositories/buyer/ObjectionBuyerMapper";
 import { BuyerModelData } from "../../../../../support/factories/models/BuyerModelFactory";
@@ -30,7 +30,7 @@ describe("Infra :: Buyer :: ObjectionBuyerMapper", () => {
         country,
       } = buyerObject;
       const address = { postalCode, street, district, city, country };
-      const expected = new Buyer({
+      const expected = Buyer.createBuyer({
         id: uuid,
         name,
         birthDate,
@@ -67,7 +67,7 @@ describe("Infra :: Buyer :: ObjectionBuyerMapper", () => {
         country,
       } = buyerObject;
       const address = { postalCode, street, district, city, country };
-      const buyer = new Buyer({
+      const buyer = Buyer.createBuyer({
         id: uuid,
         name,
         birthDate,

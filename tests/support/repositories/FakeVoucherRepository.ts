@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Voucher } from "../../../src/domain/entities";
+import { Voucher } from "../../../src/domain/entities/Voucher";
 import { VoucherRepository } from "../../../src/domain/repositories/VoucherRepository";
 
 class FakeVoucherRepository implements VoucherRepository {

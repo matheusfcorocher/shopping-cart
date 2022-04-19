@@ -1,4 +1,4 @@
-import { Cart } from "../../domain/entities";
+import * as Cart from "../../domain/entities/Cart";
 import { CartRepository } from "../../domain/repositories/CartRepository";
 import { ProductRepository } from "../../domain/repositories/ProductRepository";
 export default class RemoveLineItem {
@@ -10,10 +10,10 @@ export default class RemoveLineItem {
     this.productRepository = productRepository;
   }
 
-  public async execute(buyerId: string, productId: string): Promise<Cart> {
+  public async execute(buyerId: string, productId: string): Promise<Cart.Cart> {
     const cart = await this.cartRepository.getCartByBuyerId(buyerId);
     await this.productRepository.getProductById(productId);
-    cart.removeLineItem(productId);
+    Cart.removeLineItem(cart, productId);
     await this.cartRepository.update(cart);
     return cart
   }

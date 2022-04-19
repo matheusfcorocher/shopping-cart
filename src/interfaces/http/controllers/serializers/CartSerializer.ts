@@ -1,4 +1,4 @@
-import { Cart } from "../../../../domain/entities/index";
+import * as Cart from "../../../../domain/entities/Cart";
 import { VoucherType } from "../../../../domain/entities/Voucher";
 
 interface serializedLineItem {
@@ -27,8 +27,12 @@ type SerializedCartProps = {
 };
 
 const CartSerializer = {
-  serialize(cart: Cart): SerializedCartProps {
-    const { id, buyerId, lineItems, appliedVoucher, subtotal, shipping, discount, total } = cart;
+  serialize(cart: Cart.Cart): SerializedCartProps {
+    const { id, buyerId, lineItems, appliedVoucher } = cart;
+    const subtotal = Cart.subtotal(cart);
+    const shipping = Cart.shipping(cart);
+    const discount = Cart.discount(cart);
+    const total = Cart.total(cart);
     const serializedLineItems = lineItems.map((lineItem) => {
       const { productId, unitPrice, quantity } = lineItem;
       return { productId, unitPrice: unitPrice.toUnit(), quantity };

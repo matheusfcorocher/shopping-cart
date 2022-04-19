@@ -1,4 +1,4 @@
-import { Buyer } from "../../../domain/entities";
+import * as Buyer from "../../../domain/entities/Buyer";
 import { Address } from "../../../domain/entities/Buyer";
 import { BuyerModel } from "../../database/knex/models/BuyerModel";
 
@@ -24,7 +24,7 @@ const ObjectionBuyerMapper = {
       country,
     };
 
-    return new Buyer({
+    return Buyer.createBuyer({
       id: uuid,
       name,
       birthDate,
@@ -32,7 +32,7 @@ const ObjectionBuyerMapper = {
       address,
     });
   },
-  toDatabase(buyer: Buyer) {
+  toDatabase(buyer: Buyer.Buyer) {
     const { id, name, birthDate, email, address } = buyer;
     const { postalCode, street, district, city, country } = address;
     return {

@@ -1,4 +1,5 @@
-import { Voucher } from "../../../../../src/domain/entities";
+import * as AppliedVoucher from "../../../../../src/domain/valueObjects/AppliedVoucher";
+import * as Voucher from "../../../../../src/domain/entities/Voucher";
 import { appliedFactory } from "../../../../../src/domain/factories/AppliedVoucherFactory";
 import { createMoney } from "../../../../../src/domain/valueObjects/Money";
 
@@ -6,7 +7,7 @@ describe("Domain :: ValueObjects :: AppliedVoucher", () => {
   describe("#apply", () => {
     describe("if voucher has percentual type", () => {
       it("returns correct value", () => {
-        const voucher = new Voucher({
+        const voucher = Voucher.createVoucher({
           id: "aad",
           code: "#F121221",
           type: "percentual",
@@ -15,13 +16,19 @@ describe("Domain :: ValueObjects :: AppliedVoucher", () => {
         const percentualVoucher = appliedFactory.fromVoucher(voucher);
 
         expect(
-          JSON.stringify(percentualVoucher.apply(createMoney(1000), createMoney(1500))
-        )).toEqual(JSON.stringify(createMoney(300)));
+          JSON.stringify(
+            AppliedVoucher.applyDiscount({
+              subtotal: createMoney(1000),
+              shipping: createMoney(1500),
+              appliedVoucher: percentualVoucher,
+            })
+          )
+        ).toEqual(JSON.stringify(createMoney(300)));
       });
     });
     describe("if voucher has fixed type", () => {
       it("returns correct value", () => {
-        const voucher = new Voucher({
+        const voucher = Voucher.createVoucher({
           id: "aad",
           code: "#F121221",
           type: "fixed",
@@ -30,14 +37,20 @@ describe("Domain :: ValueObjects :: AppliedVoucher", () => {
         const fixedVoucher = appliedFactory.fromVoucher(voucher);
 
         expect(
-          JSON.stringify(fixedVoucher.apply(createMoney(1000), createMoney(3000))
-        )).toEqual(JSON.stringify(fixedVoucher.amount));
+          JSON.stringify(
+            AppliedVoucher.applyDiscount({
+              subtotal: createMoney(1000),
+              shipping: createMoney(3000),
+              appliedVoucher: fixedVoucher,
+            })
+          )
+        ).toEqual(JSON.stringify(fixedVoucher.amount));
       });
     });
     describe("if voucher has free shipping type", () => {
       describe("and subtotal is equal or more than minValue", () => {
         it("returns correct value", () => {
-          const voucher = new Voucher({
+          const voucher = Voucher.createVoucher({
             id: "aad",
             code: "#F121221",
             type: "free shipping",
@@ -47,13 +60,19 @@ describe("Domain :: ValueObjects :: AppliedVoucher", () => {
           const freeShippingVoucher = appliedFactory.fromVoucher(voucher);
 
           expect(
-            JSON.stringify(freeShippingVoucher.apply(createMoney(3000), createMoney(1000))
-          )).toEqual(JSON.stringify(createMoney(1000)));
+            JSON.stringify(
+              AppliedVoucher.applyDiscount({
+                subtotal: createMoney(3000),
+                shipping: createMoney(1000),
+                appliedVoucher: freeShippingVoucher,
+              })
+            )
+          ).toEqual(JSON.stringify(createMoney(1000)));
         });
       });
       describe("and voucher doesnt have minValue", () => {
         it("returns error", () => {
-          const voucher = new Voucher({
+          const voucher = Voucher.createVoucher({
             id: "aad",
             code: "#F121221",
             type: "free shipping",
@@ -68,7 +87,7 @@ describe("Domain :: ValueObjects :: AppliedVoucher", () => {
       });
       describe("and subtotal is less than minValue", () => {
         it("returns 0", () => {
-          const voucher = new Voucher({
+          const voucher = Voucher.createVoucher({
             id: "aad",
             code: "#F121221",
             type: "free shipping",
@@ -79,8 +98,14 @@ describe("Domain :: ValueObjects :: AppliedVoucher", () => {
           const expected = createMoney(0);
 
           expect(
-            JSON.stringify(freeShippingVoucher.apply(createMoney(1000), createMoney(1500))
-          )).toEqual(JSON.stringify(expected));
+            JSON.stringify(
+              AppliedVoucher.applyDiscount({
+                subtotal: createMoney(1000),
+                shipping: createMoney(1500),
+                appliedVoucher: freeShippingVoucher,
+              })
+            )
+          ).toEqual(JSON.stringify(expected));
         });
       });
     });

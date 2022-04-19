@@ -1,4 +1,4 @@
-import { Buyer } from "../../../../../../src/domain/entities";
+import * as Buyer from "../../../../../../src/domain/entities/Buyer";
 import ObjectionBuyerRepository from "../../../../../../src/infra/repositories/buyer/ObjectionBuyerRepository";
 import BuyerModelFactory from "../../../../../support/factories/models/BuyerModelFactory";
 
@@ -65,7 +65,7 @@ describe("Infra :: Buyer :: ObjectionBuyerRepository", () => {
         it("returns correct result", async () => {
           const buyers = await buyerRepository.getAllBuyers();
           const expected = [
-            new Buyer({
+            Buyer.createBuyer({
               id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
               name: "Matheus",
               birthDate: new Date(1999, 8, 2),
@@ -78,7 +78,7 @@ describe("Infra :: Buyer :: ObjectionBuyerRepository", () => {
                 country: "Brazil",
               },
             }),
-            new Buyer({
+            Buyer.createBuyer({
               id: "92d91715-34ad-449e-9b81-73f1a74ef44e",
               name: "Matheus",
               birthDate: new Date(1999, 8, 2),
@@ -91,7 +91,7 @@ describe("Infra :: Buyer :: ObjectionBuyerRepository", () => {
                 country: "Brazil",
               },
             }),
-            new Buyer({
+            Buyer.createBuyer({
               id: "8bc94226-3e20-40cb-a507-554fabf36ffa",
               name: "Matheus",
               birthDate: new Date(1999, 8, 2),
@@ -135,7 +135,7 @@ describe("Infra :: Buyer :: ObjectionBuyerRepository", () => {
           city: "Piracicaba",
           country: "Brazil",
         };
-        const expected = new Buyer({
+        const expected = Buyer.createBuyer({
           id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           name: "Matheus",
           birthDate: new Date(1999, 8, 2),
@@ -162,7 +162,7 @@ describe("Infra :: Buyer :: ObjectionBuyerRepository", () => {
   describe("#store", () => {
     describe("result is a buyer instance", () => {
       it("returns the correct result", async () => {
-        const buyer = new Buyer({
+        const buyer = Buyer.createBuyer({
           id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
           name: "Matheus",
           birthDate: new Date(1999, 8, 2),
@@ -182,7 +182,7 @@ describe("Infra :: Buyer :: ObjectionBuyerRepository", () => {
     });
     describe("When a buyer with the same uuid already exists", () => {
       it("returns error", async () => {
-        const buyer = new Buyer({
+        const buyer = Buyer.createBuyer({
           id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           name: "Matheus",
           birthDate: new Date("1999-08-02"),

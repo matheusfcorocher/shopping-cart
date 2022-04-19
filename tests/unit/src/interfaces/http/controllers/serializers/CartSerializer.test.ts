@@ -1,6 +1,5 @@
-import { LineItem } from "../../../../../../../src/domain/entities/Cart";
-import { Voucher, Cart } from "../../../../../../../src/domain/entities";
-import { VoucherType } from "../../../../../../../src/domain/entities/Voucher";
+import * as Voucher from "../../../../../../../src/domain/entities/Voucher";
+import * as Cart from "../../../../../../../src/domain/entities/Cart";
 import { appliedFactory } from "../../../../../../../src/domain/factories/AppliedVoucherFactory";
 import { CartSerializer } from "../../../../../../../src/interfaces/http/controllers/serializers/CartSerializer";
 import { createMoney } from "../../../../../../../src/domain/valueObjects/Money";
@@ -8,17 +7,17 @@ import { createMoney } from "../../../../../../../src/domain/valueObjects/Money"
 describe("Interfaces :: HTTP :: Cart :: CartSerializer", () => {
   it("returns id, buyerId, lineItems and appliedVoucher", () => {
     const lineItems = [
-      new LineItem("2a20283a-2371-441f-af6e-899fe63def5c", createMoney(1999), 5),
+      Cart.createLineItem({productId: "2a20283a-2371-441f-af6e-899fe63def5c", unitPrice: createMoney(1999), quantity: 5}),
     ];
-    const voucherType = <VoucherType>"fixed";
-    const voucher = new Voucher({
+    const voucherType = <Voucher.VoucherType>"fixed";
+    const voucher = Voucher.createVoucher({
       id: "2a20283a-2371-441f-af6e-899fe63def5c",
       code: "null",
       type: voucherType,
       amount: createMoney(5000),
     });
     const appliedVoucher = appliedFactory.fromVoucher(voucher);
-    const cart = new Cart({
+    const cart = Cart.createCart({
       id: "2a20283a-2371-441f-af6e-899fe63def5c",
       buyerId: "2a20283a-2371-441f-af6e-899fe63def5c",
       lineItems,

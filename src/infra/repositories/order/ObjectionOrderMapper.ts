@@ -1,4 +1,4 @@
-import { Order } from "../../../domain/entities";
+import * as Order from "../../../domain/entities/Order";
 import { LineItems } from "../../../domain/entities/Cart";
 import { createMoney } from "../../../domain/valueObjects/Money";
 import { OrderModel } from "../../database/knex/models/OrderModel";
@@ -12,7 +12,7 @@ const ObjectionOrderMapper = {
       paymentMethod,
     } = orderModel;
 
-    return new Order({
+    return Order.createOrder({
       id: uuid,
       buyerId,
       lineItems,
@@ -20,7 +20,7 @@ const ObjectionOrderMapper = {
       paymentMethod,
     });
   },
-  toDatabase(order: Order) {
+  toDatabase(order: Order.Order) {
     const { id, buyerId, discount, paymentMethod } = order;
     return {
       uuid: id,

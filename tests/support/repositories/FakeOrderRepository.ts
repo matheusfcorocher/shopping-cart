@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Order } from "../../../src/domain/entities";
+import { Order } from "../../../src/domain/entities/Order";
 import { OrderRepository } from "../../../src/domain/repositories/OrderRepository";
 
 class FakeOrderRepository implements OrderRepository {

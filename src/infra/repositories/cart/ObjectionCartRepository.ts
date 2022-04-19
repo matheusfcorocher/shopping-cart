@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { transaction } from "objection";
-import { Cart, Voucher } from "../../../domain/entities";
+import * as Cart from "../../../domain/entities/Cart";
+import * as Voucher from "../../../domain/entities/Voucher";
 import { LineItem } from "../../../domain/entities/Cart";
 import { appliedFactory } from "../../../domain/factories/AppliedVoucherFactory";
 import { VoucherType } from "../../../domain/entities/Voucher";
@@ -25,7 +26,7 @@ interface LineItemProps {
 class ObjectionCartRepository implements CartRepository {
   //public methods
 
-  public async delete(cart: Cart): Promise<string> {
+  public async delete(cart: Cart.Cart): Promise<string> {
     return transaction(CartModel, async (BoundCartModel) => {
       const { buyerId, id, lineItems } = cart;
 
@@ -50,7 +51,7 @@ class ObjectionCartRepository implements CartRepository {
     });
   }
 
-  public getAllCarts(): Promise<Cart[]> {
+  public getAllCarts(): Promise<Cart.Cart[]> {
     return CartModel.query().then((data) =>
       Promise.all(
         data.map((d) => {
@@ -59,7 +60,7 @@ class ObjectionCartRepository implements CartRepository {
       )
     );
   }
-  public getCartById(id: string): Promise<Cart> {
+  public getCartById(id: string): Promise<Cart.Cart> {
     return CartModel.query()
       .findOne({
         uuid: id,
@@ -78,7 +79,7 @@ class ObjectionCartRepository implements CartRepository {
         throw notFoundError;
       });
   }
-  public getCartByBuyerId(buyerId: string): Promise<Cart> {
+  public getCartByBuyerId(buyerId: string): Promise<Cart.Cart> {
     return CartModel.query()
       .findOne({
         buyerId,
@@ -101,7 +102,7 @@ class ObjectionCartRepository implements CartRepository {
     return uuidv4();
   }
 
-  public async update(cart: Cart): Promise<Cart> {
+  public async update(cart: Cart.Cart): Promise<Cart.Cart> {
     return transaction(CartModel, async (BoundCartModel) => {
       const { id, lineItems } = cart;
       const cartDb = await this.getCartById(id);
@@ -220,7 +221,7 @@ class ObjectionCartRepository implements CartRepository {
     );
   }
 
-  private async transformCartModelToCart(cart: CartModel): Promise<Cart> {
+  private async transformCartModelToCart(cart: CartModel): Promise<Cart.Cart> {
     const owner: Owner = {
       ownerId: cart.uuid,
       ownerType: "cart",
@@ -251,7 +252,7 @@ class ObjectionCartRepository implements CartRepository {
     const { voucherId, type, amount, minValue } = cartModel;
     if (voucherId && type && (amount || minValue)) {
       const voucherType = <VoucherType>type;
-      const voucher = new Voucher({
+      const voucher = Voucher.createVoucher({
         id: voucherId,
         code: "null",
         type: voucherType,

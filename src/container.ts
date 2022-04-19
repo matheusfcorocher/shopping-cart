@@ -13,7 +13,7 @@ import ListProducts from "./application/Product/ListProducts";
 import ListVouchers from "./application/Voucher/ListVouchers";
 
 //service
-import CheckoutDomainService from "./domain/services/CheckoutDomainService";
+import * as Service from "./domain/services/CheckoutDomainService";
 
 //Repositories importations
 import ObjectionBuyerRepository from "./infra/repositories/buyer/ObjectionBuyerRepository";
@@ -42,28 +42,31 @@ const listProducts = new ListProducts(productRepo);
 const listVouchers = new ListVouchers(voucherRepo);
 
 //Services Use cases
-const checkoutDomainService = new CheckoutDomainService(cartRepo, productRepo, orderRepo);
+const checkout = Service.makeCheckout({
+  cartRepository: cartRepo,
+  productRepository: productRepo,
+  orderRepository: orderRepo,
+});
 
 const container = {
-    carts: {
-        addLineItem,
-        applyVoucher,
-        getCurrentCart,
-        removeLineItem,
-        removeVoucher,
-    },
-    products: {
-        listProducts,
-    },
-    vouchers: {
-        listVouchers,
-    },
-    services: {
-        checkoutDomainService
-    },
-}
+  carts: {
+    addLineItem,
+    applyVoucher,
+    getCurrentCart,
+    removeLineItem,
+    removeVoucher,
+  },
+  products: {
+    listProducts,
+  },
+  vouchers: {
+    listVouchers,
+  },
+  services: {
+    checkout,
+  },
+};
 
 type Container = typeof container;
 
-
-export { container, Container};
+export { container, Container };

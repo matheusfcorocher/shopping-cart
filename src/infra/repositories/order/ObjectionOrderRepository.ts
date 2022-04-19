@@ -1,6 +1,6 @@
 import { transaction } from "objection";
 import { v4 as uuidv4 } from "uuid";
-import { Order } from "../../../domain/entities";
+import * as Order from "../../../domain/entities/Order";
 import { LineItem } from "../../../domain/entities/Cart";
 import { OrderRepository } from "../../../domain/repositories/OrderRepository";
 import { InfrastructureError } from "../../../lib/CustomError";
@@ -14,7 +14,7 @@ interface Owner {
   ownerType: string;
 }
 class ObjectionOrderRepository implements OrderRepository {
-  public getAllOrders(): Promise<Order[]> {
+  public getAllOrders(): Promise<Order.Order[]> {
     return OrderModel.query().then((data) =>
       Promise.all(
         data.map((d) => {
@@ -23,7 +23,7 @@ class ObjectionOrderRepository implements OrderRepository {
       )
     );
   }
-  public store(order: Order): Promise<string> {
+  public store(order: Order.Order): Promise<string> {
     return transaction(OrderModel, async (BoundOrderModel) => {
       const { lineItems } = order;
 
@@ -45,7 +45,7 @@ class ObjectionOrderRepository implements OrderRepository {
     return uuidv4();
   }
 
-  private async transformOrderModelToOrder(order: OrderModel): Promise<Order> {
+  private async transformOrderModelToOrder(order: OrderModel): Promise<Order.Order> {
     const owner: Owner = {
       ownerId: order.uuid,
       ownerType: "order",

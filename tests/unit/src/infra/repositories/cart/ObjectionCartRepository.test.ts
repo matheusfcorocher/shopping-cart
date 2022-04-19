@@ -1,8 +1,5 @@
-import { Cart, Voucher } from "../../../../../../src/domain/entities";
-import {
-  LineItem,
-  LineItems,
-} from "../../../../../../src/domain/entities/Cart";
+import * as Cart from "../../../../../../src/domain/entities/Cart";
+import * as Voucher from "../../../../../../src/domain/entities/Voucher";
 import { appliedFactory } from "../../../../../../src/domain/factories/AppliedVoucherFactory";
 import { CartModel } from "../../../../../../src/infra/database/knex/models/CartModel";
 import { LineItemModel } from "../../../../../../src/infra/database/knex/models/LineItemModel";
@@ -144,8 +141,8 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
     describe("when cart doesnt have any lineItems", () => {
       describe("deletes cart from database", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [];
-          const cart = new Cart({
+          const lineItems: Cart.LineItems = [];
+          const cart = Cart.createCart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             lineItems,
@@ -156,8 +153,8 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       });
       describe("return success message", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [];
-          const cart = new Cart({
+          const lineItems: Cart.LineItems = [];
+          const cart = Cart.createCart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             lineItems,
@@ -172,21 +169,21 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
     describe("when cart has lineItems", () => {
       describe("deletes lineItems from database", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [
-            new LineItem(
-              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-              createMoney(6999),
-              2
-            ),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              unitPrice: createMoney(6999),
+              quantity: 2,
+            }),
           ];
-          const voucher = new Voucher({
+          const voucher = Voucher.createVoucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "percentual",
             amount: createMoney(40),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             lineItems,
@@ -198,21 +195,21 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       });
       describe("deletes cart from database", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [
-            new LineItem(
-              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-              createMoney(6999),
-              2
-            ),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              unitPrice: createMoney(6999),
+              quantity: 2,
+            }),
           ];
-          const voucher = new Voucher({
+          const voucher = Voucher.createVoucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "percentual",
             amount: createMoney(40),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             lineItems,
@@ -224,21 +221,21 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       });
       describe("return success message", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [
-            new LineItem(
-              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-              createMoney(6999),
-              2
-            ),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              unitPrice: createMoney(6999),
+              quantity: 2,
+            }),
           ];
-          const voucher = new Voucher({
+          const voucher = Voucher.createVoucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "percentual",
             amount: createMoney(40),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             lineItems,
@@ -254,8 +251,8 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
     describe("when try to delete cart", () => {
       describe("but cart isn't found", () => {
         it("returns not found error", async () => {
-          const lineItems: LineItems = [];
-          const cart = new Cart({
+          const lineItems: Cart.LineItems = [];
+          const cart = Cart.createCart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcs",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             lineItems,
@@ -270,28 +267,28 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       });
       describe("but lineItem isn't found", () => {
         it("returns not found error", async () => {
-          const lineItems: LineItems = [
-            new LineItem(
-              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcs",
-              createMoney(6999),
-              2
-            ),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcs",
+              unitPrice: createMoney(6999),
+              quantity: 2,
+            }),
           ];
-          const voucher = new Voucher({
+          const voucher = Voucher.createVoucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "percentual",
             amount: createMoney(40),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             lineItems,
             appliedVoucher,
           });
           const notFoundError = new Error("Not Found Error");
-          notFoundError.message = `LineItems can't be found.`;
+          notFoundError.message = `Cart.LineItems can't be found.`;
 
           await expect(() => cartRepository.delete(cart)).rejects.toThrow(
             notFoundError
@@ -300,21 +297,21 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       });
       describe("but some operation fail", () => {
         it("database back to initial state by transaction", async () => {
-          const lineItems: LineItems = [
-            new LineItem(
-              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-              createMoney(6999),
-              2
-            ),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              unitPrice: createMoney(6999),
+              quantity: 2,
+            }),
           ];
-          const voucher = new Voucher({
+          const voucher = Voucher.createVoucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "fixed",
             amount: createMoney(5000),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             lineItems,
@@ -357,15 +354,15 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       });
       describe("result returns correct array", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [];
-          const lineItems2: LineItems = [
-            new LineItem(
-              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-              createMoney(6999),
-              2
-            ),
+          const lineItems: Cart.LineItems = [];
+          const lineItems2: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              unitPrice: createMoney(6999),
+              quantity: 2,
+            }),
           ];
-          const voucher = new Voucher({
+          const voucher = Voucher.createVoucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "fixed",
@@ -374,13 +371,13 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
 
           const expected = [
-            new Cart({
+            Cart.createCart({
               id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
               buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
               lineItems: lineItems2,
               appliedVoucher,
             }),
-            new Cart({
+            Cart.createCart({
               id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
               buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
               lineItems,
@@ -390,11 +387,15 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
 
           expect(
             JSON.stringify(
-              carts.sort((a: Cart, b: Cart) => a.id.localeCompare(b.id))
+              carts.sort((a: Cart.Cart, b: Cart.Cart) =>
+                a.id.localeCompare(b.id)
+              )
             )
           ).toEqual(
             JSON.stringify(
-              expected.sort((a: Cart, b: Cart) => a.id.localeCompare(b.id))
+              expected.sort((a: Cart.Cart, b: Cart.Cart) =>
+                a.id.localeCompare(b.id)
+              )
             )
           );
         });
@@ -414,8 +415,8 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
     describe("when execute method", () => {
       describe("and cart is found", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [];
-          const cart = new Cart({
+          const lineItems: Cart.LineItems = [];
+          const cart = Cart.createCart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             lineItems,
@@ -445,8 +446,8 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
     describe("when execute method", () => {
       describe("and cart is found", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [];
-          const cart = new Cart({
+          const lineItems: Cart.LineItems = [];
+          const cart = Cart.createCart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             lineItems,
@@ -483,8 +484,8 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
     describe("when cart doesnt have any lineItems", () => {
       describe("return success message", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [];
-          const cart = new Cart({
+          const lineItems: Cart.LineItems = [];
+          const cart = Cart.createCart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             lineItems,
@@ -497,15 +498,15 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
     describe("when cart has lineItems", () => {
       describe("delete lineItem from database when quantity is 0", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [];
-          const voucher = new Voucher({
+          const lineItems: Cart.LineItems = [];
+          const voucher = Voucher.createVoucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "percentual",
             amount: createMoney(40),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             lineItems,
@@ -526,21 +527,21 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       });
       describe("update lineItem from database when quantity > 0", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [
-            new LineItem(
-              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-              createMoney(6999),
-              4
-            ),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              unitPrice: createMoney(6999),
+              quantity: 4,
+            }),
           ];
-          const voucher = new Voucher({
+          const voucher = Voucher.createVoucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "percentual",
             amount: createMoney(40),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             lineItems,
@@ -563,21 +564,21 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       });
       describe("store lineItem in database", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [
-            new LineItem(
-              "8bc94226-3e20-40cb-a507-554fabf36ffa",
-              createMoney(3999),
-              2
-            ),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              unitPrice: createMoney(3999),
+              quantity: 2,
+            }),
           ];
-          const voucher = new Voucher({
+          const voucher = Voucher.createVoucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "percentual",
             amount: createMoney(40),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             lineItems,
@@ -602,21 +603,21 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       });
       describe("update cart from database", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [
-            new LineItem(
-              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-              createMoney(6999),
-              2
-            ),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              unitPrice: createMoney(6999),
+              quantity: 2,
+            }),
           ];
-          const voucher = new Voucher({
+          const voucher = Voucher.createVoucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "percentual",
             amount: createMoney(40),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             lineItems,
@@ -638,21 +639,21 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       });
       describe("return success message", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [
-            new LineItem(
-              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-              createMoney(6999),
-              2
-            ),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              unitPrice: createMoney(6999),
+              quantity: 2,
+            }),
           ];
-          const voucher = new Voucher({
+          const voucher = Voucher.createVoucher({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             code: "TEST1",
             type: "percentual",
             amount: createMoney(40),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
             lineItems,
@@ -668,14 +669,14 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
     describe("when try update cart", () => {
       describe("but some operation fail", () => {
         it("database back to initial state by transaction", async () => {
-          const lineItems: LineItems = [
-            new LineItem(
-              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
-              createMoney(6999),
-              2
-            ),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
+              unitPrice: createMoney(6999),
+              quantity: 2,
+            }),
           ];
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             lineItems,

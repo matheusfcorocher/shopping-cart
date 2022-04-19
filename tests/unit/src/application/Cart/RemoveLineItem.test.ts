@@ -1,6 +1,7 @@
 import RemoveLineItem from "../../../../../src/application/Cart/RemoveLineItem";
-import { Cart, Product, Voucher } from "../../../../../src/domain/entities";
-import { LineItems, LineItem } from "../../../../../src/domain/entities/Cart";
+import * as Cart from "../../../../../src/domain/entities/Cart";
+import * as Voucher from "../../../../../src/domain/entities/Voucher";
+import * as Product from "../../../../../src/domain/entities/Product";
 import { appliedFactory } from "../../../../../src/domain/factories/AppliedVoucherFactory";
 import { createMoney } from "../../../../../src/domain/valueObjects/Money";
 import { FakeCartRepository } from "../../../../support/repositories/FakeCartRepository";
@@ -11,24 +12,35 @@ describe("Application :: Cart :: RemoveLineItem", () => {
     describe("When cart doesn't have any line item", () => {
       describe("and cart doesnt have voucher", () => {
         it("returns not found error", async () => {
-          const lineItems: LineItems = [];
-          const cart = new Cart({
+          const lineItems: Cart.LineItems = [];
+          const cart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems,
           });
           const carts = [cart];
-          const removeItem = new LineItem("aaa", createMoney(20), 1);
+          const removeItem = Cart.createLineItem({
+            productId: "aaa",
+            unitPrice: createMoney(20),
+            quantity: 1,
+          });
           const products = [
-            new Product({ id: "aaa", name: "foo", price: createMoney(20), available: 20 }),
+            Product.createProduct({
+              id: "aaa",
+              name: "foo",
+              price: createMoney(20),
+              available: 20,
+            }),
           ];
           const removeItems = [removeItem];
-          const newCart = new Cart({
+          const newCart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems: removeItems,
           });
-          const error = new Error("Item with productId aaa wasn't found in cart!");
+          const error = new Error(
+            "Item with productId aaa wasn't found in cart!"
+          );
 
           const cartRepository = new FakeCartRepository(carts);
           const productRepository = new FakeProductRepository(products);
@@ -44,15 +56,15 @@ describe("Application :: Cart :: RemoveLineItem", () => {
       });
       describe("and cart has voucher", () => {
         it("returns not found error", async () => {
-          const lineItems: LineItems = [];
-          const voucher = new Voucher({
+          const lineItems: Cart.LineItems = [];
+          const voucher = Voucher.createVoucher({
             id: "aaa",
             code: "#F121221",
             type: "percentual",
             amount: createMoney(30.0),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems,
@@ -60,10 +72,17 @@ describe("Application :: Cart :: RemoveLineItem", () => {
           });
           const carts = [cart];
           const products = [
-            new Product({ id: "aaa", name: "foo", price: createMoney(20), available: 20 }),
+            Product.createProduct({
+              id: "aaa",
+              name: "foo",
+              price: createMoney(20),
+              available: 20,
+            }),
           ];
 
-          const error = new Error("Item with productId aaa wasn't found in cart!");
+          const error = new Error(
+            "Item with productId aaa wasn't found in cart!"
+          );
 
           const cartRepository = new FakeCartRepository(carts);
           const productRepository = new FakeProductRepository(products);
@@ -82,25 +101,46 @@ describe("Application :: Cart :: RemoveLineItem", () => {
     describe("When cart has line items", () => {
       describe("and cart doesnt have voucher", () => {
         it("returns correct cart", async () => {
-          const lineItems: LineItems = [
-            new LineItem("aaa", createMoney(20), 2),
-            new LineItem("bbb", createMoney(40), 1),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "aaa",
+              unitPrice: createMoney(20),
+              quantity: 2,
+            }),
+            Cart.createLineItem({
+              productId: "bbb",
+              unitPrice: createMoney(40),
+              quantity: 1,
+            }),
           ];
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems,
           });
           const carts = [cart];
           const products = [
-            new Product({ id: "aaa", name: "foo", price: createMoney(20), available: 20 }),
+            Product.createProduct({
+              id: "aaa",
+              name: "foo",
+              price: createMoney(20),
+              available: 20,
+            }),
           ];
 
           const removeItems = [
-            new LineItem("aaa", createMoney(20), 1),
-            new LineItem("bbb", createMoney(40), 1),
+            Cart.createLineItem({
+              productId: "aaa",
+              unitPrice: createMoney(20),
+              quantity: 2,
+            }),
+            Cart.createLineItem({
+              productId: "bbb",
+              unitPrice: createMoney(40),
+              quantity: 1,
+            }),
           ];
-          const newCart = new Cart({
+          const newCart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems: removeItems,
@@ -119,18 +159,26 @@ describe("Application :: Cart :: RemoveLineItem", () => {
       });
       describe("and cart has voucher", () => {
         it("returns correct cart", async () => {
-          const lineItems: LineItems = [
-            new LineItem("aaa", createMoney(20), 2),
-            new LineItem("bbb", createMoney(40), 1),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "aaa",
+              unitPrice: createMoney(20),
+              quantity: 2,
+            }),
+            Cart.createLineItem({
+              productId: "bbb",
+              unitPrice: createMoney(40),
+              quantity: 1,
+            }),
           ];
-          const voucher = new Voucher({
+          const voucher = Voucher.createVoucher({
             id: "aaa",
             code: "#F121221",
             type: "percentual",
             amount: createMoney(30.0),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems,
@@ -138,14 +186,27 @@ describe("Application :: Cart :: RemoveLineItem", () => {
           });
           const carts = [cart];
           const products = [
-            new Product({ id: "aaa", name: "foo", price: createMoney(20), available: 20 }),
+            Product.createProduct({
+              id: "aaa",
+              name: "foo",
+              price: createMoney(20),
+              available: 20,
+            }),
           ];
 
           const removeItems = [
-            new LineItem("aaa", createMoney(20), 1),
-            new LineItem("bbb", createMoney(40), 1),
+            Cart.createLineItem({
+              productId: "aaa",
+              unitPrice: createMoney(20),
+              quantity: 1,
+            }),
+            Cart.createLineItem({
+              productId: "bbb",
+              unitPrice: createMoney(40),
+              quantity: 1,
+            }),
           ];
-          const newCart = new Cart({
+          const newCart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems: removeItems,
@@ -167,18 +228,26 @@ describe("Application :: Cart :: RemoveLineItem", () => {
 
     describe("When buyerId wasn't found", () => {
       it("returns correct cart", async () => {
-        const lineItems: LineItems = [
-          new LineItem("aaa", createMoney(20), 2),
-          new LineItem("bbb", createMoney(40), 1),
+        const lineItems: Cart.LineItems = [
+          Cart.createLineItem({
+            productId: "aaa",
+            unitPrice: createMoney(20),
+            quantity: 2,
+          }),
+          Cart.createLineItem({
+            productId: "bbb",
+            unitPrice: createMoney(40),
+            quantity: 1,
+          }),
         ];
-        const voucher = new Voucher({
+        const voucher = Voucher.createVoucher({
           id: "aaa",
           code: "#F121221",
           type: "percentual",
           amount: createMoney(30.0),
         });
         const appliedVoucher = appliedFactory.fromVoucher(voucher);
-        const cart = new Cart({
+        const cart = Cart.createCart({
           id: "aaa",
           buyerId: "aaa",
           lineItems,
@@ -186,8 +255,18 @@ describe("Application :: Cart :: RemoveLineItem", () => {
         });
         const carts = [cart];
         const products = [
-          new Product({ id: "aaa", name: "foo", price: createMoney(20), available: 20 }),
-          new Product({ id: "bbb", name: "pie", price: createMoney(20), available: 20 }),
+          Product.createProduct({
+            id: "aaa",
+            name: "foo",
+            price: createMoney(20),
+            available: 20,
+          }),
+          Product.createProduct({
+            id: "bbb",
+            name: "pie",
+            price: createMoney(20),
+            available: 20,
+          }),
         ];
 
         const cartRepository = new FakeCartRepository(carts);
@@ -197,26 +276,38 @@ describe("Application :: Cart :: RemoveLineItem", () => {
           productRepository
         );
 
-        const error = new Error("Item with productId aaa wasn't found in cart!")
+        const error = new Error(
+          "Item with productId aaa wasn't found in cart!"
+        );
 
-        await expect(() => removeLineItem.execute("bbb", "aaa")).rejects.toThrow(error);
+        await expect(() =>
+          removeLineItem.execute("bbb", "aaa")
+        ).rejects.toThrow(error);
       });
     });
 
     describe("When productId wasn't found", () => {
       it("returns not found error", async () => {
-        const lineItems: LineItems = [
-          new LineItem("aaa", createMoney(20), 2),
-          new LineItem("bbb", createMoney(40), 1),
+        const lineItems: Cart.LineItems = [
+          Cart.createLineItem({
+            productId: "aaa",
+            unitPrice: createMoney(20),
+            quantity: 2,
+          }),
+          Cart.createLineItem({
+            productId: "bbb",
+            unitPrice: createMoney(40),
+            quantity: 1,
+          }),
         ];
-        const voucher = new Voucher({
+        const voucher = Voucher.createVoucher({
           id: "aaa",
           code: "#F121221",
           type: "percentual",
           amount: createMoney(30.0),
         });
         const appliedVoucher = appliedFactory.fromVoucher(voucher);
-        const cart = new Cart({
+        const cart = Cart.createCart({
           id: "aaa",
           buyerId: "aaa",
           lineItems,
@@ -224,7 +315,12 @@ describe("Application :: Cart :: RemoveLineItem", () => {
         });
         const carts = [cart];
         const products = [
-          new Product({ id: "bbb", name: "foo", price: createMoney(20), available: 20 }),
+          Product.createProduct({
+            id: "bbb",
+            name: "foo",
+            price: createMoney(20),
+            available: 20,
+          }),
         ];
 
         const cartRepository = new FakeCartRepository(carts);
@@ -245,19 +341,19 @@ describe("Application :: Cart :: RemoveLineItem", () => {
 
     describe("When update the cart gives error", () => {
       it("returns error", async () => {
-        const lineItems: LineItems = [
-          new LineItem("aaa", createMoney(20), 2),
-          new LineItem("bbb", createMoney(40), 1),
+        const lineItems: Cart.LineItems = [
+          Cart.createLineItem({productId: "aaa", unitPrice: createMoney(20), quantity: 2}),
+            Cart.createLineItem({productId: "bbb", unitPrice: createMoney(40), quantity: 1}),
         ];
-        const removeItem = new LineItem("aaa", createMoney(20), 4);
-        const voucher = new Voucher({
+        const removeItem = Cart.createLineItem({productId: "aaa", unitPrice: createMoney(20), quantity: 4});
+        const voucher = Voucher.createVoucher({
           id: "aaa",
           code: "#F121221",
           type: "percentual",
           amount: createMoney(30.0),
         });
         const appliedVoucher = appliedFactory.fromVoucher(voucher);
-        const cart = new Cart({
+        const cart = Cart.createCart({
           id: "aaa",
           buyerId: "aaa",
           lineItems,
@@ -265,7 +361,12 @@ describe("Application :: Cart :: RemoveLineItem", () => {
         });
         const carts = [cart];
         const products = [
-          new Product({ id: "aaa", name: "foo", price: createMoney(20), available: 20 }),
+          Product.createProduct({
+            id: "aaa",
+            name: "foo",
+            price: createMoney(20),
+            available: 20,
+          }),
         ];
         const cartRepository = new FakeCartRepository(carts);
         const error = new Error("Service Unavailable");

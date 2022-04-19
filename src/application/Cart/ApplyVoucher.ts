@@ -1,4 +1,4 @@
-import { Cart } from "../../domain/entities";
+import * as Cart from "../../domain/entities/Cart";
 import { appliedFactory } from "../../domain/factories/AppliedVoucherFactory";
 import { CartRepository } from "../../domain/repositories/CartRepository";
 import { VoucherRepository } from "../../domain/repositories/VoucherRepository";
@@ -11,11 +11,11 @@ export default class ApplyVoucher {
     this.voucherRepository = voucherRepository;
   }
 
-  public async execute(buyerId: string, code: string): Promise<Cart> {
+  public async execute(buyerId: string, code: string): Promise<Cart.Cart> {
     const cart = await this.cartRepository.getCartByBuyerId(buyerId);
     const voucher = await this.voucherRepository.getVoucherByCode(code);
     const appliedVoucher = appliedFactory.fromVoucher(voucher);
-    cart.applyVoucher(appliedVoucher);
+    Cart.applyVoucher(cart, appliedVoucher);
     await this.cartRepository.update(cart);
     return cart
   }

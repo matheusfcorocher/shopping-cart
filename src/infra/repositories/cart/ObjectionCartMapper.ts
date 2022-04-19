@@ -1,4 +1,4 @@
-import { Cart } from "../../../domain/entities";
+import * as Cart from "../../../domain/entities/Cart";
 import { LineItems } from "../../../domain/entities/Cart";
 import { AppliedVoucher } from "../../../domain/valueObjects/AppliedVoucher";
 import { CartModel } from "../../database/knex/models/CartModel";
@@ -16,14 +16,14 @@ const ObjectionCartMapper = {
     } = dataValues;
     const {lineItems, appliedVoucher} = aditionalProps
 
-    return new Cart({
+    return Cart.createCart({
       id: uuid,
       buyerId,
       lineItems,
       appliedVoucher
     });
   },
-  toDatabase(cart: Cart) {
+  toDatabase(cart: Cart.Cart) {
     const { id, buyerId} = cart;
     const { voucherId, type, amount, minValue} = (cart.appliedVoucher || {});
     return {

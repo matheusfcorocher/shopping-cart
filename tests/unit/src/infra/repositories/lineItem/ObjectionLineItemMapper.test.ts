@@ -1,4 +1,4 @@
-import { LineItem } from "../../../../../../src/domain/entities/Cart";
+import * as Cart from "../../../../../../src/domain/entities/Cart";
 import { createMoney } from "../../../../../../src/domain/valueObjects/Money";
 import { LineItemModel } from "../../../../../../src/infra/database/knex/models/LineItemModel";
 import { ObjectionLineItemMapper } from "../../../../../../src/infra/repositories/lineItem/ObjectionLineItemMapper";
@@ -18,7 +18,7 @@ describe("Infra :: LineItem :: ObjectionLineItemMapper", () => {
       };
       lineItemModel.$setJson(lineItemObject);
       const { productId, unitPrice, quantity } = lineItemObject;
-      const expected = new LineItem(productId, createMoney(unitPrice), quantity);
+      const expected = Cart.createLineItem({productId, unitPrice: createMoney(unitPrice), quantity});
 
       expect(JSON.stringify(ObjectionLineItemMapper.toEntity(lineItemModel))).toEqual(JSON.stringify(expected));
     });
@@ -36,7 +36,7 @@ describe("Infra :: LineItem :: ObjectionLineItemMapper", () => {
       };
       const { uuid, productId, unitPrice, quantity, ownerId, ownerType } =
         lineItemObject;
-      const lineItem = new LineItem(productId, createMoney(unitPrice), quantity);
+      const lineItem = Cart.createLineItem({productId, unitPrice: createMoney(unitPrice), quantity});
       const props = { uuid, ownerId, ownerType };
       const expected = {
         uuid: "2a20283a-2371-441f-af6e-899fe63def5c",

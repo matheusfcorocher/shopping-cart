@@ -1,5 +1,5 @@
-import { Order } from "../../../../../../src/domain/entities";
-import { LineItem } from "../../../../../../src/domain/entities/Cart";
+import * as Order from "../../../../../../src/domain/entities/Order";
+import * as Cart from "../../../../../../src/domain/entities/Cart";
 import { createMoney } from "../../../../../../src/domain/valueObjects/Money";
 import { OrderModel } from "../../../../../../src/infra/database/knex/models/OrderModel";
 import { ObjectionOrderMapper } from "../../../../../../src/infra/repositories/order/ObjectionOrderMapper";
@@ -18,8 +18,8 @@ describe("Infra :: Order :: ObjectionOrderMapper", () => {
       orderModel.$setJson(orderObject);
       const { uuid, buyerId, discount, paymentMethod } = orderModel;
 
-      const lineItems = [new LineItem("2a20283a-2371-441f-af6e-899fe63def5c", createMoney(1999), 5), ];
-      const expected = new Order({ id: uuid, buyerId, discount: createMoney(discount), paymentMethod, lineItems });
+      const lineItems = [Cart.createLineItem({productId: "2a20283a-2371-441f-af6e-899fe63def5c", unitPrice: createMoney(1999), quantity: 5}), ];
+      const expected = Order.createOrder({ id: uuid, buyerId, discount: createMoney(discount), paymentMethod, lineItems });
 
       expect(JSON.stringify(ObjectionOrderMapper.toEntity(orderModel, lineItems))).toEqual(JSON.stringify(expected));
     });
@@ -27,9 +27,9 @@ describe("Infra :: Order :: ObjectionOrderMapper", () => {
 
   describe(".toDatabase", () => {
     it("returns prepared object to be persisted", () => {
-      const lineItems = [new LineItem("2a20283a-2371-441f-af6e-899fe63def5c", createMoney(1999), 5), ];
+      const lineItems = [Cart.createLineItem({productId: "2a20283a-2371-441f-af6e-899fe63def5c", unitPrice: createMoney(1999), quantity: 5}), ];
 
-      const order = new Order({
+      const order = Order.createOrder({
         id: "2a20283a-2371-441f-af6e-899fe63def5c",
         buyerId: "2a20283a-2371-441f-af6e-899fe63def5c",
         lineItems,

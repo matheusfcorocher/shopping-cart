@@ -1,4 +1,4 @@
-import { Voucher } from "../../../../../../src/domain/entities";
+import * as Voucher from "../../../../../../src/domain/entities/Voucher";
 import { createMoney } from "../../../../../../src/domain/valueObjects/Money";
 import ObjectionVoucherRepository from "../../../../../../src/infra/repositories/voucher/ObjectionVoucherRepository";
 import VoucherModelFactory from "../../../../../support/factories/models/VoucherModelFactory";
@@ -52,19 +52,19 @@ describe("Infra :: Voucher :: ObjectionVoucherRepository", () => {
         it("returns correct result", async () => {
           const vouchers = await voucherRepository.getAllVouchers();
           const expected = [
-            new Voucher({
+            Voucher.createVoucher({
               id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
               code: "TEST1",
               type: "percentual",
               amount: createMoney(40),
             }),
-            new Voucher({
+            Voucher.createVoucher({
               id: "92d91715-34ad-449e-9b81-73f1a74ef44e",
               code: "TEST2",
               type: "fixed",
               amount: createMoney(40),
             }),
-            new Voucher({
+            Voucher.createVoucher({
               id: "8bc94226-3e20-40cb-a507-554fabf36ffa",
               code: "TEST3",
               type: "free shipping",
@@ -75,13 +75,13 @@ describe("Infra :: Voucher :: ObjectionVoucherRepository", () => {
 
           expect(
             JSON.stringify(
-              vouchers.sort((a: Voucher, b: Voucher) =>
+              vouchers.sort((a: Voucher.Voucher, b: Voucher.Voucher) =>
                 a.id.localeCompare(b.id)
               )
             )
           ).toEqual(
             JSON.stringify(
-              expected.sort((a: Voucher, b: Voucher) =>
+              expected.sort((a: Voucher.Voucher, b: Voucher.Voucher) =>
                 a.id.localeCompare(b.id)
               )
             )
@@ -107,7 +107,7 @@ describe("Infra :: Voucher :: ObjectionVoucherRepository", () => {
         const voucher = await voucherRepository.getVoucherById(
           "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf"
         );
-        const expected = new Voucher({
+        const expected = Voucher.createVoucher({
           id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           code: "TEST1",
           type: "percentual",
@@ -134,7 +134,7 @@ describe("Infra :: Voucher :: ObjectionVoucherRepository", () => {
     describe("result is a voucher instance", () => {
       it("returns the correct result", async () => {
         const voucher = await voucherRepository.getVoucherByCode("TEST1");
-        const expected = new Voucher({
+        const expected = Voucher.createVoucher({
           id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
           code: "TEST1",
           type: "percentual",

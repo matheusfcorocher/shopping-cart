@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Cart } from "../../../src/domain/entities";
+import { Cart, createCart } from "../../../src/domain/entities/Cart";
 import { LineItem } from '../../../src/domain/entities/Cart';
 import { CartRepository } from "../../../src/domain/repositories/CartRepository";
 
@@ -20,7 +20,7 @@ class FakeCartRepository implements CartRepository {
     const result = this.carts.find((cart) => cart?.buyerId?.normalize() === buyerId.normalize());
     if (result === undefined) {
       const lineItems : Array<LineItem> = []; 
-      const newCart = new Cart({
+      const newCart = createCart({
         id: this.getNextId(),
         buyerId: this.getNextId(),
         lineItems,

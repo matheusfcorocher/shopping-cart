@@ -1,6 +1,5 @@
-import { Cart, Voucher } from "../../../../../../src/domain/entities";
-import { LineItem } from "../../../../../../src/domain/entities/Cart";
-import { VoucherType } from "../../../../../../src/domain/entities/Voucher";
+import * as Cart from "../../../../../../src/domain/entities/Cart";
+import * as Voucher from "../../../../../../src/domain/entities/Voucher";
 import { appliedFactory } from "../../../../../../src/domain/factories/AppliedVoucherFactory";
 import { createMoney } from "../../../../../../src/domain/valueObjects/Money";
 import { CartModel } from "../../../../../../src/infra/database/knex/models/CartModel";
@@ -23,8 +22,8 @@ describe("Infra :: Cart :: ObjectionCartMapper", () => {
       const { uuid, buyerId, voucherId, type, amount, minValue } = cartModel;
       let appliedVoucher = undefined;
       if (voucherId && type && amount && minValue) {
-        const voucherType = <VoucherType>type;
-        const voucher = new Voucher({
+        const voucherType = <Voucher.VoucherType>type;
+        const voucher = Voucher.createVoucher({
           id: voucherId,
           code: "null",
           type: voucherType,
@@ -33,8 +32,8 @@ describe("Infra :: Cart :: ObjectionCartMapper", () => {
         });
         appliedVoucher = appliedFactory.fromVoucher(voucher);
       }
-      const lineItems = [new LineItem("2a20283a-2371-441f-af6e-899fe63def5c", createMoney(1999), 5), ];
-      const expected = new Cart({ id: uuid, buyerId, appliedVoucher, lineItems });
+      const lineItems = [Cart.createLineItem({productId: "2a20283a-2371-441f-af6e-899fe63def5c", unitPrice: createMoney(1999), quantity: 5}), ];
+      const expected = Cart.createCart({ id: uuid, buyerId, appliedVoucher, lineItems });
 
       expect(ObjectionCartMapper.toEntity(cartModel, {appliedVoucher, lineItems})).toEqual(expected);
     });
@@ -42,7 +41,7 @@ describe("Infra :: Cart :: ObjectionCartMapper", () => {
 
   describe(".toDatabase", () => {
     it("returns prepared object to be persisted", () => {
-      const lineItems = [new LineItem("2a20283a-2371-441f-af6e-899fe63def5c", createMoney(1999), 5), ];
+      const lineItems = [Cart.createLineItem({productId: "2a20283a-2371-441f-af6e-899fe63def5c", unitPrice: createMoney(1999), quantity: 5})];
       const cartObject: CartModelData = {
         uuid: "2a20283a-2371-441f-af6e-899fe63def5c",
         buyerId: "2a20283a-2371-441f-af6e-899fe63def5c",
@@ -50,15 +49,15 @@ describe("Infra :: Cart :: ObjectionCartMapper", () => {
         type: "fixed",
         amount: 5000,
       };
-      const voucherType = <VoucherType>cartObject.type;
-      const voucher = new Voucher({
+      const voucherType = <Voucher.VoucherType>cartObject.type;
+      const voucher = Voucher.createVoucher({
         id: cartObject.uuid,
         code: "null",
         type: voucherType,
         amount: createMoney(cartObject.amount!),
       });
       const appliedVoucher = appliedFactory.fromVoucher(voucher);
-      const cart = new Cart({
+      const cart = Cart.createCart({
         id: "2a20283a-2371-441f-af6e-899fe63def5c",
         buyerId: "2a20283a-2371-441f-af6e-899fe63def5c",
         lineItems,

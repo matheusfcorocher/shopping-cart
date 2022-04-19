@@ -1,8 +1,5 @@
-import { Order } from "../../../../../../src/domain/entities";
-import {
-  LineItem,
-  LineItems,
-} from "../../../../../../src/domain/entities/Cart";
+import * as Order from "../../../../../../src/domain/entities/Order";
+import * as Cart from "../../../../../../src/domain/entities/Cart";
 import { LineItemModel } from "../../../../../../src/infra/database/knex/models/LineItemModel";
 import { ObjectionLineItemMapper } from "../../../../../../src/infra/repositories/lineItem/ObjectionLineItemMapper";
 import BuyerModelFactory from "../../../../../support/factories/models/BuyerModelFactory";
@@ -111,24 +108,24 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
       });
       describe("result returns correct array", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [];
-          const lineItems2: LineItems = [
-            new LineItem(
-              "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
-              createMoney(6999),
-              2
-            ),
+          const lineItems: Cart.LineItems = [];
+          const lineItems2: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              unitPrice: createMoney(6999),
+              quantity: 2,
+            }),
           ];
 
           const expected = [
-            new Order({
+            Order.createOrder({
               id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
               buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
               lineItems: lineItems2,
               discount: createMoney(5000),
               paymentMethod: "debit card",
             }),
-            new Order({
+            Order.createOrder({
               id: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
               buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
               lineItems,
@@ -140,11 +137,15 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
 
           expect(
             JSON.stringify(
-              orders.sort((a: Order, b: Order) => a.id.localeCompare(b.id))
+              orders.sort((a: Order.Order, b: Order.Order) =>
+                a.id.localeCompare(b.id)
+              )
             )
           ).toEqual(
             JSON.stringify(
-              expected.sort((a: Order, b: Order) => a.id.localeCompare(b.id))
+              expected.sort((a: Order.Order, b: Order.Order) =>
+                a.id.localeCompare(b.id)
+              )
             )
           );
         });
@@ -167,8 +168,8 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
     describe("when order doesnt have any lineItems", () => {
       describe("return success message", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [];
-          const order = new Order({
+          const lineItems: Cart.LineItems = [];
+          const order = Order.createOrder({
             id: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             lineItems,
@@ -185,14 +186,14 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
     describe("when order has lineItems", () => {
       describe("store order in database", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [
-            new LineItem(
-              "92d91715-34ad-449e-9b81-73f1a74ef44e",
-              createMoney(27999),
-              2
-            ),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "92d91715-34ad-449e-9b81-73f1a74ef44e",
+              unitPrice: createMoney(27999),
+              quantity: 2,
+            }),
           ];
-          const order = new Order({
+          const order = Order.createOrder({
             id: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             lineItems,
@@ -214,14 +215,14 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
       });
       describe("store lineItem in database", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [
-            new LineItem(
-              "92d91715-34ad-449e-9b81-73f1a74ef44e",
-              createMoney(27999),
-              2
-            ),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "92d91715-34ad-449e-9b81-73f1a74ef44e",
+              unitPrice: createMoney(27999),
+              quantity: 2,
+            }),
           ];
-          const order = new Order({
+          const order = Order.createOrder({
             id: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             lineItems,
@@ -245,14 +246,14 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
       });
       describe("return success message", () => {
         it("returns correct result", async () => {
-          const lineItems: LineItems = [
-            new LineItem(
-              "92d91715-34ad-449e-9b81-73f1a74ef44e",
-              createMoney(27999),
-              2
-            ),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "92d91715-34ad-449e-9b81-73f1a74ef44e",
+              unitPrice: createMoney(27999),
+              quantity: 2,
+            }),
           ];
-          const order = new Order({
+          const order = Order.createOrder({
             id: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             lineItems,
@@ -269,14 +270,14 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
     describe("when try store order", () => {
       describe("but some operation fail", () => {
         it("database back to initial state by transaction", async () => {
-          const lineItems: LineItems = [
-            new LineItem(
-              "92d91715-34ad-449e-9b81-73f1a74ef44e",
-              createMoney(27999),
-              2
-            ),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({
+              productId: "92d91715-34ad-449e-9b81-73f1a74ef44e",
+              unitPrice: createMoney(27999),
+              quantity: 2,
+            }),
           ];
-          const order = new Order({
+          const order = Order.createOrder({
             id: "7442feba-c819-4ab0-b851-dbdbb3ee4c68",
             buyerId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd",
             lineItems,

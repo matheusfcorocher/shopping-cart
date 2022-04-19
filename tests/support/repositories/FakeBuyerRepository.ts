@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Buyer } from "../../../src/domain/entities";
+import { Buyer } from "../../../src/domain/entities/Buyer";
 import { BuyerRepository } from "../../../src/domain/repositories/BuyerRepository";
 
 class FakeBuyerRepository implements BuyerRepository {

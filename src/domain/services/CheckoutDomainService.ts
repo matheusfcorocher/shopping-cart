@@ -1,7 +1,7 @@
 import { DomainAggregateError, DomainError } from "../../lib/CustomError";
 import { Cart, discount } from "../entities/Cart";
 import { createOrder, OrderData, PaymentMethod } from "../entities/Order";
-import { Product } from "../entities/Product";
+import { createProduct, Product } from "../entities/Product";
 import { CartRepository } from "../repositories/CartRepository";
 import { OrderRepository } from "../repositories/OrderRepository";
 import { ProductRepository } from "../repositories/ProductRepository";
@@ -25,45 +25,44 @@ type CheckoutDomainServiceProps = {
 };
 
 //public functions
-type CheckoutProps = {
-  checkoutDomainService: CheckoutDomainServiceProps;
-  data: DataProps;
-}
 
-async function checkout({checkoutDomainService, data} : CheckoutProps): Promise<string> {
-  const cart = await checkoutDomainService.cartRepository.getCartById(data.cartId);
-  if (cart.lineItems.length == 0) {
-    const validationError = new DomainError({
-      title: "Bad request Error",
-      code: "BADREQUEST_ERROR",
-      message: "cart must have line items to become a order.",
+function makeCheckout({cartRepository, productRepository, orderRepository}: CheckoutDomainServiceProps) {
+  async function checkout(data: DataProps): Promise<string> {
+    const cart = await cartRepository.getCartById(
+      data.cartId
+    );
+    if (cart.lineItems.length == 0) {
+      const validationError = new DomainError({
+        title: "Bad request Error",
+        code: "BADREQUEST_ERROR",
+        message: "cart must have line items to become a order.",
+      });
+      throw validationError;
+    }
+    const products =
+      await productRepository.getAllProducts();
+    const productsData = products.map((product) => {
+      const { id, name, available } = product;
+      return { productId: id, name, available };
     });
-    throw validationError;
+    verifyAvailability(cart, productsData);
+    const orderId = orderRepository.getNextId();
+    const orderData = convertCartToOrderData(cart, data);
+    const order = createOrder({
+      ...orderData,
+      id: orderId,
+    });
+    await orderRepository.store(order);
+    await stockReduction(cart, products, productRepository);
+    await cartRepository.delete(cart);
+    return "Order created successfully!";
   }
-  const products = await checkoutDomainService.productRepository.getAllProducts();
-  const productsData = products.map((product) => {
-    const { id, name, available } = product;
-    return { productId: id, name, available };
-  });
-  verifyAvailability(cart, productsData);
-  const orderId = checkoutDomainService.orderRepository.getNextId();
-  const orderData = convertCartToOrderData(cart, data);
-  const order = createOrder({
-    ...orderData,
-    id: orderId,
-  });
-  await checkoutDomainService.orderRepository.store(order);
-  await stockReduction(cart, products, checkoutDomainService);
-  await checkoutDomainService.cartRepository.delete(cart);
-  return "Order created successfully!";
+  return checkout;
 }
 
 //private functions
 
-function convertCartToOrderData(
-  cart: Cart,
-  data: DataProps
-): OrderData {
+function convertCartToOrderData(cart: Cart, data: DataProps): OrderData {
   const { lineItems } = cart;
   const { buyerId, paymentMethod } = data;
   return {
@@ -77,14 +76,16 @@ function convertCartToOrderData(
 async function stockReduction(
   cart: Cart,
   products: Array<Product>,
-  checkoutDomainService: CheckoutDomainServiceProps
+  productRepository: ProductRepository
 ): Promise<String> {
   const updatedProducts = updateProducts(cart, products);
 
   const promises = [];
   for (let product of updatedProducts) {
     const { id, available } = product;
-    promises.push(checkoutDomainService.productRepository.update(id, { available }));
+    promises.push(
+      productRepository.update(id, { available })
+    );
   }
   await Promise.all(promises);
 
@@ -97,7 +98,14 @@ function updateProducts(cart: Cart, products: Array<Product>): Array<Product> {
       (lineItem) => product.id == lineItem.productId
     );
     if (lineItem) {
-      product.available = product.available - lineItem.quantity;
+      const updatedProduct = createProduct({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        available: product.available - lineItem.quantity,
+      });
+
+      return updatedProduct;
     }
 
     return product;
@@ -128,8 +136,8 @@ function verifyAvailability(
     }
 
     const internalError = new DomainError({
-      title: "Internal Error",
-      code: "INTERNAL_ERROR",
+      title: "Not found error",
+      code: "NOTFOUND_ERROR",
       message: `Product with id ${lineItem.productId} was not found in products data`,
     });
     throw internalError;
@@ -143,26 +151,25 @@ function verifyAvailability(
 
   const errors = messageErrors.map((m) => {
     const badRequestError = new DomainError({
-      title: "Bad request Error",
-      code: "BADREQUEST_ERROR",
+      title: "Validation Error",
+      code: "VALIDATION_ERROR",
       message: m,
     });
     badRequestError.message = m;
     return badRequestError;
   });
   const aggregateError = new DomainAggregateError({
-    title: "Bad Request Error",
-    code: "BADREQUEST_ERROR",
+    title: "Validation Error",
+    code: "VALIDATION_ERROR",
     errors,
     message:
-      "Was found multiple errors in the request. See property errors for details.",
+      "Was found multiple validation errors in the request. See property errors for details.",
     name: "",
   });
 
   throw aggregateError;
 }
 
-
 export { DataProps };
 
-export { checkout };
+export { makeCheckout };

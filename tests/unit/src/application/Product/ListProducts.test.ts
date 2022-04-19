@@ -1,5 +1,5 @@
 import ListProducts from "../../../../../src/application/Product/ListProducts";
-import { Product } from "../../../../../src/domain/entities";
+import * as Product from "../../../../../src/domain/entities/Product";
 import { createMoney } from "../../../../../src/domain/valueObjects/Money";
 import { FakeProductRepository } from "../../../../support/repositories/FakeProductRepository";
 
@@ -7,7 +7,7 @@ describe("Application :: Product :: ListProducts", () => {
   describe("#execute", () => {
     describe("When execute the method", () => {
       it("returns products", async () => {
-        const products = [new Product({id: `aaa`, name: "Chocolate", price: createMoney(20), available: 100})];
+        const products = [Product.createProduct({id: `aaa`, name: "Chocolate", price: createMoney(20), available: 100})];
         const productRepo = new FakeProductRepository(products);
         const listProducts = new ListProducts(productRepo);
 
@@ -17,7 +17,7 @@ describe("Application :: Product :: ListProducts", () => {
 
     describe("When service is unavailable", () => {
         it("returns error", async () => {
-          const products = [new Product({id: `aaa`, name: "Chocolate", price: createMoney(20), available: 100})];
+          const products = [Product.createProduct({id: `aaa`, name: "Chocolate", price: createMoney(20), available: 100})];
           const productRepo = new FakeProductRepository(products);
           const error = new Error("Service Unavailable")
           productRepo.getAllProducts = () => Promise.reject(error);

@@ -1,4 +1,4 @@
-import { Product } from "../../../../../../src/domain/entities";
+import * as Product from "../../../../../../src/domain/entities/Product";
 import { createMoney } from "../../../../../../src/domain/valueObjects/Money";
 import { ProductModel } from "../../../../../../src/infra/database/knex/models/ProductModel";
 import { ObjectionProductMapper } from "../../../../../../src/infra/repositories/product/ObjectionProductMapper";
@@ -15,7 +15,7 @@ describe("Infra :: Product :: ObjectionProductMapper", () => {
       };
       productModel.$setJson(productObject);
       const { uuid, name, price, available } = productObject;
-      const expected = new Product({
+      const expected = Product.createProduct({
         id: uuid,
         name,
         price: createMoney(price),
@@ -35,7 +35,7 @@ describe("Infra :: Product :: ObjectionProductMapper", () => {
         available: 100,
       };
       const { uuid, name, price, available } = productObject;
-      const product = new Product({
+      const product = Product.createProduct({
         id: uuid,
         name,
         price: createMoney(price),

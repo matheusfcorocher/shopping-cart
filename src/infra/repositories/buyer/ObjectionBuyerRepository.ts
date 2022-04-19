@@ -1,18 +1,18 @@
 import { v4 as uuidv4 } from "uuid";
-import { Buyer } from "../../../domain/entities";
+import * as Buyer from "../../../domain/entities/Buyer";
 import { BuyerRepository } from "../../../domain/repositories/BuyerRepository";
 import { InfrastructureError } from "../../../lib/CustomError";
 import { BuyerModel } from "../../database/knex/models/BuyerModel";
 import { ObjectionBuyerMapper } from "./ObjectionBuyerMapper";
 
 class ObjectionBuyerRepository implements BuyerRepository {
-  public getAllBuyers(): Promise<Buyer[]> {
+  public getAllBuyers(): Promise<Buyer.Buyer[]> {
     return BuyerModel.query().then((data) =>
       data.map((d) => ObjectionBuyerMapper.toEntity(d))
     );
   }
 
-  public getBuyerById(id: string): Promise<Buyer> {
+  public getBuyerById(id: string): Promise<Buyer.Buyer> {
     return this.getBuyerModelById(id).then((data) =>
       ObjectionBuyerMapper.toEntity(data)
     );
@@ -22,7 +22,7 @@ class ObjectionBuyerRepository implements BuyerRepository {
     return uuidv4();
   }
 
-  public async store(buyer: Buyer): Promise<Buyer> {
+  public async store(buyer: Buyer.Buyer): Promise<Buyer.Buyer> {
     const hasBuyer = await this.hasBuyer(buyer.id);
     if (hasBuyer) {
       const validationError = new InfrastructureError({

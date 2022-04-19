@@ -1,11 +1,7 @@
+import * as Cart from '../../../../../src/domain/entities/Cart';
+import * as Product from '../../../../../src/domain/entities/Product';
+import * as Voucher from '../../../../../src/domain/entities/Voucher';
 import AddLineItem from "../../../../../src/application/Cart/AddLineItem";
-import {
-  Buyer,
-  Cart,
-  Product,
-  Voucher,
-} from "../../../../../src/domain/entities";
-import { LineItems, LineItem } from "../../../../../src/domain/entities/Cart";
 import { appliedFactory } from "../../../../../src/domain/factories/AppliedVoucherFactory";
 import { createMoney } from "../../../../../src/domain/valueObjects/Money";
 import { FakeCartRepository } from "../../../../support/repositories/FakeCartRepository";
@@ -16,25 +12,25 @@ describe("Application :: Cart :: AddLineItem", () => {
     describe("When cart doesn't have any line item", () => {
       describe("and cart doesnt have voucher", () => {
         it("returns correct cart", async () => {
-          const lineItems: LineItems = [];
-          const cart = new Cart({
+          const lineItems: Cart.LineItems = [];
+          const cart = Cart.createCart({
             id: "aad",
             buyerId: "aad",
             lineItems,
           });
           const carts = [cart];
           const products = [
-            new Product({
+            Product.createProduct({
               id: "aad",
               name: "foo",
               price: createMoney(2000),
               available: 20,
             }),
           ];
-          const newLineItem = new LineItem("aad", createMoney(2000), 1);
+          const newLineItem = Cart.createLineItem({productId: "aad", unitPrice: createMoney(2000), quantity: 1});
 
-          const newLineItems = [newLineItem];
-          const newCart = new Cart({
+          const newLineItems : Cart.LineItems= [newLineItem];
+          const newCart = Cart.createCart({
             id: "aad",
             buyerId: "aad",
             lineItems: newLineItems,
@@ -54,15 +50,15 @@ describe("Application :: Cart :: AddLineItem", () => {
       });
       describe("and cart has voucher", () => {
         it("returns correct cart", async () => {
-          const lineItems: LineItems = [];
-          const voucher = new Voucher({
+          const lineItems: Cart.LineItems = [];
+          const voucher = Voucher.createVoucher({
             id: "aaa",
             code: "#F121221",
             type: "percentual",
             amount: createMoney(30.0),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems,
@@ -71,7 +67,7 @@ describe("Application :: Cart :: AddLineItem", () => {
           const carts = [cart];
 
           const products = [
-            new Product({
+            Product.createProduct({
               id: "aaa",
               name: "foo",
               price: createMoney(20),
@@ -86,9 +82,9 @@ describe("Application :: Cart :: AddLineItem", () => {
             productRepository
           );
 
-          const newLineItem = new LineItem("aaa", createMoney(20), 1);
+          const newLineItem = Cart.createLineItem({productId: "aaa", unitPrice: createMoney(20), quantity: 1});
           const newLineItems = [newLineItem];
-          const newCart = new Cart({
+          const newCart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems: newLineItems,
@@ -105,11 +101,11 @@ describe("Application :: Cart :: AddLineItem", () => {
     describe("When cart has line items", () => {
       describe("and cart doesnt have voucher", () => {
         it("returns correct cart", async () => {
-          const lineItems: LineItems = [
-            new LineItem("aaa", createMoney(20), 2),
-            new LineItem("bbb", createMoney(40), 1),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({productId: "aaa", unitPrice: createMoney(20), quantity: 2}),
+            Cart.createLineItem({productId: "bbb", unitPrice: createMoney(40), quantity: 1}),
           ];
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems,
@@ -117,7 +113,7 @@ describe("Application :: Cart :: AddLineItem", () => {
           const carts = [cart];
 
           const products = [
-            new Product({
+            Product.createProduct({
               id: "aaa",
               name: "foo",
               price: createMoney(20),
@@ -133,10 +129,10 @@ describe("Application :: Cart :: AddLineItem", () => {
           );
 
           const newLineItems = [
-            new LineItem("aaa", createMoney(20), 3),
-            new LineItem("bbb", createMoney(40), 1),
+            Cart.createLineItem({productId: "aaa", unitPrice: createMoney(20), quantity: 3}),
+            Cart.createLineItem({productId: "bbb", unitPrice: createMoney(40), quantity: 1}),
           ];
-          const newCart = new Cart({
+          const newCart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems: newLineItems,
@@ -148,18 +144,18 @@ describe("Application :: Cart :: AddLineItem", () => {
       });
       describe("and cart has voucher", () => {
         it("returns correct cart", async () => {
-          const lineItems: LineItems = [
-            new LineItem("aaa", createMoney(20), 2),
-            new LineItem("bbb", createMoney(40), 1),
+          const lineItems: Cart.LineItems = [
+            Cart.createLineItem({productId: "aaa", unitPrice: createMoney(20), quantity: 2}),
+            Cart.createLineItem({productId: "bbb", unitPrice: createMoney(40), quantity: 1}),
           ];
-          const voucher = new Voucher({
+          const voucher = Voucher.createVoucher({
             id: "aaa",
             code: "#F121221",
             type: "percentual",
             amount: createMoney(30.0),
           });
           const appliedVoucher = appliedFactory.fromVoucher(voucher);
-          const cart = new Cart({
+          const cart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems,
@@ -167,7 +163,7 @@ describe("Application :: Cart :: AddLineItem", () => {
           });
           const carts = [cart];
           const products = [
-            new Product({
+            Product.createProduct({
               id: "aaa",
               name: "foo",
               price: createMoney(20),
@@ -176,10 +172,10 @@ describe("Application :: Cart :: AddLineItem", () => {
           ];
 
           const newLineItems = [
-            new LineItem("aaa", createMoney(20), 3),
-            new LineItem("bbb", createMoney(40), 1),
+            Cart.createLineItem({productId: "aaa", unitPrice: createMoney(20), quantity: 3}),
+            Cart.createLineItem({productId: "bbb", unitPrice: createMoney(40), quantity: 1}),
           ];
-          const newCart = new Cart({
+          const newCart = Cart.createCart({
             id: "aaa",
             buyerId: "aaa",
             lineItems: newLineItems,
@@ -200,9 +196,9 @@ describe("Application :: Cart :: AddLineItem", () => {
     });
 
     describe("When buyerId wasn't found", () => {
-      const carts: Array<Cart> = [];
+      const carts: Array<Cart.Cart> = [];
       const products = [
-        new Product({
+        Product.createProduct({
           id: "aaa",
           name: "foo",
           price: createMoney(2000),
@@ -234,26 +230,26 @@ describe("Application :: Cart :: AddLineItem", () => {
 
         expect(JSON.stringify(objCart2)).toEqual(
           JSON.stringify({
-            lineItems: [new LineItem("aaa", createMoney(2000), 1)],
+            lineItems: [Cart.createLineItem({productId: "aaa", unitPrice: createMoney(2000), quantity: 1})],
           })
         );
       });
     });
     describe("When update the cart gives error", () => {
       it("returns error", async () => {
-        const lineItems: LineItems = [
-          new LineItem("aaa", createMoney(20), 2),
-          new LineItem("bbb", createMoney(40), 1),
+        const lineItems: Cart.LineItems = [
+          Cart.createLineItem({productId: "aaa", unitPrice: createMoney(20), quantity: 2}),
+          Cart.createLineItem({productId: "bbb", unitPrice:  createMoney(40), quantity: 1}),
         ];
-        const newLineItem = new LineItem("aaa", createMoney(20), 4);
-        const voucher = new Voucher({
+        const newLineItem = Cart.createLineItem({productId: "aaa", unitPrice: createMoney(20), quantity: 4});
+        const voucher = Voucher.createVoucher({
           id: "aaa",
           code: "#F121221",
           type: "percentual",
           amount: createMoney(30.0),
         });
         const appliedVoucher = appliedFactory.fromVoucher(voucher);
-        const cart = new Cart({
+        const cart = Cart.createCart({
           id: "aaa",
           buyerId: "aaa",
           lineItems,
@@ -261,7 +257,7 @@ describe("Application :: Cart :: AddLineItem", () => {
         });
         const carts = [cart];
         const products = [
-          new Product({
+          Product.createProduct({
             id: "aaa",
             name: "foo",
             price: createMoney(20),

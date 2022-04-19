@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { Product } from "../../../domain/entities";
+import * as Product from "../../../domain/entities/Product";
 import {
   ProductDataProps,
   ProductRepository,
@@ -9,13 +9,13 @@ import { ProductModel } from "../../database/knex/models/ProductModel";
 import { ObjectionProductMapper } from "./ObjectionProductMapper";
 
 class ObjectionProductRepository implements ProductRepository {
-  public getAllProducts(): Promise<Product[]> {
+  public getAllProducts(): Promise<Product.Product[]> {
     return ProductModel.query().then((data) =>
       data.map((d) => ObjectionProductMapper.toEntity(d))
     );
   }
 
-  public getProductById(id: string): Promise<Product> {
+  public getProductById(id: string): Promise<Product.Product> {
     return this.getProductModelById(id).then((data) =>
       ObjectionProductMapper.toEntity(data!)
     );
@@ -25,7 +25,7 @@ class ObjectionProductRepository implements ProductRepository {
     return uuidv4();
   }
 
-  public async update(id: string, data: ProductDataProps): Promise<Product> {
+  public async update(id: string, data: ProductDataProps): Promise<Product.Product> {
     const product = await this.getProductModelById(id);
     const {
       name,
