@@ -3,7 +3,7 @@ import ObjectionBuyerRepository from "../../../../../../src/infra/repositories/b
 import BuyerModelFactory from "../../../../../support/factories/models/BuyerModelFactory";
 
 const { setupIntegrationTest } = require("../../../../../support/setup");
-const buyerRepository = new ObjectionBuyerRepository();
+const buyerRepository = ObjectionBuyerRepository;
 
 describe("Infra :: Buyer :: ObjectionBuyerRepository", () => {
   setupIntegrationTest();
@@ -47,13 +47,6 @@ describe("Infra :: Buyer :: ObjectionBuyerRepository", () => {
 
   describe("#getAllBuyers", () => {
     describe("When method is called", () => {
-      describe("result is a array instance of buyers", () => {
-        it("returns correct result", async () => {
-          const buyers = await buyerRepository.getAllBuyers();
-
-          expect(buyers[0]).toBeInstanceOf(Buyer);
-        });
-      });
       describe("result has correct length", () => {
         it("returns correct result", async () => {
           const buyers = await buyerRepository.getAllBuyers();
@@ -198,9 +191,9 @@ describe("Infra :: Buyer :: ObjectionBuyerRepository", () => {
         const validationError = new Error("Validation Error");
         validationError.message = `Buyer with id ${buyer.id} already exists.`;
 
-        await expect(() =>
-        buyerRepository.store(buyer)
-        ).rejects.toThrow(validationError);
+        await expect(() => buyerRepository.store(buyer)).rejects.toThrow(
+          validationError
+        );
       });
     });
   });

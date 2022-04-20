@@ -15,16 +15,10 @@ type Buyer = {
 };
 
 //public functions
-function createBuyer({
-  id,
-  name,
-  birthDate,
-  email,
-  address,
-}: Buyer): Buyer {
+function createBuyer({ id, name, birthDate, email, address }: Buyer): Buyer {
   return { id, name, birthDate, email, address };
 }
 
-export { Address, Buyer};
+export { Address, Buyer };
 
 export { createBuyer };

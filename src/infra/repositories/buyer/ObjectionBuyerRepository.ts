@@ -5,58 +5,56 @@ import { InfrastructureError } from "../../../lib/CustomError";
 import { BuyerModel } from "../../database/knex/models/BuyerModel";
 import { ObjectionBuyerMapper } from "./ObjectionBuyerMapper";
 
-class ObjectionBuyerRepository implements BuyerRepository {
-  public getAllBuyers(): Promise<Buyer.Buyer[]> {
+const ObjectionBuyerRepository: BuyerRepository = {
+  getAllBuyers: function (): Promise<Buyer.Buyer[]> {
     return BuyerModel.query().then((data) =>
       data.map((d) => ObjectionBuyerMapper.toEntity(d))
     );
-  }
-
-  public getBuyerById(id: string): Promise<Buyer.Buyer> {
-    return this.getBuyerModelById(id).then((data) =>
+  },
+  getBuyerById: function(id: string): Promise<Buyer.Buyer> {
+    return getBuyerModelById(id).then((data) =>
       ObjectionBuyerMapper.toEntity(data)
     );
-  }
-
-  public getNextId(): string {
-    return uuidv4();
-  }
-
-  public async store(buyer: Buyer.Buyer): Promise<Buyer.Buyer> {
-    const hasBuyer = await this.hasBuyer(buyer.id);
-    if (hasBuyer) {
+  },
+  store: async function (buyer: Buyer.Buyer): Promise<Buyer.Buyer> {
+    const hasBuyer2 = await hasBuyer(buyer.id);
+    if (hasBuyer2) {
       const validationError = new InfrastructureError({
         title: "Validation Error",
         code: "VALIDATION_ERROR",
-        message: `Buyer with id ${buyer.id} already exists.`
+        message: `Buyer with id ${buyer.id} already exists.`,
       });
       return Promise.reject(validationError);
     }
     return BuyerModel.query()
       .insertAndFetch(ObjectionBuyerMapper.toDatabase(buyer))
       .then((data) => ObjectionBuyerMapper.toEntity(data));
-  }
+  },
+  getNextId: function (): string {
+    return uuidv4();
+  },
+};
 
-  private getBuyerModelById(id: string): Promise<BuyerModel> {
-    return BuyerModel.query()
-      .findOne({
-        uuid: id,
-      })
-      .then((data) => {
-        if (data === undefined) {
-          const notFoundError = new InfrastructureError({
-            title: "Not Found Error",
-            code: "NOTFOUND_ERROR",
-            message: `Buyer with id ${id} can't be found.`
-          });
-          return Promise.reject(notFoundError);
-        }
-        return data;
-      });
-  }
+function getBuyerModelById(id: string): Promise<BuyerModel> {
+  return BuyerModel.query()
+    .findOne({
+      uuid: id,
+    })
+    .then((data) => {
+      if (data === undefined) {
+        const notFoundError = new InfrastructureError({
+          title: "Not Found Error",
+          code: "NOTFOUND_ERROR",
+          message: `Buyer with id ${id} can't be found.`,
+        });
+        return Promise.reject(notFoundError);
+      }
+      return data;
+    });
+}
 
-  private hasBuyer(id: string): Promise<boolean> {
-    return BuyerModel.query()
+function hasBuyer(id: string): Promise<boolean> {
+  return BuyerModel.query()
     .findOne({
       uuid: id,
     })
@@ -66,7 +64,6 @@ class ObjectionBuyerRepository implements BuyerRepository {
       }
       return Promise.resolve(true);
     });
-  }
 }
 
 export default ObjectionBuyerRepository;

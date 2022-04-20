@@ -16,7 +16,7 @@ import { createMoney } from "../../../../../../src/domain/valueObjects/Money";
 import { InfrastructureError } from "../../../../../../src/lib/CustomError";
 
 const { setupIntegrationTest } = require("../../../../../support/setup");
-const cartRepository = new ObjectionCartRepository();
+const cartRepository = ObjectionCartRepository;
 
 // jest.mock("../../../../../../src/infra/database/knex/models/CartModel");
 
@@ -288,7 +288,7 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
             appliedVoucher,
           });
           const notFoundError = new Error("Not Found Error");
-          notFoundError.message = `Cart.LineItems can't be found.`;
+          notFoundError.message = `LineItems can't be found.`;
 
           await expect(() => cartRepository.delete(cart)).rejects.toThrow(
             notFoundError
@@ -338,13 +338,6 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
 
   describe("#getAllCarts", () => {
     describe("When method is called", () => {
-      describe("result is a array instance of cart", () => {
-        it("returns correct result", async () => {
-          const carts = await cartRepository.getAllCarts();
-
-          expect(carts[0]).toBeInstanceOf(Cart);
-        });
-      });
       describe("result has correct length", () => {
         it("returns correct result", async () => {
           const carts = await cartRepository.getAllCarts();
@@ -566,7 +559,7 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
         it("returns correct result", async () => {
           const lineItems: Cart.LineItems = [
             Cart.createLineItem({
-              productId: "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf",
+              productId: "8bc94226-3e20-40cb-a507-554fabf36ffa",
               unitPrice: createMoney(3999),
               quantity: 2,
             }),
@@ -595,6 +588,7 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
                   productId: "8bc94226-3e20-40cb-a507-554fabf36ffa",
                 })
                 .then((data) => {
+                  console.log(data)
                   return ObjectionLineItemMapper.toEntity(data!);
                 })
             )

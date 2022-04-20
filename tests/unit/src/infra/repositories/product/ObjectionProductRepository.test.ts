@@ -5,7 +5,7 @@ import { InfrastructureError } from "../../../../../../src/lib/CustomError";
 import ProductModelFactory from "../../../../../support/factories/models/ProductModelFactory";
 
 const { setupIntegrationTest } = require("../../../../../support/setup");
-const productRepository = new ObjectionProductRepository();
+const productRepository = ObjectionProductRepository;
 
 describe("Infra :: Product :: ObjectionProductRepository", () => {
   setupIntegrationTest();
@@ -34,13 +34,6 @@ describe("Infra :: Product :: ObjectionProductRepository", () => {
 
   describe("#getAllProducts", () => {
     describe("When method is called", () => {
-      describe("result is a array instance of products", () => {
-        it("returns correct result", async () => {
-          const products = await productRepository.getAllProducts();
-
-          expect(products[0]).toBeInstanceOf(Product);
-        });
-      });
       describe("result has correct length", () => {
         it("returns correct result", async () => {
           const products = await productRepository.getAllProducts();

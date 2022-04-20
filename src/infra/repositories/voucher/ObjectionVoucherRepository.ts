@@ -5,13 +5,13 @@ import { InfrastructureError } from "../../../lib/CustomError";
 import { VoucherModel } from "../../database/knex/models/VoucherModel";
 import { ObjectionVoucherMapper } from "./ObjectionVoucherMapper";
 
-class ObjectionVoucherRepository implements VoucherRepository {
-  public getAllVouchers(): Promise<Voucher.Voucher[]> {
+const ObjectionVoucherRepository: VoucherRepository = {
+  getAllVouchers: function (): Promise<Voucher.Voucher[]> {
     return VoucherModel.query().then((data) =>
       data.map((d) => ObjectionVoucherMapper.toEntity(d))
     );
-  }
-  getVoucherById(id: string): Promise<Voucher.Voucher> {
+  },
+  getVoucherById: function (id: string): Promise<Voucher.Voucher> {
     return VoucherModel.query()
       .findOne({
         uuid: id,
@@ -27,8 +27,8 @@ class ObjectionVoucherRepository implements VoucherRepository {
         }
         return ObjectionVoucherMapper.toEntity(data);
       });
-  }
-  getVoucherByCode(code: string): Promise<Voucher.Voucher> {
+  },
+  getVoucherByCode: function (code: string): Promise<Voucher.Voucher> {
     return VoucherModel.query()
       .findOne({
         code,
@@ -45,11 +45,11 @@ class ObjectionVoucherRepository implements VoucherRepository {
           detail: error.message,
         });
         throw notFoundError;
-      })
-  }
-  getNextId(): string {
+      });
+  },
+  getNextId: function (): string {
     return uuidv4();
-  }
-}
+  },
+};
 
 export default ObjectionVoucherRepository;

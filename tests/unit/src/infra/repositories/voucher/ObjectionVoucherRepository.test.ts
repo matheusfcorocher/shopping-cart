@@ -4,7 +4,7 @@ import ObjectionVoucherRepository from "../../../../../../src/infra/repositories
 import VoucherModelFactory from "../../../../../support/factories/models/VoucherModelFactory";
 
 const { setupIntegrationTest } = require("../../../../../support/setup");
-const voucherRepository = new ObjectionVoucherRepository();
+const voucherRepository = ObjectionVoucherRepository;
 
 describe("Infra :: Voucher :: ObjectionVoucherRepository", () => {
   setupIntegrationTest();
@@ -34,13 +34,6 @@ describe("Infra :: Voucher :: ObjectionVoucherRepository", () => {
 
   describe("#getAllVouchers", () => {
     describe("When method is called", () => {
-      describe("result is a array instance of vouchers", () => {
-        it("returns correct result", async () => {
-          const vouchers = await voucherRepository.getAllVouchers();
-
-          expect(vouchers[0]).toBeInstanceOf(Voucher);
-        });
-      });
       describe("result has correct length", () => {
         it("returns correct result", async () => {
           const vouchers = await voucherRepository.getAllVouchers();

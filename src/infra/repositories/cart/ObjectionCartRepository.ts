@@ -23,51 +23,27 @@ interface LineItemProps {
   unitPrice?: number;
   quantity?: number;
 }
-class ObjectionCartRepository implements CartRepository {
-  //public methods
 
-  public async delete(cart: Cart.Cart): Promise<string> {
-    return transaction(CartModel, async (BoundCartModel) => {
-      const { buyerId, id, lineItems } = cart;
+//public functions
 
-      const productIds = lineItems.map((l) => l.productId);
-
-      const boundCartModel = await this.getCartModelById(id, BoundCartModel);
-
-      await this.deleteLineItems(productIds, boundCartModel);
-
-      return boundCartModel
-        .$query()
-        .delete()
-        .then(() => "Cart was deleted successfully.")
-        .catch(() => {
-          const notFoundError = new InfrastructureError({
-            title: "Not Found Error",
-            code: "NOTFOUND_ERROR",
-            message: `Cart with id ${id} and buyerId ${buyerId} can't be found.`,
-          });
-          return Promise.reject(notFoundError);
-        });
-    });
-  }
-
-  public getAllCarts(): Promise<Cart.Cart[]> {
+const ObjectionCartRepository: CartRepository = {
+  getAllCarts: function (): Promise<Cart.Cart[]> {
     return CartModel.query().then((data) =>
       Promise.all(
         data.map((d) => {
-          return this.transformCartModelToCart(d);
+          return transformCartModelToCart(d);
         })
       )
     );
-  }
-  public getCartById(id: string): Promise<Cart.Cart> {
+  },
+  getCartById: function (id: string): Promise<Cart.Cart> {
     return CartModel.query()
       .findOne({
         uuid: id,
       })
       .then((data) => {
         if (!data) throw new Error("Cart Model is undefined.");
-        return this.transformCartModelToCart(data!);
+        return transformCartModelToCart(data!);
       })
       .catch((err) => {
         const notFoundError = new InfrastructureError({
@@ -78,15 +54,15 @@ class ObjectionCartRepository implements CartRepository {
         });
         throw notFoundError;
       });
-  }
-  public getCartByBuyerId(buyerId: string): Promise<Cart.Cart> {
+  },
+  getCartByBuyerId: function (buyerId: string): Promise<Cart.Cart> {
     return CartModel.query()
       .findOne({
         buyerId,
       })
       .then((data) => {
         if (!data) throw new Error("Cart Model is undefined.");
-        return this.transformCartModelToCart(data!);
+        return transformCartModelToCart(data!);
       })
       .catch((err) => {
         const notFoundError = new InfrastructureError({
@@ -97,27 +73,26 @@ class ObjectionCartRepository implements CartRepository {
         });
         throw notFoundError;
       });
-  }
-  public getNextId(): string {
+  },
+  getNextId: function (): string {
     return uuidv4();
-  }
-
-  public async update(cart: Cart.Cart): Promise<Cart.Cart> {
+  },
+  update: function (cart: Cart.Cart): Promise<Cart.Cart> {
     return transaction(CartModel, async (BoundCartModel) => {
       const { id, lineItems } = cart;
       const cartDb = await this.getCartById(id);
-      const boundCartModel = await this.getCartModelById(id, BoundCartModel);
+      const boundCartModel = await getCartModelById(id, BoundCartModel);
 
       const promises2 = lineItems.map(async (lineItem) => {
         const itemDb = cartDb.lineItems.find(
           (item) => item.productId === lineItem.productId
         );
 
-        if (!itemDb) {        
-          return this.storeLineItem(lineItem, boundCartModel);
+        if (!itemDb) {
+          return storeLineItem(lineItem, boundCartModel);
         }
-        
-        return 'ok';
+
+        return "ok";
       });
 
       const promises = cartDb.lineItems.map(async (lineItem) => {
@@ -126,10 +101,10 @@ class ObjectionCartRepository implements CartRepository {
         );
 
         if (!itemCart) {
-          return this.deleteLineItem(lineItem.productId, boundCartModel);
+          return deleteLineItem(lineItem.productId, boundCartModel);
         } else if (itemCart) {
           const { unitPrice, quantity, productId } = itemCart;
-          return this.updateLineItem(
+          return updateLineItem(
             {
               unitPrice: unitPrice.getAmount(),
               quantity,
@@ -147,201 +122,223 @@ class ObjectionCartRepository implements CartRepository {
         .$query()
         .patchAndFetch(data)
         .then((result) => {
-          return this.transformCartModelToCart(result);
+          return transformCartModelToCart(result);
         });
     });
-  }
+  },
+  delete: function (cart: Cart.Cart): Promise<string | undefined> {
+    return transaction(CartModel, async (BoundCartModel) => {
+      const { buyerId, id, lineItems } = cart;
 
-  //private methods
+      const productIds = lineItems.map((l) => l.productId);
 
-  private getCartModelById(
-    id: string,
-    cartModel = CartModel
-  ): Promise<CartModel> {
-    return cartModel
-      .query()
-      .findOne({
-        uuid: id,
-      })
-      .then((data) => {
-        return data!;
-      })
-      .catch((err) => {
-        const notFoundError = new InfrastructureError({
-          title: "Not Found Error",
-          code: "NOTFOUND_ERROR",
-          message: `Cart with id ${id} can't be found.`,
-          detail: err.message,
-        });
-        return Promise.reject(notFoundError);
-      });
-  }
+      const boundCartModel = await getCartModelById(id, BoundCartModel);
 
-  private async deleteLineItem(
-    productId: string,
-    cartModel: CartModel
-  ): Promise<String> {
-    return cartModel
-      .$relatedQuery("lineItems")
-      .where({ productId })
-      .delete()
-      .then(() => Promise.resolve("LineItem was deleted successfully."))
-      .catch(() => {
-        const notFoundError = new InfrastructureError({
-          title: "Not Found Error",
-          code: "NOTFOUND_ERROR",
-          message: `LineItem with productId ${productId} can't be found.`,
-        });
-        return Promise.reject(notFoundError);
-      });
-  }
+      await deleteLineItems(productIds, boundCartModel);
 
-  private async deleteLineItems(
-    productIds: Array<string>,
-    cartModel: CartModel
-  ): Promise<String> {
-    return cartModel
-      .$relatedQuery("lineItems")
-      .whereIn("productId", productIds)
-      .delete()
-      .then(() => Promise.resolve("LineItems was deleted successfully."))
-      .catch(() => {
-        const notFoundError = new InfrastructureError({
-          title: "Not Found Error",
-          code: "NOTFOUND_ERROR",
-          message: `LineItems can't be found.`,
-        });
-        return Promise.reject(notFoundError);
-      });
-  }
-
-  private getAllLineItemsByOwner(owner: Owner): Promise<LineItem[]> {
-    return this.getAllLineItemsModelsByOwner(owner).then((data) =>
-      data.map((d) => ObjectionLineItemMapper.toEntity(d))
-    );
-  }
-
-  private async transformCartModelToCart(cart: CartModel): Promise<Cart.Cart> {
-    const owner: Owner = {
-      ownerId: cart.uuid,
-      ownerType: "cart",
-    };
-    const lineItems = await this.getAllLineItemsByOwner(owner);
-    const appliedVoucher = this.getAppliedVoucher(cart);
-    const additionalProps = {
-      lineItems,
-      appliedVoucher,
-    };
-    return ObjectionCartMapper.toEntity(cart, additionalProps);
-  }
-
-  private async updateLineItem(
-    data: LineItemProps,
-    cartModel: CartModel
-  ): Promise<String> {
-    return cartModel
-      .$relatedQuery("lineItems")
-      .where({ productId: data.productId })
-      .update(data)
-      .then(() => `LineItem was updated`);
-  }
-
-  //private methods - dead ends
-
-  private getAppliedVoucher(cartModel: CartModel): AppliedVoucher | undefined {
-    const { voucherId, type, amount, minValue } = cartModel;
-    if (voucherId && type && (amount || minValue)) {
-      const voucherType = <VoucherType>type;
-      const voucher = Voucher.createVoucher({
-        id: voucherId,
-        code: "null",
-        type: voucherType,
-        amount: amount ? createMoney(amount) : undefined,
-        minValue: minValue ? createMoney(minValue) : undefined,
-      });
-      return appliedFactory.fromVoucher(voucher);
-    }
-
-    return undefined;
-  }
-
-  private getLineItemsModelByOwnerAndProductId(
-    owner: Owner,
-    productId: string,
-    lineItemModel: typeof LineItemModel
-  ): Promise<LineItemModel> {
-    const { ownerId, ownerType } = owner;
-    return lineItemModel
-      .query()
-      .findOne({
-        productId,
-        ownerId,
-        ownerType,
-      })
-      .then((data) => {
-        if (data === undefined) {
+      return boundCartModel
+        .$query()
+        .delete()
+        .then(() => "Cart was deleted successfully.")
+        .catch(() => {
           const notFoundError = new InfrastructureError({
             title: "Not Found Error",
             code: "NOTFOUND_ERROR",
-            message: `Line with ownerId ${ownerId} and productId ${productId} can't be found for ${ownerType}.`,
+            message: `Cart with id ${id} and buyerId ${buyerId} can't be found.`,
           });
           return Promise.reject(notFoundError);
-        }
-        return data;
+        });
+    });
+  },
+};
+
+//private functions
+
+function getCartModelById(
+  id: string,
+  cartModel = CartModel
+): Promise<CartModel> {
+  return cartModel
+    .query()
+    .findOne({
+      uuid: id,
+    })
+    .then((data) => {
+      return data!;
+    })
+    .catch((err) => {
+      const notFoundError = new InfrastructureError({
+        title: "Not Found Error",
+        code: "NOTFOUND_ERROR",
+        message: `Cart with id ${id} can't be found.`,
+        detail: err.message,
       });
+      return Promise.reject(notFoundError);
+    });
+}
+
+function getAllLineItemsByOwner(owner: Owner): Promise<LineItem[]> {
+  return getAllLineItemsModelsByOwner(owner).then((data) =>
+    data.map((d) => ObjectionLineItemMapper.toEntity(d))
+  );
+}
+
+function getAppliedVoucher(cartModel: CartModel): AppliedVoucher | undefined {
+  const { voucherId, type, amount, minValue } = cartModel;
+  if (voucherId && type && (amount || minValue)) {
+    const voucherType = <VoucherType>type;
+    const voucher = Voucher.createVoucher({
+      id: voucherId,
+      code: "null",
+      type: voucherType,
+      amount: amount ? createMoney(amount) : undefined,
+      minValue: minValue ? createMoney(minValue) : undefined,
+    });
+    return appliedFactory.fromVoucher(voucher);
   }
 
-  private getAllLineItemsModelsByOwner(owner: Owner): Promise<LineItemModel[]> {
-    const { ownerId, ownerType } = owner;
+  return undefined;
+}
 
-    return LineItemModel.query()
-      .where({
-        ownerId,
-        ownerType,
-      })
-      .then((data) => {
-        if (data === undefined) {
-          const notFoundError = new InfrastructureError({
-            title: "Not Found Error",
-            code: "NOTFOUND_ERROR",
-            message: `Line with ownerId ${ownerId} can't be found for ${ownerType}.`,
-          });
-          return Promise.reject(notFoundError);
-        }
-        return data;
+// function getLineItemsModelByOwnerAndProductId(
+//   owner: Owner,
+//   productId: string,
+//   lineItemModel: typeof LineItemModel
+// ): Promise<LineItemModel> {
+//   const { ownerId, ownerType } = owner;
+//   return lineItemModel
+//     .query()
+//     .findOne({
+//       productId,
+//       ownerId,
+//       ownerType,
+//     })
+//     .then((data) => {
+//       if (data === undefined) {
+//         const notFoundError = new InfrastructureError({
+//           title: "Not Found Error",
+//           code: "NOTFOUND_ERROR",
+//           message: `Line with ownerId ${ownerId} and productId ${productId} can't be found for ${ownerType}.`,
+//         });
+//         return Promise.reject(notFoundError);
+//       }
+//       return data;
+//     });
+// }
+
+function getAllLineItemsModelsByOwner(owner: Owner): Promise<LineItemModel[]> {
+  const { ownerId, ownerType } = owner;
+
+  return LineItemModel.query()
+    .where({
+      ownerId,
+      ownerType,
+    })
+    .then((data) => {
+      if (data === undefined) {
+        const notFoundError = new InfrastructureError({
+          title: "Not Found Error",
+          code: "NOTFOUND_ERROR",
+          message: `Line with ownerId ${ownerId} can't be found for ${ownerType}.`,
+        });
+        return Promise.reject(notFoundError);
+      }
+      return data;
+    });
+}
+
+// function hasLineItem(
+//   productId: string,
+//   cartModel: CartModel
+// ): Promise<boolean> {
+//   return cartModel
+//     .$relatedQuery("lineItems")
+//     .findOne({
+//       productId,
+//     })
+//     .then((d) => (d ? true : false))
+//     .catch(() => false);
+// }
+
+async function deleteLineItems(
+  productIds: Array<string>,
+  cartModel: CartModel
+): Promise<String> {
+  return cartModel
+    .$relatedQuery("lineItems")
+    .whereIn("productId", productIds)
+    .delete()
+    .then(() => Promise.resolve("LineItems was deleted successfully."))
+    .catch(() => {
+      const notFoundError = new InfrastructureError({
+        title: "Not Found Error",
+        code: "NOTFOUND_ERROR",
+        message: `LineItems can't be found.`,
       });
-  }
+      return Promise.reject(notFoundError);
+    });
+}
 
-  private hasLineItem(
-    productId: string,
-    cartModel: CartModel
-  ): Promise<boolean> {
-    return cartModel
-      .$relatedQuery("lineItems")
-      .findOne({
-        productId,
-      })
-      .then((d) => (d ? true : false))
-      .catch(() => false);
-  }
+async function deleteLineItem(
+  productId: string,
+  cartModel: CartModel
+): Promise<String> {
+  return cartModel
+    .$relatedQuery("lineItems")
+    .where({ productId })
+    .delete()
+    .then(() => Promise.resolve("LineItem was deleted successfully."))
+    .catch(() => {
+      const notFoundError = new InfrastructureError({
+        title: "Not Found Error",
+        code: "NOTFOUND_ERROR",
+        message: `LineItem with productId ${productId} can't be found.`,
+      });
+      return Promise.reject(notFoundError);
+    });
+}
 
-  private storeLineItem(
-    lineItem: LineItem,
-    cartModel: CartModel
-  ): Promise<String> {
-    const uuid = this.getNextId();
-    const { productId, unitPrice, quantity } = lineItem;
-    const data = {
-      uuid,
-      productId,
-      unitPrice: unitPrice.getAmount(),
-      quantity,
-    };
-    return cartModel
-      .$relatedQuery("lineItems")
-      .insert(data)
-      .then(() => "LineItem was created with success!");
-  }
+function storeLineItem(
+  lineItem: LineItem,
+  cartModel: CartModel
+): Promise<String> {
+  const uuid = ObjectionCartRepository.getNextId();
+  const { productId, unitPrice, quantity } = lineItem;
+  const data = {
+    uuid,
+    productId,
+    unitPrice: unitPrice.getAmount(),
+    quantity,
+  };
+  return cartModel
+    .$relatedQuery("lineItems")
+    .insert(data)
+    .then(() => "LineItem was created with success!");
+}
+
+async function transformCartModelToCart(cart: CartModel): Promise<Cart.Cart> {
+  const owner: Owner = {
+    ownerId: cart.uuid,
+    ownerType: "cart",
+  };
+  const lineItems = await getAllLineItemsByOwner(owner);
+  const appliedVoucher = getAppliedVoucher(cart);
+  const additionalProps = {
+    lineItems,
+    appliedVoucher,
+  };
+  return ObjectionCartMapper.toEntity(cart, additionalProps);
+}
+
+async function updateLineItem(
+  data: LineItemProps,
+  cartModel: CartModel
+): Promise<String> {
+  return cartModel
+    .$relatedQuery("lineItems")
+    .where({ productId: data.productId })
+    .update(data)
+    .then(() => `LineItem was updated`);
 }
 
 export default ObjectionCartRepository;

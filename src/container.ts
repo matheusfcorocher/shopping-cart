@@ -22,11 +22,11 @@ import ObjectionOrderRepository from "./infra/repositories/order/ObjectionOrderR
 import ObjectionProductRepository from "./infra/repositories/product/ObjectionProductRepository";
 import ObjectionVoucherRepository from "./infra/repositories/voucher/ObjectionVoucherRepository";
 
-const buyerRepo = new ObjectionBuyerRepository();
-const cartRepository = new ObjectionCartRepository();
-const orderRepo = new ObjectionOrderRepository();
-const productRepository = new ObjectionProductRepository();
-const voucherRepository = new ObjectionVoucherRepository();
+const buyerRepo = ObjectionBuyerRepository;
+const cartRepository = ObjectionCartRepository;
+const orderRepo = ObjectionOrderRepository;
+const productRepository = ObjectionProductRepository;
+const voucherRepository = ObjectionVoucherRepository;
 
 //Cart Use Cases
 const addLineItem = makeAddLineItem({cartRepository, productRepository});

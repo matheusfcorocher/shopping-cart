@@ -13,7 +13,7 @@ import { ObjectionOrderMapper } from "../../../../../../src/infra/repositories/o
 import { createMoney } from "../../../../../../src/domain/valueObjects/Money";
 
 const { setupIntegrationTest } = require("../../../../../support/setup");
-const orderRepository = new ObjectionOrderRepository();
+const orderRepository = ObjectionOrderRepository;
 
 // jest.mock("../../../../../../src/infra/database/knex/models/OrderModel");
 
@@ -92,13 +92,6 @@ describe("Infra :: Order :: ObjectionOrderRepository", () => {
 
   describe("#getAllOrders", () => {
     describe("When method is called", () => {
-      describe("result is a array instance of order", () => {
-        it("returns correct result", async () => {
-          const orders = await orderRepository.getAllOrders();
-
-          expect(orders[0]).toBeInstanceOf(Order);
-        });
-      });
       describe("result has correct length", () => {
         it("returns correct result", async () => {
           const orders = await orderRepository.getAllOrders();

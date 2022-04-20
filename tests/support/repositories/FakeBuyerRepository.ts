@@ -8,6 +8,9 @@ class FakeBuyerRepository implements BuyerRepository {
   constructor(buyers: Array<Buyer>) {
     this.buyers = buyers;
   }
+  getBuyerById(id: string): Promise<Buyer> {
+    throw new Error('Method not implemented.');
+  }
 
   public getAllBuyers(): Promise<Buyer[]> {
     return Promise.resolve(this.buyers);

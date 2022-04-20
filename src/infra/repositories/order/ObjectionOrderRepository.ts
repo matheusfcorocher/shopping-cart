@@ -13,92 +13,99 @@ interface Owner {
   ownerId: string;
   ownerType: string;
 }
-class ObjectionOrderRepository implements OrderRepository {
-  public getAllOrders(): Promise<Order.Order[]> {
+
+//public functions
+
+const ObjectionOrderRepository: OrderRepository = {
+  getAllOrders: function (): Promise<Order.Order[]> {
     return OrderModel.query().then((data) =>
       Promise.all(
         data.map((d) => {
-          return this.transformOrderModelToOrder(d);
+          return transformOrderModelToOrder(d);
         })
       )
     );
-  }
-  public store(order: Order.Order): Promise<string> {
+  },
+  store: function (order: Order.Order): Promise<string> {
     return transaction(OrderModel, async (BoundOrderModel) => {
       const { lineItems } = order;
 
       const data = ObjectionOrderMapper.toDatabase(order);
-      const boundOrderModel = await BoundOrderModel
-        .query()
-        .insertAndFetch(data);
+      const boundOrderModel = await BoundOrderModel.query().insertAndFetch(
+        data
+      );
 
       const promises = lineItems.map(async (lineItem) => {
-        return this.storeLineItem(lineItem, boundOrderModel);
+        return storeLineItem(lineItem, boundOrderModel);
       });
 
       await Promise.all(promises);
 
-      return 'Order was created successfully!';
+      return "Order was created successfully!";
     });
-  }
-  public getNextId(): string {
+  },
+  getNextId: function (): string {
     return uuidv4();
-  }
+  },
+};
 
-  private async transformOrderModelToOrder(order: OrderModel): Promise<Order.Order> {
-    const owner: Owner = {
-      ownerId: order.uuid,
-      ownerType: "order",
-    };
-    const lineItems = await this.getAllLineItemsByOwner(owner);
+//private functions
 
-    return ObjectionOrderMapper.toEntity(order, lineItems);
-  }
+async function transformOrderModelToOrder(
+  order: OrderModel
+): Promise<Order.Order> {
+  const owner: Owner = {
+    ownerId: order.uuid,
+    ownerType: "order",
+  };
+  const lineItems = await getAllLineItemsByOwner(owner);
 
-  private getAllLineItemsByOwner(owner: Owner): Promise<LineItem[]> {
-    return this.getAllLineItemsModelsByOwner(owner).then((data) =>
-      data.map((d) => ObjectionLineItemMapper.toEntity(d))
-    );
-  }
+  return ObjectionOrderMapper.toEntity(order, lineItems);
+}
 
-  private getAllLineItemsModelsByOwner(owner: Owner): Promise<LineItemModel[]> {
-    const { ownerId, ownerType } = owner;
+function getAllLineItemsByOwner(owner: Owner): Promise<LineItem[]> {
+  return getAllLineItemsModelsByOwner(owner).then((data) =>
+    data.map((d) => ObjectionLineItemMapper.toEntity(d))
+  );
+}
 
-    return LineItemModel.query()
-      .where({
-        ownerId,
-        ownerType,
-      })
-      .then((data) => {
-        if (data === undefined) {
-          const notFoundError = new InfrastructureError({
-            title: "Not Found Error",
-            code: "NOTFOUND_ERROR",
-            message: `Line with ownerId ${ownerId} can't be found for ${ownerType}.`,
-          });
-          return Promise.reject(notFoundError);
-        }
-        return data;
-      });
-  }
+function getAllLineItemsModelsByOwner(owner: Owner): Promise<LineItemModel[]> {
+  const { ownerId, ownerType } = owner;
 
-  private storeLineItem(
-    lineItem: LineItem,
-    orderModel: OrderModel
-  ): Promise<String> {
-    const uuid = this.getNextId();
-    const { productId, unitPrice, quantity } = lineItem;
-    const data = {
-      uuid,
-      productId,
-      unitPrice: unitPrice.getAmount(),
-      quantity,
-    };
-    return orderModel
-      .$relatedQuery("lineItems")
-      .insert(data)
-      .then(() => "LineItem was created with success!");
-  }
+  return LineItemModel.query()
+    .where({
+      ownerId,
+      ownerType,
+    })
+    .then((data) => {
+      if (data === undefined) {
+        const notFoundError = new InfrastructureError({
+          title: "Not Found Error",
+          code: "NOTFOUND_ERROR",
+          message: `Line with ownerId ${ownerId} can't be found for ${ownerType}.`,
+        });
+        return Promise.reject(notFoundError);
+      }
+      return data;
+    });
+}
+
+function storeLineItem(
+  lineItem: LineItem,
+  orderModel: OrderModel
+): Promise<String> {
+  const uuid = ObjectionOrderRepository.getNextId();
+  const { productId, unitPrice, quantity } = lineItem;
+  const data = {
+    uuid,
+    productId,
+    unitPrice: unitPrice.getAmount(),
+    quantity,
+  };
+  return orderModel
+    .$relatedQuery("lineItems")
+    .insert(data)
+    .then(() => "LineItem was created with success!");
 }
 
 export default ObjectionOrderRepository;
