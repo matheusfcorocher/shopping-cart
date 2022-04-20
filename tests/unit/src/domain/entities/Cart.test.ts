@@ -24,7 +24,7 @@ describe("Domain :: Entity :: Cart", () => {
 
   describe("#addLineItem", () => {
     describe("When cart has lineItem with quantity different from 0", () => {
-      it.only("returns the quantity plus 1 ", () => {
+      it("returns the quantity plus 1 ", () => {
         const id = cartFactory.getNextId();
         const buyerId = cartFactory.getNextId();
         const lineItemId = cartFactory.getNextId();
@@ -66,7 +66,7 @@ describe("Domain :: Entity :: Cart", () => {
     });
 
     describe("When cart doesnt have lineItem", () => {
-      it.only("returns the cart with lineItem ", () => {
+      it("returns the cart with lineItem ", () => {
         const id = cartFactory.getNextId();
         const buyerId = cartFactory.getNextId();
         const lineItemId = cartFactory.getNextId();
@@ -384,7 +384,7 @@ describe("Domain :: Entity :: Cart", () => {
         const buyerId = cartFactory.getNextId();
         const lineItemId = cartFactory.getNextId();
 
-        const lineItems = [Cart.createLineItem({productId: lineItemId, unitPrice: createMoney(20), quantity: 3})];
+        const lineItems = [Cart.createLineItem({productId: lineItemId, unitPrice: createMoney(2000), quantity: 3})];
         const appliedVoucher = appliedFactory.fromVoucher(voucher);
 
         const cart = Cart.createCart({
@@ -413,7 +413,7 @@ describe("Domain :: Entity :: Cart", () => {
         const buyerId = cartFactory.getNextId();
         const lineItemId = cartFactory.getNextId();
 
-        const lineItems = [Cart.createLineItem({productId: lineItemId, unitPrice: createMoney(20), quantity: 3})];
+        const lineItems = [Cart.createLineItem({productId: lineItemId, unitPrice: createMoney(2000), quantity: 3})];
         const appliedVoucher = appliedFactory.fromVoucher(voucher);
 
         const cart = Cart.createCart({
@@ -437,7 +437,7 @@ describe("Domain :: Entity :: Cart", () => {
         const buyerId = cartFactory.getNextId();
         const lineItemId = cartFactory.getNextId();
 
-        const lineItems = [Cart.createLineItem({productId: lineItemId, unitPrice: createMoney(20), quantity: 3})];
+        const lineItems = [Cart.createLineItem({productId: lineItemId, unitPrice: createMoney(2000), quantity: 3})];
 
         const cart = Cart.createCart({
           id,
@@ -484,7 +484,7 @@ describe("Domain :: Entity :: Cart", () => {
         const buyerId = cartFactory.getNextId();
         const lineItemId = cartFactory.getNextId();
 
-        const lineItems = [Cart.createLineItem({productId: lineItemId, unitPrice: createMoney(20), quantity: 3})];
+        const lineItems = [Cart.createLineItem({productId: lineItemId, unitPrice: createMoney(20000), quantity: 3})];
 
         const cart = Cart.createCart({
           id,

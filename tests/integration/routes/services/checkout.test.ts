@@ -349,7 +349,7 @@ describe("Interfaces :: Services :: Routes :: Checkout", () => {
           .set("Content-type", "application/json")
           .expect(200);
 
-        const productRepo = new ObjectionProductRepository();
+        const productRepo = ObjectionProductRepository;
         const product = ProductSerializer.serialize(
           await productRepo.getProductById(
             "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcf"

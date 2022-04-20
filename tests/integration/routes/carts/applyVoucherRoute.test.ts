@@ -10,7 +10,7 @@ import VoucherModelFactory from "../../../support/factories/models/VoucherModelF
 import mockModel from "../../../support/objection";
 
 const { setupIntegrationTest } = require("../../../support/setup");
-const cartRepository = new ObjectionCartRepository();
+const cartRepository = ObjectionCartRepository;
 describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
   describe("API :: POST /api/carts/voucher", () => {
     setupIntegrationTest();

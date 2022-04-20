@@ -8,7 +8,7 @@ import ProductModelFactory from "../../../support/factories/models/ProductModelF
 import VoucherModelFactory from "../../../support/factories/models/VoucherModelFactory";
 
 const { setupIntegrationTest } = require("../../../support/setup");
-const cartRepository = new ObjectionCartRepository();
+const cartRepository = ObjectionCartRepository;
 describe("Interfaces :: Cart :: Routes :: GetCurrentCart", () => {
   describe("API :: GET /api/carts/:buyerId", () => {
     setupIntegrationTest();

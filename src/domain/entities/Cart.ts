@@ -57,7 +57,7 @@ function subtotal(cart: Cart): Money {
 }
 
 function shipping(cart: Cart): Money {
-  if (subtotal(cart).greaterThanOrEqual(createMoney(40000))) {
+  if (subtotal(cart).greaterThanOrEqual(createMoney(40000)) || subtotal(cart).equalsTo(createMoney(0))) {
     return createMoney(0);
   }
   const shippingWeight: number = calculateCartWeight(cart);

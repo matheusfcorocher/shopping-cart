@@ -588,7 +588,6 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
                   productId: "8bc94226-3e20-40cb-a507-554fabf36ffa",
                 })
                 .then((data) => {
-                  console.log(data)
                   return ObjectionLineItemMapper.toEntity(data!);
                 })
             )
