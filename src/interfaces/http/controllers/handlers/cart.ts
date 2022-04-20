@@ -13,8 +13,7 @@ const addLineItemHandler = async (
 ) => {
   try {
     const { addLineItem } = req.container.carts;
-    const { buyerId, productId } = req.body;
-    const result = await addLineItem.execute(buyerId, productId);
+    const result = await addLineItem(req.body);
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
     const httpResponseError = EHConverter.convert(error);    
@@ -33,8 +32,7 @@ const applyVoucherHandler = async (
 ) => {
   try {
     const { applyVoucher } = req.container.carts;
-    const { buyerId, code } = req.body;
-    const result = await applyVoucher.execute(buyerId, code);
+    const result = await applyVoucher(req.body);
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
     const httpResponseError = EHConverter.convert(error);    
@@ -53,7 +51,7 @@ const getCurrentCartHandler = async (
   try {
     const { getCurrentCart } = req.container.carts;
     const { buyerId } = req.params;
-    const result = await getCurrentCart.execute(buyerId);
+    const result = await getCurrentCart(buyerId);
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
     const httpResponseError = EHConverter.convert(error);    
@@ -72,8 +70,7 @@ const removeLineItemHandler = async (
 ) => {
   try {
     const { removeLineItem } = req.container.carts;
-    const { buyerId, productId } = req.body;
-    const result = await removeLineItem.execute(buyerId, productId);
+    const result = await removeLineItem(req.body);
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
     const httpResponseError = EHConverter.convert(error);    
@@ -92,7 +89,7 @@ const removeVoucherHandler = async (
   try {
     const { removeVoucher } = req.container.carts;
     const { buyerId } = req.params;
-    const result = await removeVoucher.execute(buyerId);
+    const result = await removeVoucher(buyerId);
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
     const httpResponseError = EHConverter.convert(error);    

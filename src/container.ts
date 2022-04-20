@@ -1,16 +1,16 @@
 //Use Cases importations
 //cart
-import AddLineItem from "./application/Cart/AddLineItem";
-import ApplyVoucher from "./application/Cart/ApplyVoucher";
-import GetCurrentCart from "./application/Cart/GetCurrentCart";
-import RemoveLineItem from "./application/Cart/RemoveLineItem";
-import RemoveVoucher from "./application/Cart/RemoveVoucher";
+import {makeAddLineItem} from "./application/Cart/AddLineItem";
+import {makeApplyVoucher} from "./application/Cart/ApplyVoucher";
+import {makeGetCurrentCart} from "./application/Cart/GetCurrentCart";
+import {makeRemoveLineItem} from "./application/Cart/RemoveLineItem";
+import {makeRemoveVoucher} from "./application/Cart/RemoveVoucher";
 
 //product
-import ListProducts from "./application/Product/ListProducts";
+import {makeListProducts} from "./application/Product/ListProducts";
 
 //voucher
-import ListVouchers from "./application/Voucher/ListVouchers";
+import {makeListVouchers} from "./application/Voucher/ListVouchers";
 
 //service
 import * as Service from "./domain/services/CheckoutDomainService";
@@ -23,28 +23,28 @@ import ObjectionProductRepository from "./infra/repositories/product/ObjectionPr
 import ObjectionVoucherRepository from "./infra/repositories/voucher/ObjectionVoucherRepository";
 
 const buyerRepo = new ObjectionBuyerRepository();
-const cartRepo = new ObjectionCartRepository();
+const cartRepository = new ObjectionCartRepository();
 const orderRepo = new ObjectionOrderRepository();
-const productRepo = new ObjectionProductRepository();
-const voucherRepo = new ObjectionVoucherRepository();
+const productRepository = new ObjectionProductRepository();
+const voucherRepository = new ObjectionVoucherRepository();
 
 //Cart Use Cases
-const addLineItem = new AddLineItem(cartRepo, productRepo);
-const applyVoucher = new ApplyVoucher(cartRepo, voucherRepo);
-const getCurrentCart = new GetCurrentCart(cartRepo);
-const removeLineItem = new RemoveLineItem(cartRepo, productRepo);
-const removeVoucher = new RemoveVoucher(cartRepo);
+const addLineItem = makeAddLineItem({cartRepository, productRepository});
+const applyVoucher = makeApplyVoucher({cartRepository, voucherRepository});
+const getCurrentCart = makeGetCurrentCart({cartRepository});
+const removeLineItem = makeRemoveLineItem({cartRepository, productRepository});
+const removeVoucher = makeRemoveVoucher({cartRepository});
 
 //Product Use Cases
-const listProducts = new ListProducts(productRepo);
+const listProducts = makeListProducts({productRepository});
 
 //Voucher Use Cases
-const listVouchers = new ListVouchers(voucherRepo);
+const listVouchers = makeListVouchers({voucherRepository});
 
 //Services Use cases
 const checkout = Service.makeCheckout({
-  cartRepository: cartRepo,
-  productRepository: productRepo,
+  cartRepository: cartRepository,
+  productRepository: productRepository,
   orderRepository: orderRepo,
 });
 

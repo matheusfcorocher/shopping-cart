@@ -8,7 +8,7 @@ const getProductsListHandler = async (
 ) => {
   try {
     const { listProducts } = req.container.products;
-    const result = await listProducts.execute();
+    const result = await listProducts();
     reply.send(result.map((r) => ProductSerializer.serialize(r)));
   } catch (error: any) {
     const httpResponseError = EHConverter.convert(error);    

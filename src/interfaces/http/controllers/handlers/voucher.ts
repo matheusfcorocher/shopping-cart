@@ -8,7 +8,7 @@ const getVouchersListHandler = async (
 ) => {
   try {
     const { listVouchers } = req.container.vouchers;
-    const result = await listVouchers.execute();
+    const result = await listVouchers();
     reply.send(result.map((r) => VoucherSerializer.serialize(r)));
   } catch (error: any) {
     const httpResponseError = EHConverter.convert(error);    
