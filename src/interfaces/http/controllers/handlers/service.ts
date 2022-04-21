@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { DataProps } from "../../../../domain/services/CheckoutDomainService";
-import { EHConverter } from "../../../../lib/CustomError";
+import { EHConverter } from "../../../../lib/errors/ErrorConverter";
+import { HttpError } from "../../../../lib/errors/HttpError";
 
 const checkoutHandler = async (
   req: FastifyRequest<{
@@ -14,7 +15,7 @@ const checkoutHandler = async (
     reply.send(result);
   } catch (error: any) {
     const httpResponseError = EHConverter.convert(error);    
-    return reply.status(httpResponseError.status).send(httpResponseError.toJson());
+    return reply.status(httpResponseError.status).send(HttpError.toJson(httpResponseError));
   }
 };
 

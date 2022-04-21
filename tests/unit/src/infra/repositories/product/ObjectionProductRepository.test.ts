@@ -1,7 +1,7 @@
 import * as Product from "../../../../../../src/domain/entities/Product";
 import { createMoney } from "../../../../../../src/domain/valueObjects/Money";
 import ObjectionProductRepository from "../../../../../../src/infra/repositories/product/ObjectionProductRepository";
-import { InfrastructureError } from "../../../../../../src/lib/CustomError";
+import { InfrastructureError } from "../../../../../../src/lib/errors/InfrastructureError";
 import ProductModelFactory from "../../../../../support/factories/models/ProductModelFactory";
 
 const { setupIntegrationTest } = require("../../../../../support/setup");
@@ -112,8 +112,8 @@ describe("Infra :: Product :: ObjectionProductRepository", () => {
     describe("When doesn't find a product by id", () => {
       it("returns error", async () => {
         const id = "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcd";
-        const notFoundError = new InfrastructureError({
-          title: "Not Found Error",
+        const notFoundError = InfrastructureError.create({
+          name: "Not Found Error",
           code: "NOTFOUND_ERROR",
           message: `Couldn't find product with id: ${id} in database. Verify if you are passing the correct productId.`,
           detail: "",
@@ -151,8 +151,8 @@ describe("Infra :: Product :: ObjectionProductRepository", () => {
         const productData = {
           available: 28,
         };
-        const notFoundError = new InfrastructureError({
-          title: "Not Found Error",
+        const notFoundError = InfrastructureError.create({
+          name: "Not Found Error",
           code: "NOTFOUND_ERROR",
           message: `Couldn't find product with id: ${id} in database. Verify if you are passing the correct productId.`,
           detail: "",

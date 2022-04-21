@@ -308,7 +308,7 @@ describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
         .set("Content-type", "application/json")
         .expect(404);
       const notFoundError = {
-        title: "Not Found Error",
+        name: "Not Found Error",
         status: 404,
         message: `Couldn't find cart with buyerId: ${data.buyerId} in database. Verify if you are passing the correct buyerId.`,
         detail:
@@ -331,7 +331,7 @@ describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
         .set("Content-type", "application/json")
         .expect(404);
       const notFoundError = {
-        title: "Not Found Error",
+        name: "Not Found Error",
         status: 404,
         message: `Couldn't find voucher with code: ${data.code} in database. Verify if you are passing the correct code.`,
         detail: "Voucher Model is undefined.",
@@ -358,7 +358,7 @@ describe("Interfaces :: Cart :: Routes :: ApplyVoucher", () => {
       jest.restoreAllMocks();
 
       expect(response.body).toEqual({
-        title: "Not Found Error",
+        name: "Not Found Error",
         status: 404,
         message: `Couldn't find cart with buyerId: ${data.buyerId} in database. Verify if you are passing the correct buyerId.`,
         detail: "Service Unavailable",

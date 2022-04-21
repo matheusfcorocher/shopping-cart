@@ -4,9 +4,11 @@ import * as Order from "../../../../../src/domain/entities/Order";
 import * as CheckoutService from "../../../../../src/domain/services/CheckoutDomainService";
 import { createMoney } from "../../../../../src/domain/valueObjects/Money";
 import {
-  DomainAggregateError,
   DomainError,
-} from "../../../../../src/lib/CustomError";
+} from "../../../../../src/lib/errors/DomainError";
+import {
+  DomainAggregateError,
+} from "../../../../../src/lib/errors/DomainAggregateError";
 import { FakeCartRepository } from "../../../../support/repositories/FakeCartRepository";
 import { FakeOrderRepository } from "../../../../support/repositories/FakeOrderRepository";
 import { FakeProductRepository } from "../../../../support/repositories/FakeProductRepository";
@@ -171,19 +173,18 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         const productRepository = new FakeProductRepository(products);
         const orderRepository = new FakeOrderRepository(orders);
 
-        const badRequestError = new DomainError({
-          title: "Bad request Error",
+        const badRequestError = DomainError.create({
+          name: "Bad request Error",
           code: "BADREQUEST_ERROR",
           message: `Product Chocolate is out of stock`,
         });
         const errors = [badRequestError];
-        const aggregateError = new DomainAggregateError({
-          title: "Bad Request Error",
+        const aggregateError = DomainAggregateError.create({
+          name: "Bad Request Error",
           code: "BADREQUEST_ERROR",
           errors,
           message:
             "Was found multiple validation errors in the request. See property errors for details.",
-          name: "",
         });
 
         const checkout = CheckoutService.makeCheckout({
@@ -229,19 +230,18 @@ describe("Domain :: Services :: CheckoutDomainServices", () => {
         const productRepository = new FakeProductRepository(products);
         const orderRepository = new FakeOrderRepository(orders);
 
-        const badRequestError = new DomainError({
-          title: "Bad request Error",
+        const badRequestError = DomainError.create({
+          name: "Bad request Error",
           code: "BADREQUEST_ERROR",
           message: `Can't buy the product Chocolate with quantity 4 due it's only available 3 units`,
         });
         const errors = [badRequestError];
-        const aggregateError = new DomainAggregateError({
-          title: "Bad Request Error",
+        const aggregateError = DomainAggregateError.create({
+          name: "Bad Request Error",
           code: "BADREQUEST_ERROR",
           errors,
           message:
             "Was found multiple validation errors in the request. See property errors for details.",
-          name: "",
         });
 
         const checkout = CheckoutService.makeCheckout({

@@ -289,7 +289,7 @@ describe("Interfaces :: Cart :: Routes :: RemoveVoucher", () => {
           .del(`/api/carts/voucher/` + data.buyerId)
           .expect(404);
         const notFoundError = {
-          title: "Not Found Error",
+          name: "Not Found Error",
           status: 404,
           message: `Couldn't find cart with buyerId: ${data.buyerId} in database. Verify if you are passing the correct buyerId.`,
           detail:

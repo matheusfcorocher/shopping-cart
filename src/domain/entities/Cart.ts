@@ -1,4 +1,4 @@
-import { DomainError } from "../../lib/CustomError";
+import { DomainError } from "../../lib/errors/DomainError";
 import { AppliedVoucher, applyDiscount } from "../valueObjects/AppliedVoucher";
 import { createMoney, Money } from "../valueObjects/Money";
 
@@ -57,7 +57,10 @@ function subtotal(cart: Cart): Money {
 }
 
 function shipping(cart: Cart): Money {
-  if (subtotal(cart).greaterThanOrEqual(createMoney(40000)) || subtotal(cart).equalsTo(createMoney(0))) {
+  if (
+    subtotal(cart).greaterThanOrEqual(createMoney(40000)) ||
+    subtotal(cart).equalsTo(createMoney(0))
+  ) {
     return createMoney(0);
   }
   const shippingWeight: number = calculateCartWeight(cart);
@@ -67,6 +70,7 @@ function shipping(cart: Cart): Money {
 }
 
 function total(cart: Cart): Money {
+  if (discount(cart).greaterThanOrEqual(subtotal(cart))) return shipping(cart);
   return subtotal(cart).add(shipping(cart)).subtract(discount(cart));
 }
 
@@ -107,8 +111,8 @@ function removeLineItem(cart: Cart, productId: string): void {
     if (item.quantity <= 0) cart.lineItems.splice(index, 1);
     else cart.lineItems[index] = item;
   } else {
-    throw new DomainError({
-      title: "Not Found Error",
+    throw DomainError.create({
+      name: "Not Found Error",
       code: "NOTFOUND_ERROR",
       message: `Item with productId ${productId} wasn't found in cart!`,
     });

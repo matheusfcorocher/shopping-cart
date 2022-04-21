@@ -13,7 +13,7 @@ import ProductModelFactory from "../../../../../support/factories/models/Product
 import VoucherModelFactory from "../../../../../support/factories/models/VoucherModelFactory";
 import mockModel from "../../../../../support/objection";
 import { createMoney } from "../../../../../../src/domain/valueObjects/Money";
-import { InfrastructureError } from "../../../../../../src/lib/CustomError";
+import { InfrastructureError } from "../../../../../../src/lib/errors/InfrastructureError";
 
 const { setupIntegrationTest } = require("../../../../../support/setup");
 const cartRepository = ObjectionCartRepository;
@@ -456,8 +456,8 @@ describe("Infra :: Cart :: ObjectionCartRepository", () => {
       describe("but cart isn't found", () => {
         it("returns not found error", async () => {
           const buyerId = "7ea29c37-f9e7-4453-bc58-50ed4b5c0fcs";
-          const notFoundError = new InfrastructureError({
-            title: "Not Found Error",
+          const notFoundError = InfrastructureError.create({
+            name: "Not Found Error",
             code: "NOTFOUND_ERROR",
             message: `Couldn't find cart with buyerId: ${buyerId} in database. Verify if you are passing the correct buyerId.`,
             detail: "",

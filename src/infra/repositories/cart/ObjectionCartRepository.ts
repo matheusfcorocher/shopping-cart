@@ -11,7 +11,7 @@ import { ObjectionLineItemMapper } from "../lineItem/ObjectionLineItemMapper";
 import { ObjectionCartMapper } from "./ObjectionCartMapper";
 import { CartModel } from "../../database/knex/models/CartModel";
 import { LineItemModel } from "../../database/knex/models/LineItemModel";
-import { InfrastructureError } from "../../../lib/CustomError";
+import { InfrastructureError } from "../../../lib/errors/InfrastructureError";
 import { createMoney } from "../../../domain/valueObjects/Money";
 interface Owner {
   ownerId: string;
@@ -46,8 +46,8 @@ const ObjectionCartRepository: CartRepository = {
         return transformCartModelToCart(data!);
       })
       .catch((err) => {
-        const notFoundError = new InfrastructureError({
-          title: "Not Found Error",
+        const notFoundError = InfrastructureError.create({
+          name: "Not Found Error",
           code: "NOTFOUND_ERROR",
           message: `Couldn't find cart with id: ${id} in database. Verify if you are passing the correct id.`,
           detail: err.message,
@@ -65,8 +65,8 @@ const ObjectionCartRepository: CartRepository = {
         return transformCartModelToCart(data!);
       })
       .catch((err) => {
-        const notFoundError = new InfrastructureError({
-          title: "Not Found Error",
+        const notFoundError = InfrastructureError.create({
+          name: "Not Found Error",
           code: "NOTFOUND_ERROR",
           message: `Couldn't find cart with buyerId: ${buyerId} in database. Verify if you are passing the correct buyerId.`,
           detail: err.message,
@@ -141,8 +141,8 @@ const ObjectionCartRepository: CartRepository = {
         .delete()
         .then(() => "Cart was deleted successfully.")
         .catch(() => {
-          const notFoundError = new InfrastructureError({
-            title: "Not Found Error",
+          const notFoundError = InfrastructureError.create({
+            name: "Not Found Error",
             code: "NOTFOUND_ERROR",
             message: `Cart with id ${id} and buyerId ${buyerId} can't be found.`,
           });
@@ -167,8 +167,8 @@ function getCartModelById(
       return data!;
     })
     .catch((err) => {
-      const notFoundError = new InfrastructureError({
-        title: "Not Found Error",
+      const notFoundError = InfrastructureError.create({
+        name: "Not Found Error",
         code: "NOTFOUND_ERROR",
         message: `Cart with id ${id} can't be found.`,
         detail: err.message,
@@ -215,8 +215,8 @@ function getAppliedVoucher(cartModel: CartModel): AppliedVoucher | undefined {
 //     })
 //     .then((data) => {
 //       if (data === undefined) {
-//         const notFoundError = new InfrastructureError({
-//           title: "Not Found Error",
+//         const notFoundError = InfrastructureError.create({
+//           name: "Not Found Error",
 //           code: "NOTFOUND_ERROR",
 //           message: `Line with ownerId ${ownerId} and productId ${productId} can't be found for ${ownerType}.`,
 //         });
@@ -236,8 +236,8 @@ function getAllLineItemsModelsByOwner(owner: Owner): Promise<LineItemModel[]> {
     })
     .then((data) => {
       if (data === undefined) {
-        const notFoundError = new InfrastructureError({
-          title: "Not Found Error",
+        const notFoundError = InfrastructureError.create({
+          name: "Not Found Error",
           code: "NOTFOUND_ERROR",
           message: `Line with ownerId ${ownerId} can't be found for ${ownerType}.`,
         });
@@ -270,8 +270,8 @@ async function deleteLineItems(
     .delete()
     .then(() => Promise.resolve("LineItems was deleted successfully."))
     .catch(() => {
-      const notFoundError = new InfrastructureError({
-        title: "Not Found Error",
+      const notFoundError = InfrastructureError.create({
+        name: "Not Found Error",
         code: "NOTFOUND_ERROR",
         message: `LineItems can't be found.`,
       });
@@ -289,8 +289,8 @@ async function deleteLineItem(
     .delete()
     .then(() => Promise.resolve("LineItem was deleted successfully."))
     .catch(() => {
-      const notFoundError = new InfrastructureError({
-        title: "Not Found Error",
+      const notFoundError = InfrastructureError.create({
+        name: "Not Found Error",
         code: "NOTFOUND_ERROR",
         message: `LineItem with productId ${productId} can't be found.`,
       });

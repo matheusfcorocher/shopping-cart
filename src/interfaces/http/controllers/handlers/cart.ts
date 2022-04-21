@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { EHConverter } from "../../../../lib/CustomError";
+import { EHConverter } from "../../../../lib/errors/ErrorConverter";
+import { HttpError } from "../../../../lib/errors/HttpError";
 import { CartSerializer } from "../serializers/CartSerializer";
 
 const addLineItemHandler = async (
@@ -17,7 +18,7 @@ const addLineItemHandler = async (
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
     const httpResponseError = EHConverter.convert(error);    
-    return reply.status(httpResponseError.status).send(httpResponseError.toJson());
+    return reply.status(httpResponseError.status).send(HttpError.toJson(httpResponseError));
   }
 };
 
@@ -36,7 +37,7 @@ const applyVoucherHandler = async (
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
     const httpResponseError = EHConverter.convert(error);    
-    return reply.status(httpResponseError.status).send(httpResponseError.toJson());
+    return reply.status(httpResponseError.status).send(HttpError.toJson(httpResponseError));
   }
 };
 
@@ -55,7 +56,7 @@ const getCurrentCartHandler = async (
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
     const httpResponseError = EHConverter.convert(error);    
-    return reply.status(httpResponseError.status).send(httpResponseError.toJson());
+    return reply.status(httpResponseError.status).send(HttpError.toJson(httpResponseError));
   }
 };
 
@@ -74,7 +75,7 @@ const removeLineItemHandler = async (
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
     const httpResponseError = EHConverter.convert(error);    
-    return reply.status(httpResponseError.status).send(httpResponseError.toJson());
+    return reply.status(httpResponseError.status).send(HttpError.toJson(httpResponseError));
   }
 };
 
@@ -93,7 +94,7 @@ const removeVoucherHandler = async (
     reply.send(CartSerializer.serialize(result));
   } catch (error: any) {
     const httpResponseError = EHConverter.convert(error);    
-    return reply.status(httpResponseError.status).send(httpResponseError.toJson());
+    return reply.status(httpResponseError.status).send(HttpError.toJson(httpResponseError));
   }
 };
 

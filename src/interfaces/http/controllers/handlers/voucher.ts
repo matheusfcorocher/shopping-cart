@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { EHConverter } from "../../../../lib/CustomError";
+import { EHConverter } from "../../../../lib/errors/ErrorConverter";
+import { HttpError } from "../../../../lib/errors/HttpError";
 import { VoucherSerializer } from "../serializers/VoucherSerializer";
 
 const getVouchersListHandler = async (
@@ -12,7 +13,7 @@ const getVouchersListHandler = async (
     reply.send(result.map((r) => VoucherSerializer.serialize(r)));
   } catch (error: any) {
     const httpResponseError = EHConverter.convert(error);    
-    return reply.status(httpResponseError.status).send(httpResponseError.toJson());
+    return reply.status(httpResponseError.status).send(HttpError.toJson(httpResponseError));
   }
 };
 

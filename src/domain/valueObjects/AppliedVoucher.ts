@@ -1,4 +1,4 @@
-import { DomainError } from "../../lib/CustomError";
+import { DomainError } from "../../lib/errors/DomainError";
 import { Voucher, VoucherType } from "../entities/Voucher";
 import { createMoney, Money } from "./Money";
 
@@ -37,9 +37,9 @@ function createPercentualVoucher({
   amount,
 }: AppliedVoucher): AppliedVoucher {
   if (!isInRange({ voucherId, type, amount })) {
-    const internalError = new DomainError({
-      title: "Internal Error",
-      code: "INTERNAL_ERROR",
+    const internalError = DomainError.create({
+      name: "Validation Error",
+      code: "VALIDATION_ERROR",
       message: "PercentualVoucher must have an amount between 0 and 100.",
     });
     throw internalError;

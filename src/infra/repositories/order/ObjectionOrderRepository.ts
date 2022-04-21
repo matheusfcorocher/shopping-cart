@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import * as Order from "../../../domain/entities/Order";
 import { LineItem } from "../../../domain/entities/Cart";
 import { OrderRepository } from "../../../domain/repositories/OrderRepository";
-import { InfrastructureError } from "../../../lib/CustomError";
+import { InfrastructureError } from "../../../lib/errors/InfrastructureError";
 import { LineItemModel } from "../../database/knex/models/LineItemModel";
 import { OrderModel } from "../../database/knex/models/OrderModel";
 import { ObjectionLineItemMapper } from "../lineItem/ObjectionLineItemMapper";
@@ -79,8 +79,8 @@ function getAllLineItemsModelsByOwner(owner: Owner): Promise<LineItemModel[]> {
     })
     .then((data) => {
       if (data === undefined) {
-        const notFoundError = new InfrastructureError({
-          title: "Not Found Error",
+        const notFoundError = InfrastructureError.create({
+          name: "Not Found Error",
           code: "NOTFOUND_ERROR",
           message: `Line with ownerId ${ownerId} can't be found for ${ownerType}.`,
         });

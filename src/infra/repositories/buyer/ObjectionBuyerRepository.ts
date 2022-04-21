@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import * as Buyer from "../../../domain/entities/Buyer";
 import { BuyerRepository } from "../../../domain/repositories/BuyerRepository";
-import { InfrastructureError } from "../../../lib/CustomError";
+import { InfrastructureError } from "../../../lib/errors/InfrastructureError";
 import { BuyerModel } from "../../database/knex/models/BuyerModel";
 import { ObjectionBuyerMapper } from "./ObjectionBuyerMapper";
 
@@ -19,8 +19,8 @@ const ObjectionBuyerRepository: BuyerRepository = {
   store: async function (buyer: Buyer.Buyer): Promise<Buyer.Buyer> {
     const hasBuyer2 = await hasBuyer(buyer.id);
     if (hasBuyer2) {
-      const validationError = new InfrastructureError({
-        title: "Validation Error",
+      const validationError = InfrastructureError.create({
+        name: "Validation Error",
         code: "VALIDATION_ERROR",
         message: `Buyer with id ${buyer.id} already exists.`,
       });
@@ -42,8 +42,8 @@ function getBuyerModelById(id: string): Promise<BuyerModel> {
     })
     .then((data) => {
       if (data === undefined) {
-        const notFoundError = new InfrastructureError({
-          title: "Not Found Error",
+        const notFoundError = InfrastructureError.create({
+          name: "Not Found Error",
           code: "NOTFOUND_ERROR",
           message: `Buyer with id ${id} can't be found.`,
         });

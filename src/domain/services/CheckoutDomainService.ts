@@ -1,10 +1,12 @@
-import { DomainAggregateError, DomainError } from "../../lib/CustomError";
+import { DomainError } from "../../lib/errors/DomainError";
+import { DomainAggregateError } from "../../lib/errors/DomainAggregateError";
 import { Cart, discount } from "../entities/Cart";
 import { createOrder, OrderData, PaymentMethod } from "../entities/Order";
 import { createProduct, Product } from "../entities/Product";
 import { CartRepository } from "../repositories/CartRepository";
 import { OrderRepository } from "../repositories/OrderRepository";
 import { ProductRepository } from "../repositories/ProductRepository";
+import { BaseError, Exception } from "../../lib/errors/BaseErrors";
 
 type DataProps = {
   cartId: string;
@@ -32,9 +34,9 @@ function makeCheckout({cartRepository, productRepository, orderRepository}: Chec
       data.cartId
     );
     if (cart.lineItems.length == 0) {
-      const validationError = new DomainError({
-        title: "Bad request Error",
-        code: "BADREQUEST_ERROR",
+      const validationError = DomainError.create({
+        name: "Validation Error",
+        code: "VALIDATION_ERROR",
         message: "cart must have line items to become a order.",
       });
       throw validationError;
@@ -135,8 +137,8 @@ function verifyAvailability(
       };
     }
 
-    const internalError = new DomainError({
-      title: "Not found error",
+    const internalError = DomainError.create({
+      name: "Not found error",
       code: "NOTFOUND_ERROR",
       message: `Product with id ${lineItem.productId} was not found in products data`,
     });
@@ -150,21 +152,20 @@ function verifyAvailability(
   if (messageErrors.length === 0) return true;
 
   const errors = messageErrors.map((m) => {
-    const badRequestError = new DomainError({
-      title: "Validation Error",
+    const badRequestError = DomainError.create({
+      name: "Validation Error",
       code: "VALIDATION_ERROR",
       message: m,
     });
-    badRequestError.message = m;
+
     return badRequestError;
   });
-  const aggregateError = new DomainAggregateError({
-    title: "Validation Error",
+  const aggregateError = DomainAggregateError.create({
+    name: "Validation Error",
     code: "VALIDATION_ERROR",
     errors,
     message:
       "Was found multiple validation errors in the request. See property errors for details.",
-    name: "",
   });
 
   throw aggregateError;

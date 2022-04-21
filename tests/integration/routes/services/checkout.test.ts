@@ -175,7 +175,7 @@ describe("Interfaces :: Services :: Routes :: Checkout", () => {
           .expect(404);
 
         const notFoundError = {
-          title: "Not Found Error",
+          name: "Not Found Error",
           status: 404,
           message: `Couldn't find cart with id: ${data.cartId} in database. Verify if you are passing the correct id.`,
           detail:
@@ -201,7 +201,7 @@ describe("Interfaces :: Services :: Routes :: Checkout", () => {
           .expect(400);
 
         const badRequestError = {
-          title: "Bad request Error",
+          name: "Validation Error",
           status: 400,
           message: "cart must have line items to become a order.",
           hasManyErrors: false,
@@ -225,11 +225,11 @@ describe("Interfaces :: Services :: Routes :: Checkout", () => {
           .expect(400);
 
         const expected = {
-          title: "Bad Request Error",
+          name: "Validation Error",
           status: 400,
           hasManyErrors: true,
           message:
-            "Was found multiple errors in the request. See property errors for details.",
+            "Was found multiple validation errors in the request. See property errors for details.",
         };
         const responseWithoutErrors = {
           ...response.body,
@@ -247,14 +247,14 @@ describe("Interfaces :: Services :: Routes :: Checkout", () => {
 
         const expectedErrors = [
           {
-            code: "BADREQUEST_ERROR",
+            code: "VALIDATION_ERROR",
             message: "Product Gaming Chair is out of stock",
-            title: "Bad request Error",
+            name: "Validation Error",
           },
           {
-            code: "BADREQUEST_ERROR",
+            code: "VALIDATION_ERROR",
             message: `Can't buy the product Gaming Monitor with quantity 2 due it's only available 1 units`,
-            title: "Bad request Error",
+            name: "Validation Error",
           },
         ];
 
@@ -279,11 +279,11 @@ describe("Interfaces :: Services :: Routes :: Checkout", () => {
           .expect(400);
 
         const expected = {
-          title: "Bad Request Error",
+          name: "Validation Error",
           status: 400,
           hasManyErrors: true,
           message:
-            "Was found multiple errors in the request. See property errors for details.",
+            "Was found multiple validation errors in the request. See property errors for details.",
         };
         const responseWithoutErrors = {
           ...response.body,
@@ -301,14 +301,14 @@ describe("Interfaces :: Services :: Routes :: Checkout", () => {
 
         const expectedErrors = [
           {
-            code: "BADREQUEST_ERROR",
+            code: "VALIDATION_ERROR",
             message: "Product Gaming Chair is out of stock",
-            title: "Bad request Error",
+            name: "Validation Error",
           },
           {
-            code: "BADREQUEST_ERROR",
+            code: "VALIDATION_ERROR",
             message: `Can't buy the product Gaming Monitor with quantity 2 due it's only available 1 units`,
-            title: "Bad request Error",
+            name: "Validation Error",
           },
         ];
 

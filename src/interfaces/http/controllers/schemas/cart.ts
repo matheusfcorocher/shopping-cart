@@ -39,7 +39,7 @@ const cartObj = Type.Object({
 });
 
 const errorObj = Type.Object({
-  title: Type.String(),
+  name: Type.String(),
   code: Type.String(),
   detail: Type.Optional(Type.String()),
   message: Type.String(),
@@ -49,7 +49,7 @@ const errorObj = Type.Object({
 const httpResponseError = Type.Object({
   type: Type.Optional(Type.String()),
   hasManyErrors: Type.Optional(Type.Boolean()),
-  title: Type.String(),
+  name: Type.String(),
   status: Type.Number(),
   message: Type.String(),
   detail: Type.Optional(Type.String()),

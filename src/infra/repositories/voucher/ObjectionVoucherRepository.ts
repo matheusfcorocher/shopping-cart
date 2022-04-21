@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import * as Voucher from "../../../domain/entities/Voucher";
 import { VoucherRepository } from "../../../domain/repositories/VoucherRepository";
-import { InfrastructureError } from "../../../lib/CustomError";
+import { InfrastructureError } from "../../../lib/errors/InfrastructureError";
 import { VoucherModel } from "../../database/knex/models/VoucherModel";
 import { ObjectionVoucherMapper } from "./ObjectionVoucherMapper";
 
@@ -18,8 +18,8 @@ const ObjectionVoucherRepository: VoucherRepository = {
       })
       .then((data) => {
         if (data === undefined) {
-          const notFoundError = new InfrastructureError({
-            title: "Not Found Error",
+          const notFoundError = InfrastructureError.create({
+            name: "Not Found Error",
             code: "NOTFOUND_ERROR",
             message: `Voucher with id ${id} can't be found.`,
           });
@@ -38,8 +38,8 @@ const ObjectionVoucherRepository: VoucherRepository = {
         return ObjectionVoucherMapper.toEntity(data);
       })
       .catch((error) => {
-        const notFoundError = new InfrastructureError({
-          title: "Not Found Error",
+        const notFoundError = InfrastructureError.create({
+          name: "Not Found Error",
           code: "NOTFOUND_ERROR",
           message: `Couldn't find voucher with code: ${code} in database. Verify if you are passing the correct code.`,
           detail: error.message,

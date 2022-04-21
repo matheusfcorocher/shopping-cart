@@ -319,7 +319,7 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
         .set("Content-type", "application/json")
         .expect(404);
       const notFoundError = {
-        title: "Not Found Error",
+        name: "Not Found Error",
         status: 404,
         message: `Couldn't find cart with buyerId: ${data.buyerId} in database. Verify if you are passing the correct buyerId.`,
         detail:
@@ -342,7 +342,7 @@ describe("Interfaces :: Cart :: Routes :: AddLineItem", () => {
         .set("Content-type", "application/json")
         .expect(404);
       const notFoundError = {
-        title: "Not Found Error",
+        name: "Not Found Error",
         status: 404,
         message: `Couldn't find product with id: ${data.productId} in database. Verify if you are passing the correct productId.`,
         detail:

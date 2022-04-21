@@ -4,7 +4,7 @@ import {
   ProductDataProps,
   ProductRepository,
 } from "../../../domain/repositories/ProductRepository";
-import { InfrastructureError } from "../../../lib/CustomError";
+import { InfrastructureError } from "../../../lib/errors/InfrastructureError";
 import { ProductModel } from "../../database/knex/models/ProductModel";
 import { ObjectionProductMapper } from "./ObjectionProductMapper";
 
@@ -53,8 +53,8 @@ function getProductModelById(id: string): Promise<ProductModel> {
       return data!;
     })
     .catch((error) => {
-      const notFoundError = new InfrastructureError({
-        title: "Not Found Error",
+      const notFoundError = InfrastructureError.create({
+        name: "Not Found Error",
         code: "NOTFOUND_ERROR",
         message: `Couldn't find product with id: ${id} in database. Verify if you are passing the correct productId.`,
         detail: error.message,

@@ -1,4 +1,4 @@
-import { DomainError } from "../../lib/CustomError";
+import { DomainError } from "../../lib/errors/DomainError";
 import { Voucher } from "../entities/Voucher";
 import {
   AppliedVoucher,
@@ -20,17 +20,17 @@ const appliedFactory: AppliedVoucherFactory = {
       case "free shipping":
         if (minValue)
           return createFreeShippingVoucher({ voucherId: id, type, amount, minValue });
-        throw new DomainError({
-          title: "Internal Error",
-          code: "INTERNAL_ERROR",
+        throw DomainError.create({
+          name: "Not Found Error",
+          code: "NOTFOUND_ERROR",
           message: "minValue field not found in free shipping voucher",
         });
       case "percentual":
         return createPercentualVoucher({ voucherId: id, type, amount });
       default:
-        throw new DomainError({
-          title: "Internal Error",
-          code: "INTERNAL_ERROR",
+        throw DomainError.create({
+          name: "Not Found Error",
+          code: "NOTFOUND_ERROR",
           message: "Voucher type wasn't found",
         });
     }
