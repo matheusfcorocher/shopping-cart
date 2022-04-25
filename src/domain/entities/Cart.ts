@@ -74,42 +74,82 @@ function total(cart: Cart): Money {
   return subtotal(cart).add(shipping(cart)).subtract(discount(cart));
 }
 
-function addLineItem(cart: Cart, lineItemData: LineItemDataProps): void {
+function addLineItem(cart: Cart, lineItemData: LineItemDataProps): Cart {
   const item = cart.lineItems.find(
     (item) => item.productId.normalize() === lineItemData.productId.normalize()
   );
   if (item) {
-    item.quantity += 1;
+    const newItem: LineItem = {
+      ...item,
+      quantity: item.quantity + 1,
+    };
     const index = cart.lineItems.findIndex(
       (lineItem) =>
         lineItem.productId.normalize() === lineItemData.productId.normalize()
     );
-    cart.lineItems[index] = item;
+    const newlineItems = [
+      ...cart.lineItems.slice(0, index),
+      newItem,
+      ...cart.lineItems.slice(index + 1),
+    ];
+    return {
+      ...cart,
+      lineItems: newlineItems,
+    };
   } else {
     const newLineItem = createLineItem({
       productId: lineItemData.productId,
       unitPrice: lineItemData.price,
       quantity: 1,
     });
-    cart.lineItems = [...cart.lineItems, newLineItem];
+    const lineItems = [...cart.lineItems, newLineItem];
+    return {
+      ...cart,
+      lineItems,
+    };
   }
 }
 
-function applyVoucher(cart: Cart, appliedVoucher: AppliedVoucher): void {
-  cart.appliedVoucher = appliedVoucher;
+function applyVoucher(cart: Cart, appliedVoucher: AppliedVoucher): Cart {
+  return {
+    ...cart,
+    appliedVoucher: appliedVoucher,
+  };
 }
 
-function removeLineItem(cart: Cart, productId: string): void {
+function removeLineItem(cart: Cart, productId: string): Cart {
   const item = cart.lineItems.find(
     (item) => item.productId.normalize() === productId.normalize()
   );
   if (item) {
-    item.quantity -= 1;
+    const newItem: LineItem = {
+      ...item,
+      quantity: item.quantity - 1,
+    };
     const index = cart.lineItems.findIndex(
       (lineItem) => lineItem.productId.normalize() === productId.normalize()
     );
-    if (item.quantity <= 0) cart.lineItems.splice(index, 1);
-    else cart.lineItems[index] = item;
+    if (item.quantity <= 0) {
+      cart.lineItems.splice(index, 1);
+      const newlineItems = [
+        ...cart.lineItems.slice(0, index),
+        ...cart.lineItems.slice(index + 1),
+      ];
+      return {
+        ...cart,
+        lineItems: newlineItems,
+      };
+    } else {
+      const newlineItems = [
+        ...cart.lineItems.slice(0, index),
+        newItem,
+        ...cart.lineItems.slice(index + 1),
+      ];
+      return {
+        ...cart,
+        lineItems: newlineItems,
+      };
+    }
   } else {
     throw DomainError.create({
       name: "Not Found Error",
@@ -119,8 +159,11 @@ function removeLineItem(cart: Cart, productId: string): void {
   }
 }
 
-function removeVoucher(cart: Cart): void {
-  cart.appliedVoucher = undefined;
+function removeVoucher(cart: Cart): Cart {
+  return {
+    ...cart,
+    appliedVoucher: undefined,
+  };
 }
 
 //private functions

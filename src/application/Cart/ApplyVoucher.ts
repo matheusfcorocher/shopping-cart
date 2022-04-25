@@ -24,9 +24,8 @@ function makeApplyVoucher({
     const cart = await cartRepository.getCartByBuyerId(buyerId);
     const voucher = await voucherRepository.getVoucherByCode(code);
     const appliedVoucher = appliedFactory.fromVoucher(voucher);
-    Cart.applyVoucher(cart, appliedVoucher);
-    await cartRepository.update(cart);
-    return cart;
+    const cartWithVoucher = Cart.applyVoucher(cart, appliedVoucher);
+    return cartRepository.update(cartWithVoucher);
   }
 
   return applyVoucher;

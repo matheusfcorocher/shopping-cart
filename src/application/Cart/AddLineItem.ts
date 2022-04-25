@@ -22,9 +22,8 @@ function makeAddLineItem({
   }: addLineItemProps): Promise<Cart.Cart> {
     const cart = await cartRepository.getCartByBuyerId(buyerId);
     const product = await productRepository.getProductById(productId);
-    Cart.addLineItem(cart, { productId: product.id, price: product.price });
-    await cartRepository.update(cart);
-    return cart;
+    const cartWithAddedItem = Cart.addLineItem(cart, { productId: product.id, price: product.price });
+    return cartRepository.update(cartWithAddedItem);
   }
 
   return addLineItem;

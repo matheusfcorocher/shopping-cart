@@ -22,9 +22,8 @@ function makeRemoveLineItem({
   }: removeLineItemProps): Promise<Cart.Cart> {
     const cart = await cartRepository.getCartByBuyerId(buyerId);
     await productRepository.getProductById(productId);
-    Cart.removeLineItem(cart, productId);
-    await cartRepository.update(cart);
-    return cart;
+    const cartRemovedItem = Cart.removeLineItem(cart, productId);
+    return  cartRepository.update(cartRemovedItem);
   }
 
   return removeLineItem;

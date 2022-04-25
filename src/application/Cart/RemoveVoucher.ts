@@ -8,9 +8,8 @@ type makeRemoveVoucherProps = {
 function makeRemoveVoucher({ cartRepository }: makeRemoveVoucherProps) {
   async function removeVoucher(buyerId: string): Promise<Cart.Cart> {
     const cart = await cartRepository.getCartByBuyerId(buyerId);
-    Cart.removeVoucher(cart);
-    await cartRepository.update(cart);
-    return cart;
+    const cartWithoutVoucher = Cart.removeVoucher(cart);
+    return cartRepository.update(cartWithoutVoucher);
   }
 
   return removeVoucher;
