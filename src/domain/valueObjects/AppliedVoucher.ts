@@ -1,5 +1,5 @@
 import { DomainError } from "../../lib/errors/DomainError";
-import { Voucher, VoucherType } from "../entities/Voucher";
+import { VoucherType } from "../entities/Voucher";
 import { createMoney, Money } from "./Money";
 
 type AppliedVoucher = {
@@ -7,7 +7,6 @@ type AppliedVoucher = {
   type: VoucherType;
   amount?: Money | null;
   minValue?: Money | null;
-  // apply: ({subtotal, shipping} : ApplyProps) => Money;
 };
 
 type ApplyProps = {

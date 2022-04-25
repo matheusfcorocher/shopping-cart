@@ -8,7 +8,7 @@ type makeListProductsProps = {
 function makeListProducts({
   productRepository,
 }: makeListProductsProps) {
-  async function listProducts(): Promise<Array<Product.Product>> {
+  function listProducts(): Promise<Array<Product.Product>> {
     return productRepository.getAllProducts();
   }
 

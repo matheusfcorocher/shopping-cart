@@ -1,4 +1,4 @@
-import { AggregateBaseError, AggregateException, BaseError, Exception } from "./BaseErrors";
+import { AggregateBaseError, AggregateException, Exception } from "./BaseErrors";
 
 interface DomainAggregateErrorProps {
   name: string;

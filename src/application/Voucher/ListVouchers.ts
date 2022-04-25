@@ -8,7 +8,7 @@ type makeListVouchersProps = {
 function makeListVouchers({
   voucherRepository,
 }: makeListVouchersProps) {
-  async function listVouchers(): Promise<Array<Voucher.Voucher>> {
+  function listVouchers(): Promise<Array<Voucher.Voucher>> {
     return voucherRepository.getAllVouchers();
   }
 

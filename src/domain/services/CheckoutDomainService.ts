@@ -2,7 +2,7 @@ import { DomainError } from "../../lib/errors/DomainError";
 import { DomainAggregateError } from "../../lib/errors/DomainAggregateError";
 import { Cart, discount } from "../entities/Cart";
 import { createOrder, OrderData, PaymentMethod } from "../entities/Order";
-import { createProduct, Product } from "../entities/Product";
+import { Product } from "../entities/Product";
 import { CartRepository } from "../repositories/CartRepository";
 import { OrderRepository } from "../repositories/OrderRepository";
 import { ProductRepository } from "../repositories/ProductRepository";
