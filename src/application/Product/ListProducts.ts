@@ -9,7 +9,7 @@ function makeListProducts({
   productRepository,
 }: makeListProductsProps) {
   async function listProducts(): Promise<Array<Product.Product>> {
-    return await productRepository.getAllProducts();
+    return productRepository.getAllProducts();
   }
 
   return listProducts;

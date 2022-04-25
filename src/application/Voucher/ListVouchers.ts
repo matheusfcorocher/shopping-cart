@@ -9,7 +9,7 @@ function makeListVouchers({
   voucherRepository,
 }: makeListVouchersProps) {
   async function listVouchers(): Promise<Array<Voucher.Voucher>> {
-    return await voucherRepository.getAllVouchers();
+    return voucherRepository.getAllVouchers();
   }
 
   return listVouchers;

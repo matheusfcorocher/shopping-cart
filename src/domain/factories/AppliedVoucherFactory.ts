@@ -19,7 +19,7 @@ const appliedFactory: AppliedVoucherFactory = {
         return createFixedVoucher({ voucherId: id, type, amount });
       case "free shipping":
         if (minValue)
-          return createFreeShippingVoucher({ voucherId: id, type, amount, minValue });
+          return createFreeShippingVoucher({ voucherId: id, type, minValue });
         throw DomainError.create({
           name: "Not Found Error",
           code: "NOTFOUND_ERROR",

@@ -6,7 +6,6 @@ import { createProduct, Product } from "../entities/Product";
 import { CartRepository } from "../repositories/CartRepository";
 import { OrderRepository } from "../repositories/OrderRepository";
 import { ProductRepository } from "../repositories/ProductRepository";
-import { BaseError, Exception } from "../../lib/errors/BaseErrors";
 
 type DataProps = {
   cartId: string;
@@ -28,11 +27,13 @@ type CheckoutDomainServiceProps = {
 
 //public functions
 
-function makeCheckout({cartRepository, productRepository, orderRepository}: CheckoutDomainServiceProps) {
+function makeCheckout({
+  cartRepository,
+  productRepository,
+  orderRepository,
+}: CheckoutDomainServiceProps) {
   async function checkout(data: DataProps): Promise<string> {
-    const cart = await cartRepository.getCartById(
-      data.cartId
-    );
+    const cart = await cartRepository.getCartById(data.cartId);
     if (cart.lineItems.length == 0) {
       const validationError = DomainError.create({
         name: "Validation Error",
@@ -41,8 +42,7 @@ function makeCheckout({cartRepository, productRepository, orderRepository}: Chec
       });
       throw validationError;
     }
-    const products =
-      await productRepository.getAllProducts();
+    const products = await productRepository.getAllProducts();
     const productsData = products.map((product) => {
       const { id, name, available } = product;
       return { productId: id, name, available };
@@ -85,9 +85,7 @@ async function stockReduction(
   const promises = [];
   for (let product of updatedProducts) {
     const { id, available } = product;
-    promises.push(
-      productRepository.update(id, { available })
-    );
+    promises.push(productRepository.update(id, { available }));
   }
   await Promise.all(promises);
 
@@ -100,14 +98,10 @@ function updateProducts(cart: Cart, products: Array<Product>): Array<Product> {
       (lineItem) => product.id == lineItem.productId
     );
     if (lineItem) {
-      const updatedProduct = createProduct({
-        id: product.id,
-        name: product.name,
-        price: product.price,
+      return {
+        ...product,
         available: product.available - lineItem.quantity,
-      });
-
-      return updatedProduct;
+      };
     }
 
     return product;
